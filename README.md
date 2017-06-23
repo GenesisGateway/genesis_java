@@ -1,6 +1,8 @@
 Genesis Java
 ===========
 
+[![Build Status](https://img.shields.io/travis/GenesisGateway/genesis_java.svg?style=flat)](https://travis-ci.org/GenesisGateway/genesis_java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.emerchantpay.gateway/genesis-java/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.emerchantpay.gateway/genesis-java/)
 [![Software License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE)
 
 Overview
@@ -29,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
 </dependency>
 ```
 
