@@ -10,12 +10,17 @@ import com.emerchantpay.gateway.api.requests.financial.card.*;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSale3DRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.RecurringSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayInRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayOutRequest;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayInRequest;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayOutRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayInRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayOutRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.AlipayRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.WechatRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecPayoutRequest;
 import com.emerchantpay.gateway.api.requests.financial.pbv.PBVSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.pbv.PBVYeePayRequest;
+import com.emerchantpay.gateway.api.requests.financial.sct.SCTPayoutRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.*;
 import com.emerchantpay.gateway.api.requests.financial.wallets.EzeewalletRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.NetellerRequest;
@@ -275,11 +280,6 @@ public class TransactionGateway {
 		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
 	}
 
-	public TransactionResult<Transaction> getSDDPayout(SDDPayoutRequest request) {
-
-		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
-	}
-
 	public TransactionResult<Transaction> getSDDInitRecurring(SDDInitRecurringSaleRequest request) {
 
 		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
@@ -291,6 +291,12 @@ public class TransactionGateway {
 	}
 
 	public TransactionResult<Transaction> getSDDRefund(SDDRefundRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// SCT
+	public TransactionResult<Transaction> getSCTPayout(SCTPayoutRequest request) {
 
 		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
 	}
@@ -341,6 +347,36 @@ public class TransactionGateway {
 	}
 
 	public TransactionResult<Transaction> getTrustlyWithdrawal(TrustlyWithdrawalRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// Earthport
+	public TransactionResult<Transaction> getEarthport(EarthportRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// Alipay
+	public TransactionResult<Transaction> getAliPay(AlipayRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// Wechat
+	public TransactionResult<Transaction> getWechat(WechatRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// PaySec
+	public TransactionResult<Transaction> getPaySec(PaySecRequest request) {
+
+		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
+	}
+
+	// PaySec Payout
+	public TransactionResult<Transaction> getPaySecPayout(PaySecPayoutRequest request) {
 
 		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
 	}

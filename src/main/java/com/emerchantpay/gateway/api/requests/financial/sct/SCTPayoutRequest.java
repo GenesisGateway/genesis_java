@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.api.requests.financial.sdd;
+package com.emerchantpay.gateway.api.requests.financial.sct;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
@@ -35,14 +35,14 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDPayoutRequest extends Request {
+public class SCTPayoutRequest extends Request {
 
     protected Configuration configuration;
     private Http http;
 
     private NodeWrapper response;
 
-    private String transactionType = TransactionTypes.SDD_PAYOUT;
+    private String transactionType = TransactionTypes.SCT_PAYOUT;
     private String transactionId;
     private String usage;
     private String remoteIP;
@@ -54,72 +54,72 @@ public class SDDPayoutRequest extends Request {
     private String iban;
     private String bic;
 
-    private SDDPayoutAddressRequest billingAddress;
-    private SDDPayoutAddressRequest shippingAddress;
+    private SCTPayoutAddressRequest billingAddress;
+    private SCTPayoutAddressRequest shippingAddress;
 
-    public SDDPayoutRequest() {
+    public SCTPayoutRequest() {
         super();
     }
 
-    public SDDPayoutRequest(Configuration configuration) {
+    public SCTPayoutRequest(Configuration configuration) {
 
         super();
         this.configuration = configuration;
     }
 
-    public SDDPayoutRequest setTransactionId(String transactionId) {
+    public SCTPayoutRequest setTransactionId(String transactionId) {
         this.transactionId = transactionId;
         return this;
     }
 
-    public SDDPayoutRequest setUsage(String usage) {
+    public SCTPayoutRequest setUsage(String usage) {
         this.usage = usage;
         return this;
     }
 
-    public SDDPayoutRequest setAmount(BigDecimal amount) {
+    public SCTPayoutRequest setAmount(BigDecimal amount) {
 
         this.amount = amount;
         return this;
     }
 
-    public SDDPayoutRequest setCurrency(String currency) {
+    public SCTPayoutRequest setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public SDDPayoutRequest setRemoteIp(String remoteIP) {
+    public SCTPayoutRequest setRemoteIp(String remoteIP) {
         this.remoteIP = remoteIP;
         return this;
     }
 
-    public SDDPayoutRequest setCustomerEmail(String customerEmail) {
+    public SCTPayoutRequest setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
         return this;
     }
 
-    public SDDPayoutRequest setCustomerPhone(String customerPhone) {
+    public SCTPayoutRequest setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
         return this;
     }
 
-    public SDDPayoutRequest setIBAN(String iban) {
+    public SCTPayoutRequest setIBAN(String iban) {
         this.iban = iban;
         return this;
     }
 
-    public SDDPayoutRequest setBIC(String bic) {
+    public SCTPayoutRequest setBIC(String bic) {
         this.bic = bic;
         return this;
     }
 
-    public SDDPayoutAddressRequest billingAddress() {
-        billingAddress = new SDDPayoutAddressRequest(this, "billing_address");
+    public SCTPayoutAddressRequest billingAddress() {
+        billingAddress = new SCTPayoutAddressRequest(this, "billing_address");
         return billingAddress;
     }
 
-    public SDDPayoutAddressRequest shippingAddress() {
-        shippingAddress = new SDDPayoutAddressRequest(this, "shipping_address");
+    public SCTPayoutAddressRequest shippingAddress() {
+        shippingAddress = new SCTPayoutAddressRequest(this, "shipping_address");
         return shippingAddress;
     }
 
@@ -168,7 +168,7 @@ public class SDDPayoutRequest extends Request {
         return buildRequest("payment_transaction").getElements();
     }
 
-    public SDDPayoutAddressRequest getBillingAddress() {
+    public SCTPayoutAddressRequest getBillingAddress() {
         return billingAddress;
     }
 }

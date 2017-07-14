@@ -111,7 +111,7 @@ public class TransactionTypes {
 	public static String SDD_INIT_RECURRING_SALE = "sdd_init_recurring_sale";
 	public static String SDD_RECURRING_SALE = "sdd_recurring_sale";
 	public static String SDD_REFUND = "sdd_refund";
-	public static String SDD_PAYOUT = "sdd_payout";
+	public static String SCT_PAYOUT = "sct_payout";
 
 	//IDebit
 	public static String IDEBIT_PAYIN = "idebit_payin";
@@ -131,4 +131,19 @@ public class TransactionTypes {
 	// Trustly
 	public static String TRUSTLY_SALE = "trustly_sale";
 	public static String TRUSTLY_WITHDRAWAL = "trustly_withdrawal";
+
+	// Earthport
+	public static String EARTHPORT = "earthport";
+
+	// Alipay
+	public static String ALIPAY = "alipay";
+
+	// Wechat
+	public static String WECHAT = "wechat";
+
+	// PaySec
+	public static String PAYSEC = "paysec";
+
+	// PaySec Payout
+	public static String PAYSEC_PAYOUT = "paysec_payout";
 }

@@ -9,7 +9,6 @@ import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -36,146 +35,140 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CitadelPayOutRequest extends Request {
+public class EarthportRequest extends Request {
 
     protected Configuration configuration;
     private Http http;
 
     private NodeWrapper response;
 
-    private String transactionType = TransactionTypes.CITADEL_PAYOUT;
+    private String transactionType = TransactionTypes.EARTHPORT;
     private String transactionId;
     private String usage;
     private String remoteIP;
     private String customerEmail;
     private String customerPhone;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
-    private URL notificationUrl;
     private BigDecimal amount;
     private BigDecimal convertedAmount;
     private String currency;
-    private String holderName;
-    private String iban;
-    private String swiftCode;
-    private String accountNumber;
+    private String accountName;
     private String bankName;
-    private String bankCity;
+    private String iban;
+    private String bic;
+    private String accountNumber;
     private String bankCode;
     private String branchCode;
-    private String branchCheckDigit;
+    private String accountSuffix;
+    private String sortCode;
+    private String abaRoutingNum;
 
-    private CitadelPayOutAddressRequest billingAddress;
+    private EarthportAddressRequest billingAddress;
+    private EarthportAddressRequest shippingAddress;
 
-    public CitadelPayOutRequest() {
+    public EarthportRequest() {
         super();
     }
 
-    public CitadelPayOutRequest(Configuration configuration) {
+    public EarthportRequest(Configuration configuration) {
 
         super();
         this.configuration = configuration;
     }
 
-    public CitadelPayOutRequest setTransactionId(String transactionId) {
+    public EarthportRequest setTransactionId(String transactionId) {
         this.transactionId = transactionId;
         return this;
     }
 
-    public CitadelPayOutRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public CitadelPayOutRequest setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    public CitadelPayOutRequest setUsage(String usage) {
+    public EarthportRequest setUsage(String usage) {
         this.usage = usage;
         return this;
     }
 
-    public CitadelPayOutRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
+    public EarthportRequest setAmount(BigDecimal amount) {
+
+        this.amount = amount;
         return this;
     }
 
-    public CitadelPayOutRequest setCustomerEmail(String customerEmail) {
+    public EarthportRequest setCurrency(String currency) {
+        this.currency = currency;
+        return this;
+    }
+
+    public EarthportRequest setRemoteIp(String remoteIP) {
+        this.remoteIP = remoteIP;
+        return this;
+    }
+
+    public EarthportRequest setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
         return this;
     }
 
-    public CitadelPayOutRequest setCustomerPhone(String customerPhone) {
+    public EarthportRequest setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
         return this;
     }
 
-    public CitadelPayOutRequest setHolderName(String holderName) {
-        this.holderName = holderName;
+    public EarthportRequest setAccountName(String accountName) {
+        this.accountName = accountName;
         return this;
     }
 
-    public CitadelPayOutRequest setIBAN(String iban) {
-        this.iban = iban;
-        return this;
-    }
-
-    public CitadelPayOutRequest setSwiftCode(String swiftCode) {
-        this.swiftCode = swiftCode;
-        return this;
-    }
-
-    public CitadelPayOutRequest setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-        return this;
-    }
-
-    public CitadelPayOutRequest setBankName(String bankName) {
+    public EarthportRequest setBankName(String bankName) {
         this.bankName = bankName;
         return this;
     }
 
-    public CitadelPayOutRequest setBankCode(String bankCode) {
+    public EarthportRequest setIBAN(String iban) {
+        this.iban = iban;
+        return this;
+    }
+
+    public EarthportRequest setBIC(String bic) {
+        this.bic = bic;
+        return this;
+    }
+
+    public EarthportRequest setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+        return this;
+    }
+
+    public EarthportRequest setBankCode(String bankCode) {
         this.bankCode = bankCode;
         return this;
     }
 
-    public CitadelPayOutRequest setBankCity(String bankCity) {
-        this.bankCity = bankCity;
-        return this;
-    }
-
-    public CitadelPayOutRequest setBranchCode(String branchCode) {
+    public EarthportRequest setBranchCode(String branchCode) {
         this.branchCode = branchCode;
         return this;
     }
 
-
-    public CitadelPayOutRequest setBranchCheckDigit(String branchCheckDigit) {
-        this.branchCheckDigit = branchCheckDigit;
+    public EarthportRequest setAccountNumberSuffix(String accountSuffix) {
+        this.accountSuffix = accountSuffix;
         return this;
     }
 
-    public CitadelPayOutAddressRequest billingAddress() {
-        billingAddress = new CitadelPayOutAddressRequest(this, "billing_address");
+    public EarthportRequest setSortCode(String sortCode) {
+        this.sortCode = sortCode;
+        return this;
+    }
+
+    public EarthportRequest setAbaRoutingNumber(String abaRoutingNum) {
+        this.abaRoutingNum = abaRoutingNum;
+        return this;
+    }
+
+    public EarthportAddressRequest billingAddress() {
+        billingAddress = new EarthportAddressRequest(this, "billing_address");
         return billingAddress;
+    }
+
+    public EarthportAddressRequest shippingAddress() {
+        shippingAddress = new EarthportAddressRequest(this, "shipping_address");
+        return shippingAddress;
     }
 
     @Override
@@ -198,16 +191,16 @@ public class CitadelPayOutRequest extends Request {
             convertedAmount = curr.getAmount();
         }
 
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_success_url", returnSuccessUrl)
-                .addElement("return_failure_url", returnFailureUrl).addElement("notification_url", notificationUrl)
-                .addElement("remote_ip", remoteIP).addElement("customer_email", customerEmail)
-                .addElement("customer_phone", customerPhone).addElement("amount", convertedAmount)
-                .addElement("currency", currency).addElement("holder_name", holderName)
-                .addElement("iban", iban).addElement("swift_code", swiftCode).addElement("bank_name", bankName)
-                .addElement("bank_code", bankCode).addElement("bank_city", bankCity).addElement("branch_code", branchCode)
-                .addElement("branch_check_digit", branchCheckDigit).addElement("account_number", accountNumber)
-                .addElement("billing_address", billingAddress);
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement("transaction_id", transactionId).addElement("usage", usage)
+                .addElement("remote_ip", remoteIP).addElement("amount", convertedAmount)
+                .addElement("currency", currency).addElement("customer_email", customerEmail)
+                .addElement("account_name", accountName).addElement("bank_name", bankName)
+                .addElement("customer_phone", customerPhone).addElement("iban", iban).addElement("bic", bic)
+                .addElement("account_number", accountNumber).addElement("bank_code", bankCode)
+                .addElement("branch_code", branchCode).addElement("account_number_suffix", accountSuffix)
+                .addElement("sort_code", sortCode).addElement("aba_routing_number", abaRoutingNum)
+                .addElement("billing_address", billingAddress).addElement("shipping_address", shippingAddress);
     }
 
     public Request execute(Configuration configuration) {
@@ -227,7 +220,7 @@ public class CitadelPayOutRequest extends Request {
         return buildRequest("payment_transaction").getElements();
     }
 
-    public CitadelPayOutAddressRequest getBillingAddress() {
+    public EarthportAddressRequest getBillingAddress() {
         return billingAddress;
     }
 }

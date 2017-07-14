@@ -1,7 +1,10 @@
-package com.emerchantpay.gateway.api.requests.financial.sdd;
+package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,9 +29,9 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDPayoutAddressRequest extends Request {
+public class PaySecPayoutAddressRequest extends Request {
 
-	private SDDPayoutRequest parent;
+	private PaySecPayoutRequest parent;
 
 	private String firstname;
 	private String lastname;
@@ -41,48 +44,48 @@ public class SDDPayoutAddressRequest extends Request {
 
 	protected String tagName;
 
-	SDDPayoutAddressRequest(SDDPayoutRequest parent, String tagName) {
+	PaySecPayoutAddressRequest(PaySecPayoutRequest parent, String tagName) {
 		this.parent = parent;
 		this.tagName = tagName;
 	}
 
 	// Billing Address
-	public SDDPayoutAddressRequest setFirstname(String firstname) {
+	public PaySecPayoutAddressRequest setFirstname(String firstname) {
 		this.firstname = firstname;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setLastname(String lastname) {
+	public PaySecPayoutAddressRequest setLastname(String lastname) {
 		this.lastname = lastname;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setAddress1(String address1) {
+	public PaySecPayoutAddressRequest setAddress1(String address1) {
 		this.address1 = address1;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setAddress2(String address2) {
+	public PaySecPayoutAddressRequest setAddress2(String address2) {
 		this.address2 = address2;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setCity(String city) {
+	public PaySecPayoutAddressRequest setCity(String city) {
 		this.city = city;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setZipCode(String zipCode) {
+	public PaySecPayoutAddressRequest setZipCode(String zipCode) {
 		this.zipCode = zipCode;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setState(String state) {
+	public PaySecPayoutAddressRequest setState(String state) {
 		this.state = state;
 		return this;
 	}
 
-	public SDDPayoutAddressRequest setCountry(String country) {
+	public PaySecPayoutAddressRequest setCountry(String country) {
 		this.country = country;
 		return this;
 	}
@@ -104,7 +107,11 @@ public class SDDPayoutAddressRequest extends Request {
 				.addElement("zip_code", zipCode).addElement("state", state).addElement("country", country);
 	}
 
-	public SDDPayoutRequest done() {
+	public List<Map.Entry<String, Object>> getElements() {
+		return buildRequest(tagName).getElements();
+	}
+
+	public PaySecPayoutRequest done() {
 		return parent;
 	}
 }

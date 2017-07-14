@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway;
 
+import com.emerchantpay.gateway.api.requests.financial.sct.SCTPayoutRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.*;
 import com.emerchantpay.gateway.util.Country;
 import com.emerchantpay.gateway.util.Currency;
@@ -22,11 +23,9 @@ public class SDDRequestsTest {
     private String uidSale;
     private String uidRecurring;
     private String uidinitRecurring;
-    private String uidPayout;
     private String uidRefund;
 
     private SDDSaleRequest sddSale = new SDDSaleRequest();
-    private SDDPayoutRequest sddPayout = new SDDPayoutRequest();
     private SDDInitRecurringSaleRequest sddInitRecurring = new SDDInitRecurringSaleRequest();
     private SDDRecurringSaleRequest sddRecurring = new SDDRecurringSaleRequest();
     private SDDRefundRequest sddRefund = new SDDRefundRequest();
@@ -51,21 +50,6 @@ public class SDDRequestsTest {
                 .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency()).setIBAN("DE09100100101234567894")
                 .setBIC("PBNKDEFFXXX").billingAddress().setFirstname("Plamen").setLastname("Petrov")
                 .setCountry(Country.Germany.getCode()).done();
-    }
-
-    @Before
-    public void createSSDPayout() {
-        uidPayout = new StringUtils().generateUID();
-
-        // SDD Payout
-        sddPayout.setTransactionId(uidPayout).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency()).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setIBAN("DE09100100101234567894").setBIC("PBNKDEFFXXX")
-                .billingAddress().setAddress1("New York").setAddress2("Dallas")
-                .setFirstname("Plamen").setLastname("Petrov").setCountry(Country.Germany.getCode()).setCity("Berlin")
-                .setZipCode("1000").setState("NY").done()
-                .shippingAddress().setAddress1("New York").setAddress2("Dallas").setFirstname("Plamen").setLastname("Petrov")
-                .setCountry(Country.Germany.getCode()).setCity("Berlin").setZipCode("1000").setState("NY").done();
     }
 
     @Before
@@ -140,27 +124,6 @@ public class SDDRequestsTest {
         assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
         assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
         assertEquals(mappedParams.get("billing_address"), sddInitRecurring.getBillingAddress());
-    }
-
-    @Test
-    public void testSDDPayout() {
-
-        mappedParams = new HashMap<String, Object>();
-
-        elements = sddPayout.getElements();
-
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), sddPayout.getElements().get(i).getValue());
-        }
-
-        assertEquals(mappedParams.get("transaction_id"), uidPayout);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("billing_address"), sddPayout.getBillingAddress());
     }
 
     @Test

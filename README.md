@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.0.1</version>
+        <version>1.1.0</version>
 </dependency>
 ```
 
@@ -117,6 +117,7 @@ api.requests.financial.apm.SofortRequest
 api.requests.financial.apm.TrustlySaleRequest
 api.requests.financial.apm.TrustlyWithdrawalRequest
 api.requests.financial.apm.PayPalExpressRequest
+api.requests.financial.apm.EarthportRequest
 
 // PayByVouchers transactions
 api.requests.financial.pbv.PBVSaleRequest
@@ -135,7 +136,7 @@ api.requests.financial.card.recurring.RecurringSaleRequest
 
 //Sepa Direct Debit transactions
 api.requests.financial.sdd.SDDSaleRequest
-api.requests.financial.sdd.SDDPayoutRequest
+api.requests.financial.sct.SCTPayoutRequest
 api.requests.financial.sdd.SDDRefundRequest
 api.requests.financial.sdd.SDDInitRecurringSaleRequest
 api.requests.financial.sdd.SDDRecurringSaleRequest
@@ -146,7 +147,11 @@ api.requests.financial.apm.CitadelPayOutRequest
 api.requests.financial.oBeP.InstadebitPayInRequest
 api.requests.financial.oBeP.InstaDebitPayInRequest
 api.requests.financial.oBeP.IDebitPayInRequest
-api.requests.financial.oBeP.iDebit\IDebitPayOutRequest
+api.requests.financial.oBeP.IDebitPayOutRequest
+api.requests.financial.oBeP.AlipayRequest
+api.requests.financial.oBeP.WechatRequest
+api.requests.financial.oBeP.PaySecRequest
+api.requests.financial.oBeP.PaySecPayoutRequest
 
 // Electronic Wallets transactions
 api.requests.financial.wallets.eZeeWalletRequest
@@ -159,8 +164,8 @@ api.requests.nonfinancial.AccountVerificationRequest
 api.requests.nonfinancial.BlacklistRequest
 
 // Chargeback information request
-NonFinancial\Fraud\Chargeback\DateRange
-NonFinancial\Fraud\Chargeback\Transaction
+api.requests.nonfinancial.fraud.ChargebackByDateRequest
+api.requests.nonfinancial.fraud.ChargebackRequest
 
 // SAFE/TC40 Report
 api.requests.nonfinancial.fraud.ReportsByDateRequest

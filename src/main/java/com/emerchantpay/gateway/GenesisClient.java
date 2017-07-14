@@ -11,6 +11,12 @@ import com.emerchantpay.gateway.api.requests.financial.apm.POLiRequest;
 import com.emerchantpay.gateway.api.requests.financial.apm.PProRequest;
 import com.emerchantpay.gateway.api.requests.financial.apm.PaySafeCardRequest;
 import com.emerchantpay.gateway.api.requests.financial.apm.SofortRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.CitadelPayInRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.CitadelPayOutRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.PayPalExpressRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.TrustlySaleRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.TrustlyWithdrawalRequest;
+import com.emerchantpay.gateway.api.requests.financial.apm.EarthportRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.CreditRequest;
@@ -20,8 +26,17 @@ import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSale3DRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.RecurringSaleRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayInRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayOutRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayInRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayOutRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.AlipayRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.WechatRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecRequest;
+import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecPayoutRequest;
 import com.emerchantpay.gateway.api.requests.financial.pbv.PBVSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.pbv.PBVYeePayRequest;
+import com.emerchantpay.gateway.api.requests.financial.sct.SCTPayoutRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRecurringSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRefundRequest;
@@ -102,6 +117,21 @@ public class GenesisClient extends Request {
 	private SDDRecurringSaleRequest sddrecurringsaleRequest;
 	private SDDInitRecurringSaleRequest sddinitrecurringsaleRequest;
 	private SDDRefundRequest sddrefundRequest;
+	private SCTPayoutRequest sctPayoutRequest;
+	private IDebitPayInRequest idebitpayinRequest;
+	private IDebitPayOutRequest idebitpayoutRequest;
+	private InstaDebitPayInRequest instadebitpayinRequest;
+	private InstaDebitPayOutRequest instadebitpayoutRequest;
+	private CitadelPayInRequest citadelpayinRequest;
+	private CitadelPayOutRequest citadelpayoutRequest;
+	private PayPalExpressRequest paypalRequest;
+	private TrustlySaleRequest trustlysaleRequest;
+	private TrustlyWithdrawalRequest trustlywithdrawalRequest;
+	private EarthportRequest earthportRequest;
+	private AlipayRequest alipayRequest;
+	private WechatRequest wechatRequest;
+	private PaySecRequest paysecRequest;
+	private PaySecPayoutRequest paysecpayoutRequest;
 
 	// Nonfinancial Requests
 	private AccountVerificationRequest accountverificationRequest;
@@ -248,6 +278,7 @@ public class GenesisClient extends Request {
 		return p24Request;
 	}
 
+	// SDD Requests
 	public SDDSaleRequest setSDDSale() {
 		sddsaleRequest = new SDDSaleRequest(configuration);
 		return sddsaleRequest;
@@ -266,6 +297,87 @@ public class GenesisClient extends Request {
 	public SDDRefundRequest setSDDRefundSale() {
 		sddrefundRequest = new SDDRefundRequest(configuration);
 		return sddrefundRequest;
+	}
+
+	// SCT Payout Request
+	public SCTPayoutRequest setSCTPayout() {
+		sctPayoutRequest = new SCTPayoutRequest(configuration);
+		return sctPayoutRequest;
+	}
+
+	// OBEP Requests
+	public IDebitPayInRequest setIDebitPayIn() {
+		idebitpayinRequest = new IDebitPayInRequest(configuration);
+		return idebitpayinRequest;
+	}
+
+	public IDebitPayOutRequest setIDebitPayOut() {
+		idebitpayoutRequest = new IDebitPayOutRequest(configuration);
+		return idebitpayoutRequest;
+	}
+
+	public InstaDebitPayInRequest setInstaDebitPayIn() {
+		instadebitpayinRequest = new InstaDebitPayInRequest(configuration);
+		return instadebitpayinRequest;
+	}
+
+	public InstaDebitPayOutRequest setInstaDebitPayOut() {
+		instadebitpayoutRequest = new InstaDebitPayOutRequest(configuration);
+		return instadebitpayoutRequest;
+	}
+
+	public AlipayRequest setAliPay() {
+		alipayRequest = new AlipayRequest(configuration);
+		return alipayRequest;
+	}
+
+	public WechatRequest setWechat() {
+		wechatRequest = new WechatRequest(configuration);
+		return wechatRequest;
+	}
+
+	public PaySecRequest setPaySec() {
+		paysecRequest = new PaySecRequest(configuration);
+		return paysecRequest;
+	}
+
+	public PaySecPayoutRequest setPaySecPayout() {
+		paysecpayoutRequest = new PaySecPayoutRequest(configuration);
+		return paysecpayoutRequest;
+	}
+
+	// Citadel Requests
+	public CitadelPayInRequest setCitadelPayIn() {
+		citadelpayinRequest = new CitadelPayInRequest(configuration);
+		return citadelpayinRequest;
+	}
+
+	public CitadelPayOutRequest setCitadelPayOut() {
+		citadelpayoutRequest = new CitadelPayOutRequest(configuration);
+		return citadelpayoutRequest;
+	}
+
+	// PayPal Express Request
+	public PayPalExpressRequest setPayPalExpress() {
+		paypalRequest = new PayPalExpressRequest(configuration);
+		return paypalRequest;
+	}
+
+	// Trustly Requests
+	public TrustlySaleRequest setTrustlySale() {
+		trustlysaleRequest = new TrustlySaleRequest(configuration);
+		return trustlysaleRequest;
+	}
+
+	public TrustlyWithdrawalRequest setTrustlyWithdrawal() {
+		trustlywithdrawalRequest = new TrustlyWithdrawalRequest(configuration);
+		return trustlywithdrawalRequest;
+	}
+
+	// Earthport Request
+	public EarthportRequest setEarthport() {
+		earthportRequest = new EarthportRequest(configuration);
+		return earthportRequest;
 	}
 
 	// Nonfinancial Requests
@@ -334,7 +446,7 @@ public class GenesisClient extends Request {
 		return inpaybanksRequest;
 	}
 
-	// WPF Requests;
+	// WPF Requests
 	public WPFCreateRequest setWPFCreate() {
 		wpfcreateRequest = new WPFCreateRequest(configuration);
 		return wpfcreateRequest;
