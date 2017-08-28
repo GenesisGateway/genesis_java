@@ -35,13 +35,20 @@ public class InPayTest {
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
                 .setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
-                .setReturnFailureUrl(new URL("https://example.com/return_failure_url"))
-                .billingAddress().setAddress1("Berlin").setAddress2("Berlin").setFirstname("Plamen")
-                .setLastname("Petrov").setCity("Berlin").setCountry("DE").setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
+
+        inPay.setBillingPrimaryAddress("Berlin");
+        inPay.setBillingSecondaryAddress("Berlin");
+        inPay.setBillingFirstname("Plamen");
+        inPay.setBillingLastname("Petrov");
+        inPay.setBillingCity("Berlin");
+        inPay.setBillingCountry("DE");
+        inPay.setBillingZipCode("M4B1B3");
+        inPay.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        inPay.billingAddress().setCountry(null).done();
+        inPay.setBillingCountry(null);
     }
 
     @Test
@@ -51,8 +58,14 @@ public class InPayTest {
 
         elements = inPay.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), inPay.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", inPay.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), inPay.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -65,7 +78,7 @@ public class InPayTest {
         assertEquals(mappedParams.get("is_payout"), null);
         assertEquals(mappedParams.get("return_success_url"),  new URL("https://example.com/return_success_url"));
         assertEquals(mappedParams.get("return_failure_url"),  new URL("https://example.com/return_failure_url"));
-        assertEquals(mappedParams.get("billing_address"), inPay.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), inPay.getBillingAddress().getElements());
     }
 
     @Test
@@ -74,7 +87,7 @@ public class InPayTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = inPay.getBillingAddress().getElements();
+        elements = inPay.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), inPay.getBillingAddress().getElements().get(i).getValue());

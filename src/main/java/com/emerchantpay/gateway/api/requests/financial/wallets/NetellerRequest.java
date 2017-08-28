@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class NetellerRequest extends Request {
+public class NetellerRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -56,9 +58,6 @@ public class NetellerRequest extends Request {
 	private URL failureUrl;
 	private String customerEmail;
 	private String customerPhone;
-
-	private NetellerAddressRequest billingAddress;
-	private NetellerAddressRequest shippingAddress;
 
 	public NetellerRequest() {
 		super();
@@ -126,16 +125,6 @@ public class NetellerRequest extends Request {
 		return this;
 	}
 
-	public NetellerAddressRequest billingAddress() {
-		billingAddress = new NetellerAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public NetellerAddressRequest shippingAddress() {
-		shippingAddress = new NetellerAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -162,8 +151,9 @@ public class NetellerRequest extends Request {
 				.addElement("currency", currency).addElement("customer_account", customerAccount)
 				.addElement("account_password", accountPassword).addElement("return_success_url", successUrl)
 				.addElement("return_failure_url", failureUrl).addElement("customer_email", customerEmail)
-				.addElement("customer_phone", customerPhone).addElement("billing_address", billingAddress)
-				.addElement("shipping_address", shippingAddress);
+				.addElement("customer_phone", customerPhone)
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -177,10 +167,6 @@ public class NetellerRequest extends Request {
 
 	public NodeWrapper getResponse() {
 		return response;
-	}
-
-	public NetellerAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

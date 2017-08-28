@@ -77,7 +77,8 @@ public class RequestBuilder {
 			builder.append(buildXMLElement(entry.getKey(), entry.getValue()));
 		}
 		builder.append(String.format("</%s>", parent));
-		return builder.toString();
+		return builder.toString().replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+				.replaceAll("&apos;", "'").replaceAll("&quot;", "\"").replaceAll("<>", "").replaceAll("</>", "");
 	}
 
 	protected static String buildXMLElement(Object element) {

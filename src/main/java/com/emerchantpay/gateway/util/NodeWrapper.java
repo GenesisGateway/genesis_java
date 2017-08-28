@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway.util;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -27,7 +28,7 @@ import java.util.*;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public abstract class NodeWrapper {
+public abstract class NodeWrapper implements Serializable {
 
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";

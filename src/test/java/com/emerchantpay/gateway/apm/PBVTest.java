@@ -36,9 +36,16 @@ public class PBVTest {
         pbvSale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setCardholder("PLAMEN PETROV").setExpirationMonth("05").setExpirationYear("2020")
-                .setCardNumber("4200000000000000").setCvv("123").billingAddress().setAddress1("New York")
-                .setAddress2("Sydney 2").setFirstname("Plamen").setLastname("Petrov").setCity("New York")
-                .setCountry("US").setZipCode("N4C1C3").setState("NY").done().setBirthDate("24-04-1988");
+                .setCardNumber("4200000000000000").setCvv("123").setBirthDate("24-04-1988");
+
+        pbvSale.setBillingPrimaryAddress("New York");
+        pbvSale.setBillingSecondaryAddress("New York");
+        pbvSale.setBillingFirstname("Plamen");
+        pbvSale.setBillingLastname("Petrov");
+        pbvSale.setBillingCity("New York");
+        pbvSale.setBillingCountry("US");
+        pbvSale.setBillingZipCode("N4C1C3");
+        pbvSale.setBillingState("NY");
     }
 
     @Before
@@ -54,7 +61,7 @@ public class PBVTest {
     }
 
     public void setMissingParams() {
-        pbvSale.billingAddress().setCountry(null).done();
+        pbvSale.setBillingCountry(null);
     }
 
     @Test
@@ -64,8 +71,14 @@ public class PBVTest {
 
         elements = pbvSale.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), pbvSale.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", pbvSale.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), pbvSale.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidSale);
@@ -80,7 +93,7 @@ public class PBVTest {
         assertEquals(mappedParams.get("expiration_month"), "05");
         assertEquals(mappedParams.get("expiration_year"), "2020");
         assertEquals(mappedParams.get("birth_date"), "24-04-1988");
-        assertEquals(mappedParams.get("billing_address"), pbvSale.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), pbvSale.getBillingAddress().getElements());
     }
 
     @Test
@@ -89,7 +102,7 @@ public class PBVTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = pbvSale.getBillingAddress().getElements();
+        elements = pbvSale.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), pbvSale.getBillingAddress().getElements().get(i).getValue());

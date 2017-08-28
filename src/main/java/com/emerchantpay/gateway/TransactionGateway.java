@@ -25,7 +25,6 @@ import com.emerchantpay.gateway.api.requests.financial.sdd.*;
 import com.emerchantpay.gateway.api.requests.financial.wallets.EzeewalletRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.NetellerRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.WebMoneyRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.AVSRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.AccountVerificationRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.BlacklistRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ChargebackByDateRequest;
@@ -210,11 +209,6 @@ public class TransactionGateway {
 	}
 
 	public TransactionResult<Transaction> getAccountVerification(AccountVerificationRequest request) {
-
-		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
-	}
-
-	public TransactionResult<Transaction> getAVS(AVSRequest request) {
 
 		return new TransactionResult<Transaction>(request.getResponse(), Transaction.class);
 	}

@@ -39,9 +39,16 @@ public class WPFRequestsTest {
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("https://www.example.com/success"))
                 .setReturnFailureUrl(new URL("https://www.example.com/failure"))
                 .setReturnCancelUrl(new URL("https://example.com/return_cancel"))
-                .setNotificationUrl(new URL("https://example.com/notification")).billingAddress()
-                .setAddress1("Berlin").setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov")
-                .setCity("Berlin").setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done();
+                .setNotificationUrl(new URL("https://example.com/notification"));
+
+        wpfCreate.setBillingPrimaryAddress("Berlin");
+        wpfCreate.setBillingSecondaryAddress("Berlin");
+        wpfCreate.setBillingFirstname("Plamen");
+        wpfCreate.setBillingLastname("Petrov");
+        wpfCreate.setBillingCity("Berlin");
+        wpfCreate.setBillingCountry(Country.Germany.getCode());
+        wpfCreate.setBillingZipCode("M4B1B3");
+        wpfCreate.setBillingState("BE");
     }
 
     @Before
@@ -52,7 +59,7 @@ public class WPFRequestsTest {
     }
 
     public void setMissingParams() {
-        wpfCreate.billingAddress().setCountry(null).done();
+        wpfCreate.setBillingCountry(null);
     }
 
     @Test
@@ -62,8 +69,14 @@ public class WPFRequestsTest {
 
         elements = wpfCreate.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), wpfCreate.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", wpfCreate.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), wpfCreate.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidWpf);
@@ -77,7 +90,7 @@ public class WPFRequestsTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("https://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("https://www.example.com/failure"));
         assertEquals(mappedParams.get("return_cancel_url"), new URL("https://example.com/return_cancel"));
-        assertEquals(mappedParams.get("billing_address"), wpfCreate.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), wpfCreate.getBillingAddress().getElements());
     }
 
     @Test
@@ -99,12 +112,12 @@ public class WPFRequestsTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = wpfCreate.getBillingAddress().getElements();
+        elements = wpfCreate.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), wpfCreate.getBillingAddress().getElements().get(i).getValue());
         }
 
-        assertEquals(mappedParams.get("country"), null);
+        assertNull(mappedParams.get("country"));
     }
 }

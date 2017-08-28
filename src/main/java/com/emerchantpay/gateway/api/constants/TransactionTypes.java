@@ -23,10 +23,7 @@ package com.emerchantpay.gateway.api.constants;
  */
 
 public class TransactionTypes {
-
-	// Address Verification
-	public static String AVS = "avs";
-
+	
 	// Account Verification
 	public static String ACCOUNT_VERIFICATION = "account_verification";
 

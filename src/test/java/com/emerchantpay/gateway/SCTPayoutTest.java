@@ -30,12 +30,27 @@ public class SCTPayoutTest {
         // SCT Payout
         sctPayout.setTransactionId(uidPayout).setRemoteIp("192.168.0.1").setUsage("TICKETS")
                 .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency()).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setIBAN("DE09100100101234567894").setBIC("PBNKDEFFXXX")
-                .billingAddress().setAddress1("New York").setAddress2("Dallas")
-                .setFirstname("Plamen").setLastname("Petrov").setCountry(Country.Germany.getCode()).setCity("Berlin")
-                .setZipCode("1000").setState("NY").done()
-                .shippingAddress().setAddress1("New York").setAddress2("Dallas").setFirstname("Plamen").setLastname("Petrov")
-                .setCountry(Country.Germany.getCode()).setCity("Berlin").setZipCode("1000").setState("NY").done();
+                .setCustomerPhone("+55555555").setIBAN("DE09100100101234567894").setBIC("PBNKDEFFXXX");
+
+        // Billing Address
+        sctPayout.setBillingPrimaryAddress("New York");
+        sctPayout.setBillingSecondaryAddress("Dallas");
+        sctPayout.setBillingFirstname("Plamen");
+        sctPayout.setBillingLastname("Petrov");
+        sctPayout.setBillingCity("Berlin");
+        sctPayout.setBillingCountry(Country.Germany.getCode());
+        sctPayout.setBillingZipCode("1000");
+        sctPayout.setBillingState("NY");
+
+        // Shipping Address
+        sctPayout.setShippingPrimaryAddress("New York");
+        sctPayout.setShippingSecondaryAddress("Dallas");
+        sctPayout.setShippingFirstname("Plamen");
+        sctPayout.setShippingLastname("Petrov");
+        sctPayout.setShippingCity("Berlin");
+        sctPayout.setShippingCountry(Country.Germany.getCode());
+        sctPayout.setShippingZipCode("1000");
+        sctPayout.setShippingState("NY");
     }
 
     @Test
@@ -45,8 +60,14 @@ public class SCTPayoutTest {
 
         elements = sctPayout.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), sctPayout.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", sctPayout.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), sctPayout.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidPayout);
@@ -56,6 +77,6 @@ public class SCTPayoutTest {
         assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
         assertEquals(mappedParams.get("customer_email"), "john@example.com");
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("billing_address"), sctPayout.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), sctPayout.getBillingAddress().getElements());
     }
 }

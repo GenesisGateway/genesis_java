@@ -2,6 +2,8 @@ package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.apm.*;
 import com.emerchantpay.gateway.card.*;
+import com.emerchantpay.gateway.obep.IDebitTest;
+import com.emerchantpay.gateway.obep.InstaDebitTest;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;

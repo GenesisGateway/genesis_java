@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway;
+package com.emerchantpay.gateway.obep;
 
 import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayInRequest;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayOutRequest;
@@ -36,11 +36,18 @@ public class InstaDebitTest {
         instadebitPayIn.setTransactionId(uidPayIn).setRemoteIp("192.168.0.1").setUsage("TICKETS")
                 .setCurrency(Currency.CAD.getCurrency())
                 .setAmount(new BigDecimal("100.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setCustomerAccountId("1534537").billingAddress().setAddress1("Toronto")
-                .setAddress2("Toronto").setFirstname("Plamen").setLastname("Petrov").setCity("Toronto")
-                .setCountry(Country.Canada.getCode()).setZipCode("M4B1B3").setState("ON").done()
+                .setCustomerPhone("+55555555").setCustomerAccountId("1534537")
                 .setReturnUrl(new URL("https://example.com/return_success"))
                 .setNotificationUrl(new URL("https://example.com/return_notification"));
+
+        instadebitPayIn.setBillingPrimaryAddress("Toronto");
+        instadebitPayIn.setBillingSecondaryAddress("Toronto");
+        instadebitPayIn.setBillingFirstname("Plamen");
+        instadebitPayIn.setBillingLastname("Petrov");
+        instadebitPayIn.setBillingCity("Toronto");
+        instadebitPayIn.setBillingCountry(Country.Canada.getCode());
+        instadebitPayIn.setBillingZipCode("M4B1B3");
+        instadebitPayIn.setBillingState("ON");
     }
 
     @Before
@@ -53,7 +60,7 @@ public class InstaDebitTest {
     }
 
     public void setMissingParams() {
-        instadebitPayIn.billingAddress().setCountry(null).done();
+        instadebitPayIn.setBillingCountry(null);
     }
 
     @Test
@@ -63,8 +70,14 @@ public class InstaDebitTest {
 
         elements = instadebitPayIn.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), instadebitPayIn.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", instadebitPayIn.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), instadebitPayIn.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidPayIn);
@@ -76,7 +89,7 @@ public class InstaDebitTest {
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/return_notification"));
         assertEquals(mappedParams.get("customer_email"), "john@example.com");
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("billing_address"), instadebitPayIn.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), instadebitPayIn.getBillingAddress().getElements());
     }
 
     @Test
@@ -85,7 +98,7 @@ public class InstaDebitTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = instadebitPayIn.getBillingAddress().getElements();
+        elements = instadebitPayIn.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), instadebitPayIn.getBillingAddress().getElements().get(i).getValue());

@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway.util;
 
+import java.io.Serializable;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ import com.emerchantpay.gateway.api.constants.Environments;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Configuration {
+public class Configuration implements Serializable {
 
 	private Environments environment;
 	private Endpoints endpoint;

@@ -53,9 +53,16 @@ public class WalletsTest {
                 .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setIsPayout(true).setCustomerAccount("118221674199")
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Berlin")
-                .setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin")
-                .setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        webmoney.setBillingPrimaryAddress("Berlin");
+        webmoney.setBillingSecondaryAddress("Berlin");
+        webmoney.setBillingFirstname("Plamen");
+        webmoney.setBillingLastname("Petrov");
+        webmoney.setBillingCity("Berlin");
+        webmoney.setBillingCountry(Country.Germany.getCode());
+        webmoney.setBillingZipCode("M4B1B3");
+        webmoney.setBillingState("BE");
     }
 
     @Before
@@ -67,14 +74,21 @@ public class WalletsTest {
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setCustomerAccount("453501020503").setAccountPassword("908379")
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Berlin")
-                .setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin")
-                .setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        neteller.setBillingPrimaryAddress("Berlin");
+        neteller.setBillingSecondaryAddress("Berlin");
+        neteller.setBillingFirstname("Plamen");
+        neteller.setBillingLastname("Petrov");
+        neteller.setBillingCity("Berlin");
+        neteller.setBillingCountry(Country.Germany.getCode());
+        neteller.setBillingZipCode("M4B1B3");
+        neteller.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        webmoney.billingAddress().setCountry(null).done();
-        neteller.billingAddress().setCountry(null).done();
+        webmoney.setBillingCountry(null);
+        neteller.setBillingCountry(null);
     }
 
     @Test
@@ -108,7 +122,13 @@ public class WalletsTest {
         elements = webmoney.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), webmoney.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", webmoney.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), webmoney.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidWebmoney);
@@ -122,7 +142,7 @@ public class WalletsTest {
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("is_payout"), true);
         assertEquals(mappedParams.get("customer_account_id"), "118221674199");
-        assertEquals(mappedParams.get("billing_address"), webmoney.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), webmoney.getBillingAddress().getElements());
     }
 
     @Test
@@ -131,7 +151,7 @@ public class WalletsTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = webmoney.getBillingAddress().getElements();
+        elements = webmoney.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), webmoney.getBillingAddress().getElements().get(i).getValue());
@@ -148,7 +168,13 @@ public class WalletsTest {
         elements = neteller.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), neteller.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", neteller.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), neteller.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidNeteller);
@@ -161,7 +187,7 @@ public class WalletsTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("customer_account"), "453501020503");
-        assertEquals(mappedParams.get("billing_address"), neteller.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), neteller.getBillingAddress().getElements());
     }
 
     @Test
@@ -170,7 +196,7 @@ public class WalletsTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = neteller.getBillingAddress().getElements();
+        elements = neteller.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), neteller.getBillingAddress().getElements().get(i).getValue());

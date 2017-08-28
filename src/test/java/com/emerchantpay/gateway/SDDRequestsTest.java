@@ -37,8 +37,12 @@ public class SDDRequestsTest {
         // SDD Sale
         sddSale.setTransactionId(uidSale).setRemoteIp("94.26.28.135").setUsage("TICKETS")
                 .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency())
-                .setIBAN("DE09100100101234567894").setBIC("PBNKDEFFXXX").billingAddress().setFirstname("Plamen").setLastname("Petrov")
-                .setCountry(Country.Germany.getCode()).done();
+                .setIBAN("DE09100100101234567894").setBIC("PBNKDEFFXXX");
+
+
+        sddSale.setBillingFirstname("Plamen");
+        sddSale.setBillingLastname("Petrov");
+        sddSale.setBillingCountry(Country.Germany.getCode());
     }
 
     @Before
@@ -48,13 +52,16 @@ public class SDDRequestsTest {
         // SDD Init Recurring Sale
         sddInitRecurring.setTransactionId(uidinitRecurring).setRemoteIp("192.168.0.1").setUsage("TICKETS")
                 .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency()).setIBAN("DE09100100101234567894")
-                .setBIC("PBNKDEFFXXX").billingAddress().setFirstname("Plamen").setLastname("Petrov")
-                .setCountry(Country.Germany.getCode()).done();
+                .setBIC("PBNKDEFFXXX");
+
+        sddInitRecurring.setBillingFirstname("Plamen");
+        sddInitRecurring.setBillingLastname("Petrov");
+        sddInitRecurring.setBillingCountry(Country.Germany.getCode());
     }
 
     @Before
     public void createRecurringSale() {
-       uidRecurring = new StringUtils().generateUID();
+        uidRecurring = new StringUtils().generateUID();
 
         // SDD Recurring Sale
         sddRecurring.setTransactionId(uidRecurring).setRemoteIp("94.198.63.122").setUsage("TICKETS")
@@ -78,8 +85,14 @@ public class SDDRequestsTest {
 
         elements = sddSale.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), sddSale.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", sddSale.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), sddSale.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidSale);
@@ -87,7 +100,7 @@ public class SDDRequestsTest {
         assertEquals(mappedParams.get("usage"), "TICKETS");
         assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
         assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("billing_address"), sddSale.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), sddSale.getBillingAddress().getElements());
     }
 
     @Test
@@ -114,8 +127,14 @@ public class SDDRequestsTest {
 
         elements = sddInitRecurring.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), sddInitRecurring.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", sddInitRecurring.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), sddInitRecurring.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidinitRecurring);
@@ -123,7 +142,7 @@ public class SDDRequestsTest {
         assertEquals(mappedParams.get("usage"), "TICKETS");
         assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
         assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("billing_address"), sddInitRecurring.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), sddInitRecurring.getBillingAddress().getElements());
     }
 
     @Test

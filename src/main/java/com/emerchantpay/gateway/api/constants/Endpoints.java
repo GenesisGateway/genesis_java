@@ -23,7 +23,9 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Endpoints {
+import java.io.Serializable;
+
+public class Endpoints implements Serializable {
 
 	private String endpointName;
 

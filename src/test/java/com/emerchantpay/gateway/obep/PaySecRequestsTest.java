@@ -38,10 +38,16 @@ public class PaySecRequestsTest {
                 .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
                 .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"))
-                .billingAddress().setAddress1("First Avenue").setAddress2("Second Avenue")
-                .setFirstname("John").setLastname("Doe").setCity("Beijing")
-                .setCountry(Country.China.getCode()).setZipCode("M4B1B3").setState("BJ").done();
+                .setNotificationUrl(new URL("https://example.com/notification"));
+
+        paysec.setBillingPrimaryAddress("First Avenue");
+        paysec.setBillingSecondaryAddress("Second Avenue");
+        paysec.setBillingFirstname("John");
+        paysec.setBillingLastname("Doe");
+        paysec.setBillingCity("Beijing");
+        paysec.setBillingCountry(Country.China.getCode());
+        paysec.setBillingZipCode("M4B1B3");
+        paysec.setBillingState("BJ");
     }
 
     @Before
@@ -56,15 +62,22 @@ public class PaySecRequestsTest {
                 .setBankAccountName("Test Bank Account Name").setBankAccountNumber("1234123412341234")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
                 .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"))
-                .billingAddress().setAddress1("First Avenue").setAddress2("Second Avenue")
-                .setFirstname("John").setLastname("Doe").setCity("Beijing")
-                .setCountry(Country.China.getCode()).setZipCode("M4B1B3").setState("BJ").done();
+                .setNotificationUrl(new URL("https://example.com/notification"));
+
+        paysecPayout.setBillingPrimaryAddress("First Avenue");
+        paysecPayout.setBillingSecondaryAddress("Berlin");
+        paysecPayout.setBillingFirstname("John");
+        paysecPayout.setBillingLastname("Doe");
+        paysecPayout.setBillingCity(Country.China.getCode());
+        paysecPayout.setBillingCountry("DE");
+        paysecPayout.setBillingZipCode("M4B1B3");
+        paysecPayout.setBillingState("BJ");
+
     }
 
     public void setMissingParams() {
-        paysec.billingAddress().setCountry(null).done();
-        paysecPayout.billingAddress().setCountry(null).done();
+        paysec.setBillingCountry(null);
+        paysecPayout.setBillingCountry(null);
     }
 
     @Test
@@ -75,7 +88,13 @@ public class PaySecRequestsTest {
         elements = paysec.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), paysec.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", paysec.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), paysec.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uid);
@@ -88,7 +107,7 @@ public class PaySecRequestsTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("billing_address"), paysec.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), paysec.getBillingAddress().getElements());
     }
 
     @Test
@@ -97,7 +116,7 @@ public class PaySecRequestsTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = paysec.getBillingAddress().getElements();
+        elements = paysec.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), paysec.getBillingAddress().getElements().get(i).getValue());
@@ -114,7 +133,13 @@ public class PaySecRequestsTest {
         elements = paysecPayout.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), paysecPayout.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", paysecPayout.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), paysecPayout.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidPayout);
@@ -132,7 +157,7 @@ public class PaySecRequestsTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("billing_address"), paysecPayout.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), paysecPayout.getBillingAddress().getElements());
     }
 
     @Test
@@ -141,7 +166,7 @@ public class PaySecRequestsTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = paysecPayout.getBillingAddress().getElements();
+        elements = paysecPayout.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), paysec.getBillingAddress().getElements().get(i).getValue());

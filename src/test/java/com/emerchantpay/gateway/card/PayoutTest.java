@@ -34,13 +34,20 @@ public class PayoutTest {
                 .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
                 .setCardholder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
                 .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").billingAddress().setAddress1("Address1").setAddress2("Address2")
-                .setFirstname("John").setLastname("Doe").setCountry("US").setCity("New York").setZipCode("1000")
-                .setState("NY").done();
+                .setCustomerPhone("+5555555555");
+
+        payout.setBillingPrimaryAddress("Address1");
+        payout.setBillingSecondaryAddress("Address2");
+        payout.setBillingFirstname("John");
+        payout.setBillingLastname("Doe");
+        payout.setBillingCity("New York");
+        payout.setBillingCountry("US");
+        payout.setBillingZipCode("1000");
+        payout.setBillingState("NY");
     }
 
     public void setMissingParams() {
-        payout.billingAddress().setCountry(null).done();
+        payout.setBillingCountry(null);
     }
 
     @Test
@@ -51,7 +58,13 @@ public class PayoutTest {
         elements = payout.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), payout.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", payout.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), payout.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -65,7 +78,7 @@ public class PayoutTest {
         assertEquals(mappedParams.get("expiration_year"), "2020");
         assertEquals(mappedParams.get("customer_email"), "john@example.com");
         assertEquals(mappedParams.get("customer_phone"), "+5555555555");
-        assertEquals(mappedParams.get("billing_address"), payout.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), payout.getBillingAddress().getElements());
     }
 
     @Test
@@ -74,7 +87,7 @@ public class PayoutTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = payout.getBillingAddress().getElements();
+        elements = payout.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), payout.getBillingAddress().getElements().get(i).getValue());

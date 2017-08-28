@@ -28,15 +28,22 @@ public class AbnIDealTest {
     @Before
     public void createAbnIDeal() throws MalformedURLException {
 
-       uniqueId = new StringUtils().generateUID();
+        uniqueId = new StringUtils().generateUID();
 
         // AbnIDeal
         abnIDeal.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("20.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setCustomerBankId("INGBNL2A")
-                .billingAddress().setAddress1("Amsterdam Street 1").setAddress2("Amsterdam Street 2").setFirstname("Plamen")
-                .setLastname("Petrov").setCity("Amsterdam").setCountry("NL").setZipCode("NLB1B3").setState("NL").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setCustomerBankId("INGBNL2A");
+
+        abnIDeal.setBillingPrimaryAddress("Amsterdam Street 1");
+        abnIDeal.setBillingSecondaryAddress("Amsterdam Street 2");
+        abnIDeal.setBillingFirstname("Plamen");
+        abnIDeal.setBillingLastname("Petrov");
+        abnIDeal.setBillingCity("Amsterdam");
+        abnIDeal.setBillingCountry("NL");
+        abnIDeal.setBillingZipCode("NLB1B3");
+        abnIDeal.setBillingState("NL");
     }
 
     public void setMissingParams() {
@@ -50,7 +57,13 @@ public class AbnIDealTest {
         elements = abnIDeal.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), abnIDeal.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", abnIDeal.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), abnIDeal.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -63,7 +76,7 @@ public class AbnIDealTest {
         assertEquals(mappedParams.get("customer_bank_id"), "INGBNL2A");
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), abnIDeal.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), abnIDeal.getBillingAddress().getElements());
     }
 
     @Test

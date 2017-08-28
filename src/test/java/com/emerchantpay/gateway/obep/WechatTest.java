@@ -38,14 +38,20 @@ public class WechatTest {
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
                 .setReturnFailureUrl(new URL("https://example.com/return_failure"))
                 .setReturnUrl(new URL("https://example.com/return"))
-                .setNotificationUrl(new URL("https://example.com/notification"))
-                .billingAddress().setAddress1("First Avenue").setAddress2("Second Avenue")
-                .setFirstname("John").setLastname("Doe").setCity("Berlin")
-                .setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done();
+                .setNotificationUrl(new URL("https://example.com/notification"));
+
+        wechat.setBillingPrimaryAddress("First Avenue");
+        wechat.setBillingSecondaryAddress("Second Avenue");
+        wechat.setBillingFirstname("John");
+        wechat.setBillingLastname("Doe");
+        wechat.setBillingCity("Berlin");
+        wechat.setBillingCountry(Country.Germany.getCode());
+        wechat.setBillingZipCode("M4B1B3");
+        wechat.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        wechat.billingAddress().setCountry(null).done();
+        wechat.setBillingCountry(null);
     }
 
     @Test
@@ -56,7 +62,13 @@ public class WechatTest {
         elements = wechat.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), wechat.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", wechat.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), wechat.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uid);
@@ -73,7 +85,7 @@ public class WechatTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("billing_address"), wechat.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), wechat.getBillingAddress().getElements());
     }
 
     @Test
@@ -82,7 +94,7 @@ public class WechatTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = wechat.getBillingAddress().getElements();
+        elements = wechat.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), wechat.getBillingAddress().getElements().get(i).getValue());

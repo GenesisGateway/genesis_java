@@ -1,19 +1,20 @@
 package com.emerchantpay.gateway.api.requests.financial.pbv;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
 
-public class PBVSaleRequest extends Request {
+public class PBVSaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -38,8 +39,6 @@ public class PBVSaleRequest extends Request {
 	private String customerPhone;
 	private String birthDate;
 
-	private PBVSaleAddressRequest billingAddress;
-	private PBVSaleAddressRequest shippingAddress;
 	private PBVSaleDynamicDescriptorParamsRequest dynamicDescriptorParams;
 
 	public PBVSaleRequest() {
@@ -127,16 +126,6 @@ public class PBVSaleRequest extends Request {
 		return this;
 	}
 
-	public PBVSaleAddressRequest billingAddress() {
-		billingAddress = new PBVSaleAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public PBVSaleAddressRequest shippingAddress() {
-		shippingAddress = new PBVSaleAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	public PBVSaleDynamicDescriptorParamsRequest dynamicDescriptionParams() {
 		dynamicDescriptorParams = new PBVSaleDynamicDescriptorParamsRequest(this);
 		return dynamicDescriptorParams;
@@ -170,7 +159,8 @@ public class PBVSaleRequest extends Request {
 				.addElement("expiration_month", expirationMonth).addElement("expiration_year", expirationYear)
 				.addElement("cvv", cvv).addElement("customer_email", customerEmail)
 				.addElement("customer_phone", customerPhone).addElement("birth_date", birthDate)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -188,9 +178,5 @@ public class PBVSaleRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public PBVSaleAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

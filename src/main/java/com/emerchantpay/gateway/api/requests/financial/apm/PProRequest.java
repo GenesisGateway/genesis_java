@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PProRequest extends Request {
+public class PProRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -60,9 +62,6 @@ public class PProRequest extends Request {
 	private String bic;
 	private String iban;
 	private String accountPhone;
-
-	private PProAddressRequest billingAddress;
-	private PProAddressRequest shippingAddress;
 
 	public PProRequest() {
 		super();
@@ -150,16 +149,6 @@ public class PProRequest extends Request {
 		return this;
 	}
 
-	public PProAddressRequest billingAddress() {
-		billingAddress = new PProAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public PProAddressRequest shippingAddress() {
-		shippingAddress = new PProAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -188,7 +177,8 @@ public class PProRequest extends Request {
 				.addElement("currency", currency).addElement("payment_type", paymentType)
 				.addElement("account_number", accountNumber).addElement("bank_code", bankCode).addElement("bic", bic)
 				.addElement("iban", iban).addElement("account_phone", accountPhone)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -206,9 +196,5 @@ public class PProRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public PProAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

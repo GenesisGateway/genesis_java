@@ -7,7 +7,9 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SaleRequest extends Request implements RiskParamsAttributes {
+public class SaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -61,8 +63,6 @@ public class SaleRequest extends Request implements RiskParamsAttributes {
 	private String customerPhone;
 	private String birthDate;
 
-	private SaleAddressRequest billingAddress;
-	private SaleAddressRequest shippingAddress;
 	private SaleDynamicDescriptorParamsRequest dynamicDescriptorParams;
 
 	public SaleRequest() {
@@ -151,16 +151,6 @@ public class SaleRequest extends Request implements RiskParamsAttributes {
 		return this;
 	}
 
-	public SaleAddressRequest billingAddress() {
-		billingAddress = new SaleAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public SaleAddressRequest shippingAddress() {
-		shippingAddress = new SaleAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	public SaleDynamicDescriptorParamsRequest dynimicDescriptionParams() {
 		dynamicDescriptorParams = new SaleDynamicDescriptorParamsRequest(this);
 		return dynamicDescriptorParams;
@@ -194,9 +184,10 @@ public class SaleRequest extends Request implements RiskParamsAttributes {
 				.addElement("expiration_month", expirationMonth).addElement("expiration_year", expirationYear)
 				.addElement("cvv", cvv).addElement("customer_email", customerEmail)
 				.addElement("customer_phone", customerPhone).addElement("birth_date", birthDate)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress)
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", dynamicDescriptorParams)
-				.addElement("risk_params", buildRiskParams("risk_params").toXML());
+				.addElement("risk_params", buildRiskParams().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -214,9 +205,5 @@ public class SaleRequest extends Request implements RiskParamsAttributes {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public SaleAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

@@ -33,13 +33,20 @@ public class PayPalExpressTest {
         paypalExpress.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Berlin")
-                .setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin").setCountry("DE")
-                .setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        paypalExpress.setBillingPrimaryAddress("Berlin");
+        paypalExpress.setBillingSecondaryAddress("Berlin");
+        paypalExpress.setBillingFirstname("Plamen");
+        paypalExpress.setBillingLastname("Petrov");
+        paypalExpress.setBillingCity("Berlin");
+        paypalExpress.setBillingCountry("DE");
+        paypalExpress.setBillingZipCode("M4B1B3");
+        paypalExpress.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        paypalExpress.billingAddress().setCountry(null).done();
+        paypalExpress.setBillingCountry(null);
     }
 
     @Test
@@ -48,8 +55,14 @@ public class PayPalExpressTest {
 
         elements = paypalExpress.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), paypalExpress.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", paypalExpress.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), paypalExpress.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -59,7 +72,7 @@ public class PayPalExpressTest {
         assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), paypalExpress.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), paypalExpress.getBillingAddress().getElements());
     }
 
     @Test
@@ -68,7 +81,7 @@ public class PayPalExpressTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = paypalExpress.getBillingAddress().getElements();
+        elements = paypalExpress.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), paypalExpress.getBillingAddress().getElements().get(i).getValue());

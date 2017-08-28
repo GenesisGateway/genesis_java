@@ -36,15 +36,22 @@ public class Sale3DTest {
                 .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
                 .setCardholder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
                 .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").billingAddress().setAddress1("Address1").setAddress2("Address2")
-                .setFirstname("John").setLastname("Doe").setCountry("US").setCity("New York").setZipCode("1000")
-                .setState("NY").done().setNotificationUrl(new URL("http://www.example.com/notification"))
+                .setCustomerPhone("+5555555555").setNotificationUrl(new URL("http://www.example.com/notification"))
                 .setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        sale3d.setBillingPrimaryAddress("Address1");
+        sale3d.setBillingSecondaryAddress("Address2");
+        sale3d.setBillingFirstname("John");
+        sale3d.setBillingLastname("Doe");
+        sale3d.setBillingCity("New York");
+        sale3d.setBillingCountry("US");
+        sale3d.setBillingZipCode("1000");
+        sale3d.setBillingState("NY");
     }
 
     public void setMissingParams() {
-        sale3d.billingAddress().setCountry(null).done();
+        sale3d.setBillingCountry(null);
     }
 
 
@@ -56,7 +63,13 @@ public class Sale3DTest {
         elements = sale3d.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), sale3d.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", sale3d.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), sale3d.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -69,7 +82,7 @@ public class Sale3DTest {
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), sale3d.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), sale3d.getBillingAddress().getElements());
     }
 
     @Test
@@ -78,7 +91,7 @@ public class Sale3DTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = sale3d.getBillingAddress().getElements();
+        elements = sale3d.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), sale3d.getBillingAddress().getElements().get(i).getValue());

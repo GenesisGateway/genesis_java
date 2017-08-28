@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SofortRequest extends Request {
+public class SofortRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -56,9 +58,6 @@ public class SofortRequest extends Request {
 	private String customerPhone;
 	private String customerBankId;
 	private String bankAccountNumber;
-
-	private SofortAddressRequest billingAddress;
-	private SofortAddressRequest shippingAddress;
 
 	public SofortRequest() {
 		super();
@@ -126,16 +125,6 @@ public class SofortRequest extends Request {
 		return this;
 	}
 
-	public SofortAddressRequest billingAddress() {
-		billingAddress = new SofortAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public SofortAddressRequest shippingAddress() {
-		shippingAddress = new SofortAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -162,8 +151,9 @@ public class SofortRequest extends Request {
 				.addElement("customer_phone", customerPhone).addElement("return_success_url", successUrl)
 				.addElement("return_failure_url", failureUrl).addElement("amount", convertedAmount)
 				.addElement("currency", currency).addElement("customer_bank_id", customerBankId)
-				.addElement("ban_account_number", bankAccountNumber).addElement("billing_address", billingAddress)
-				.addElement("shippingAddress", shippingAddress);
+				.addElement("ban_account_number", bankAccountNumber)
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -181,9 +171,5 @@ public class SofortRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public SofortAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

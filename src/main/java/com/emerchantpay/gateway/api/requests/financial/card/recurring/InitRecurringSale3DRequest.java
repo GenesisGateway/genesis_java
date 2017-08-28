@@ -8,7 +8,9 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -37,7 +39,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSale3DRequest extends Request implements RiskParamsAttributes {
+public class InitRecurringSale3DRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -64,8 +66,6 @@ public class InitRecurringSale3DRequest extends Request implements RiskParamsAtt
 	private URL returnSuccessUrl;
 	private URL returnFailureUrl;
 
-	private InitRecurringSale3DAddressRequest billingAddress;
-	private InitRecurringSale3DAddressRequest shippingAddress;
 	private InitRecurringSale3DDynamicDescriptorParamsRequest dynamicDescriptorParams;
 	private InitRecurringSale3DMpiParamsRequest mpiParams;
 
@@ -164,16 +164,6 @@ public class InitRecurringSale3DRequest extends Request implements RiskParamsAtt
 		return this;
 	}
 
-	public InitRecurringSale3DAddressRequest billingAddress() {
-		billingAddress = new InitRecurringSale3DAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public InitRecurringSale3DAddressRequest shippingAddress() {
-		shippingAddress = new InitRecurringSale3DAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	public InitRecurringSale3DDynamicDescriptorParamsRequest dynimicDescriptionParams() {
 		dynamicDescriptorParams = new InitRecurringSale3DDynamicDescriptorParamsRequest(this);
 		return dynamicDescriptorParams;
@@ -213,9 +203,10 @@ public class InitRecurringSale3DRequest extends Request implements RiskParamsAtt
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
 				.addElement("notification_url", notificationUrl).addElement("return_success_url", returnSuccessUrl)
 				.addElement("return_failure_url", returnFailureUrl).addElement("birth_date", birthDate)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress)
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamicDescriptorParams", dynamicDescriptorParams).addElement("mpi_params", mpiParams)
-				.addElement("risk_params", buildRiskParams("risk_params").toXML());
+				.addElement("risk_params", buildRiskParams().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -233,9 +224,5 @@ public class InitRecurringSale3DRequest extends Request implements RiskParamsAtt
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public InitRecurringSale3DAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

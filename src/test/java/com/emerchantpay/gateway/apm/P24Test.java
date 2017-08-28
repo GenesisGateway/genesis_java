@@ -34,13 +34,20 @@ public class P24Test {
 				.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
 				.setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
 				.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
-				.setReturnFailureUrl(new URL("https://example.com/return_failure_url")).billingAddress().setAddress1("Berlin")
-				.setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin").setCountry("DE")
-				.setZipCode("M4B1B3").setState("BE").done();
+				.setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
+
+		request.setBillingPrimaryAddress("Berlin");
+		request.setBillingSecondaryAddress("Berlin");
+		request.setBillingFirstname("Plamen");
+		request.setBillingLastname("Petrov");
+		request.setBillingCity("Berlin");
+		request.setBillingCountry("DE");
+		request.setBillingZipCode("M4B1B3");
+		request.setBillingState("BE");
 	}
 
 	public void setMissingParams() {
-		request.billingAddress().setCountry(null).done();
+		request.setBillingCountry(null);
 	}
 
 	@Test
@@ -49,8 +56,14 @@ public class P24Test {
 
 		elements = request.getElements();
 
-		for (int i = 0; i < elements.size() ; i++) {
-			mappedParams.put(elements.get(i).getKey(), request.getElements().get(i).getValue());
+		for (int i = 0; i < elements.size(); i++) {
+			if (elements.get(i).getKey() == "billing_address")
+			{
+				mappedParams.put("billing_address", request.getBillingAddress().getElements());
+			}
+			else {
+				mappedParams.put(elements.get(i).getKey(), request.getElements().get(i).getValue());
+			}
 		}
 
 		assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -63,7 +76,7 @@ public class P24Test {
 		assertEquals(mappedParams.get("is_payout"), null);
 		assertEquals(mappedParams.get("return_success_url"),  new URL("https://example.com/return_success_url"));
 		assertEquals(mappedParams.get("return_failure_url"),  new URL("https://example.com/return_failure_url"));
-		assertEquals(mappedParams.get("billing_address"), request.getBillingAddress());
+		assertEquals(mappedParams.get("billing_address"), request.getBillingAddress().getElements());
 	}
 
 	@Test
@@ -72,7 +85,7 @@ public class P24Test {
 		setMissingParams();
 
 		mappedParams = new HashMap<String, Object>();
-		elements = request.getBillingAddress().getElements();
+		elements = request.buildBillingAddress().getElements();
 
 		for (int i = 0; i < elements.size(); i++) {
 			mappedParams.put(elements.get(i).getKey(), request.getBillingAddress().getElements().get(i).getValue());

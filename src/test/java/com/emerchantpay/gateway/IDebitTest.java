@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway;
+package com.emerchantpay.gateway.obep;
 
 import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayInRequest;
@@ -39,11 +39,18 @@ public class IDebitTest {
         idebitPayIn.setTransactionId(uidPayIn).setRemoteIp("192.168.0.1").setUsage("TICKETS")
                 .setCurrency(Currency.CAD.getCurrency())
                 .setAmount(new BigDecimal("100.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setCustomerAccountId("1534537").billingAddress().setAddress1("Toronto")
-                .setAddress2("Toronto").setFirstname("Plamen").setLastname("Petrov").setCity("Toronto")
-                .setCountry(Country.Canada.getCode()).setZipCode("M4B1B3").setState("ON").done()
+                .setCustomerPhone("+55555555").setCustomerAccountId("1534537")
                 .setReturnUrl(new URL("https://example.com/return_success"))
                 .setNotificationUrl(new URL("https://example.com/return_notification"));
+
+        idebitPayIn.setBillingPrimaryAddress("Toronto");
+        idebitPayIn.setBillingSecondaryAddress("Toronto");
+        idebitPayIn.setBillingFirstname("Plamen");
+        idebitPayIn.setBillingLastname("Petrov");
+        idebitPayIn.setBillingCity("Toronto");
+        idebitPayIn.setBillingCountry(Country.Canada.getCode());
+        idebitPayIn.setBillingZipCode("M4B1B3");
+        idebitPayIn.setBillingState("ON");
     }
 
     @Before
@@ -56,7 +63,7 @@ public class IDebitTest {
     }
 
     public void setMissingParams() {
-        idebitPayIn.billingAddress().setCountry(null).done();
+        idebitPayIn.setBillingCountry(null);
     }
 
     @Test
@@ -66,8 +73,14 @@ public class IDebitTest {
 
         elements = idebitPayIn.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), idebitPayIn.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", idebitPayIn.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), idebitPayIn.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidPayIn);
@@ -79,7 +92,7 @@ public class IDebitTest {
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("return_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/return_notification"));
-        assertEquals(mappedParams.get("billing_address"), idebitPayIn.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), idebitPayIn.getBillingAddress().getElements());
     }
 
     @Test
@@ -88,7 +101,7 @@ public class IDebitTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = idebitPayIn.getBillingAddress().getElements();
+        elements = idebitPayIn.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), idebitPayIn.getBillingAddress().getElements().get(i).getValue());

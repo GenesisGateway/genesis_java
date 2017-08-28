@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CitadelPayOutRequest extends Request {
+public class CitadelPayOutRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -64,8 +66,6 @@ public class CitadelPayOutRequest extends Request {
     private String bankCode;
     private String branchCode;
     private String branchCheckDigit;
-
-    private CitadelPayOutAddressRequest billingAddress;
 
     public CitadelPayOutRequest() {
         super();
@@ -173,11 +173,6 @@ public class CitadelPayOutRequest extends Request {
         return this;
     }
 
-    public CitadelPayOutAddressRequest billingAddress() {
-        billingAddress = new CitadelPayOutAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -207,7 +202,8 @@ public class CitadelPayOutRequest extends Request {
                 .addElement("iban", iban).addElement("swift_code", swiftCode).addElement("bank_name", bankName)
                 .addElement("bank_code", bankCode).addElement("bank_city", bankCity).addElement("branch_code", branchCode)
                 .addElement("branch_check_digit", branchCheckDigit).addElement("account_number", accountNumber)
-                .addElement("billing_address", billingAddress);
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML());
     }
 
     public Request execute(Configuration configuration) {
@@ -225,9 +221,5 @@ public class CitadelPayOutRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public CitadelPayOutAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

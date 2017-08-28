@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.*;
 
 import java.math.BigDecimal;
@@ -33,7 +35,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class TrustlyWithdrawalRequest extends Request {
+public class TrustlyWithdrawalRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -52,8 +54,6 @@ public class TrustlyWithdrawalRequest extends Request {
     private BigDecimal convertedAmount;
     private String currency;
     private String birthDate;
-
-    private TrustlyWithdrawalAddressRequest billingAddress;
 
     public TrustlyWithdrawalRequest() {
         super();
@@ -115,11 +115,6 @@ public class TrustlyWithdrawalRequest extends Request {
         return this;
     }
 
-    public TrustlyWithdrawalAddressRequest billingAddress() {
-        billingAddress = new TrustlyWithdrawalAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -145,7 +140,9 @@ public class TrustlyWithdrawalRequest extends Request {
                 .addElement("return_failure_url", returnFailureUrl).addElement("remote_ip", remoteIP)
                 .addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
                 .addElement("amount", convertedAmount).addElement("currency", currency)
-                .addElement("billing_address", billingAddress).addElement("birth_date", birthDate);
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement("birth_date", birthDate);
     }
 
     public Request execute(Configuration configuration) {
@@ -163,9 +160,5 @@ public class TrustlyWithdrawalRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public TrustlyWithdrawalAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

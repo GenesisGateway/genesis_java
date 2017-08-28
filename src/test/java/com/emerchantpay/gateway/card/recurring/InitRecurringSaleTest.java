@@ -35,10 +35,17 @@ public class InitRecurringSaleTest {
                 .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"))
                 .setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123").setExpirationMonth("02")
                 .setExpirationYear("2020").setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-                .billingAddress().setAddress1("Berlin").setAddress2("Berlin").setFirstname("Plamen")
-                .setLastname("Petrov").setCity("New York").setCountry("US").setZipCode("M4B1B3").setState("CA").done()
                 .setBirthDate("24-04-1988");
-}
+
+        initRecurring.setBillingPrimaryAddress("Berlin");
+        initRecurring.setBillingSecondaryAddress("Berlin");
+        initRecurring.setBillingFirstname("Plamen");
+        initRecurring.setBillingLastname("Petrov");
+        initRecurring.setBillingCity("Berlin");
+        initRecurring.setBillingCountry("US");
+        initRecurring.setBillingZipCode("M4B1B3");
+        initRecurring.setBillingState("CA");
+    }
 
     public void setMissingParams() {
         initRecurring.setCardNumber(null);
@@ -52,7 +59,13 @@ public class InitRecurringSaleTest {
         elements = initRecurring.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), initRecurring.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", initRecurring.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), initRecurring.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -67,7 +80,7 @@ public class InitRecurringSaleTest {
         assertEquals(mappedParams.get("customer_email"), "john@example.com");
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("birth_date"), "24-04-1988");
-        assertEquals(mappedParams.get("billing_address"), initRecurring.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), initRecurring.getBillingAddress().getElements());
     }
 
     @Test

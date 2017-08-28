@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class AbnIDealRequest extends Request {
+public class AbnIDealRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -55,9 +57,6 @@ public class AbnIDealRequest extends Request {
 	private String customerEmail;
 	private String customerPhone;
 	private String customerBankId;
-
-	private AbnIDealAddressRequest billingAddress;
-	private AbnIDealAddressRequest shippingAddress;
 
 	public AbnIDealRequest() {
 		super();
@@ -120,16 +119,6 @@ public class AbnIDealRequest extends Request {
 		return this;
 	}
 
-	public AbnIDealAddressRequest billingAddress() {
-		billingAddress = new AbnIDealAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public AbnIDealAddressRequest shippingAddress() {
-		shippingAddress = new AbnIDealAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -156,7 +145,8 @@ public class AbnIDealRequest extends Request {
 				.addElement("customer_phone", customerPhone).addElement("return_success_url", successUrl)
 				.addElement("return_failure_url", failureUrl).addElement("amount", convertedAmount)
 				.addElement("currency", currency).addElement("customer_bank_id", customerBankId)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -174,9 +164,5 @@ public class AbnIDealRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public AbnIDealAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

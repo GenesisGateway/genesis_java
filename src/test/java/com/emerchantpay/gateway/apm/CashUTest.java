@@ -34,13 +34,20 @@ public class CashUTest {
         cashU.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("15.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Fifth avenue 1")
-                .setAddress2("Fifth avenue 2").setFirstname("Plamen").setLastname("Petrov").setCity("New York").setCountry("US")
-                .setZipCode("M4B1B3").setState("WA").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        cashU.setBillingPrimaryAddress("Fifth avenue 1");
+        cashU.setBillingSecondaryAddress("Fifth avenue 2");
+        cashU.setBillingFirstname("Plamen");
+        cashU.setBillingLastname("Petrov");
+        cashU.setBillingCity("New York");
+        cashU.setBillingCountry("US");
+        cashU.setBillingZipCode("M4B1B3");
+        cashU.setBillingState("WA");
     }
 
     public void setMissingParams() {
-        cashU.billingAddress().setCountry(null).done();
+        cashU.setBillingCountry(null);
     }
 
     @Test
@@ -50,7 +57,13 @@ public class CashUTest {
         elements = cashU.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), cashU.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", cashU.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), cashU.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -62,7 +75,7 @@ public class CashUTest {
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), cashU.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), cashU.getBillingAddress().getElements());
     }
 
     @Test
@@ -71,12 +84,13 @@ public class CashUTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = cashU.getBillingAddress().getElements();
+        elements = cashU.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), cashU.getBillingAddress().getElements().get(i).getValue());
         }
 
+        System.out.println(mappedParams.get("country"));
         assertNull(mappedParams.get("country"));
     }
 }

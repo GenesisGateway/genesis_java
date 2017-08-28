@@ -8,12 +8,14 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
 
-public class P24Request extends Request {
+public class P24Request extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -31,9 +33,6 @@ public class P24Request extends Request {
 	private BigDecimal amount;
 	private BigDecimal convertedAmount;
 	private String currency;
-
-	private P24AddressRequest billingAddress;
-	private P24AddressRequest shippingAddress;
 
 	public P24Request() {
 		super();
@@ -91,16 +90,6 @@ public class P24Request extends Request {
 		return this;
 	}
 
-	public P24AddressRequest billingAddress() {
-		billingAddress = new P24AddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public P24AddressRequest shippingAddress() {
-		shippingAddress = new P24AddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -126,8 +115,8 @@ public class P24Request extends Request {
 				.addElement("remote_ip", remoteIP).addElement("customer_email", customerEmail)
 				.addElement("customer_phone", customerPhone).addElement("return_success_url", successUrl)
 				.addElement("return_failure_url", failureUrl).addElement("amount", convertedAmount)
-				.addElement("currency", currency).addElement("billing_address", billingAddress)
-				.addElement("shippingAddress", shippingAddress);
+				.addElement("currency", currency).addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -145,9 +134,5 @@ public class P24Request extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public P24AddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

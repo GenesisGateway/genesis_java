@@ -7,6 +7,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -35,7 +37,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDSaleRequest extends Request {
+public class SDDSaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -53,9 +55,6 @@ public class SDDSaleRequest extends Request {
 	private String currency;
 	private String iban;
 	private String bic;
-
-	private SDDSaleAddressRequest billingAddress;
-	private SDDSaleAddressRequest shippingAddress;
 
 	public SDDSaleRequest() {
 		super();
@@ -113,16 +112,6 @@ public class SDDSaleRequest extends Request {
 		return this;
 	}
 
-	public SDDSaleAddressRequest billingAddress() {
-		billingAddress = new SDDSaleAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public SDDSaleAddressRequest shippingAddress() {
-		shippingAddress = new SDDSaleAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -148,7 +137,8 @@ public class SDDSaleRequest extends Request {
 				.addElement("amount", convertedAmount).addElement("currency", currency)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
 				.addElement("iban", iban).addElement("bic", bic)
-				.addElement("billing_address", billingAddress).addElement("shipping_address", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -166,9 +156,5 @@ public class SDDSaleRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public SDDSaleAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

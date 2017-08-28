@@ -27,17 +27,24 @@ public class AccountVerificationTest {
     public void createAuthorize3D() throws MalformedURLException {
         uniqueId = new StringUtils().generateUID();
 
-        // AVS
+        // Account Verification
         accountVerification.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS")
                 .setMoto(true).setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
                 .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").billingAddress().setAddress1("Address1").setAddress2("Address2")
-                .setFirstname("John").setLastname("Doe").setCountry("US").setCity("New York").setZipCode("1000")
-                .setState("NY").done();
+                .setCustomerPhone("+5555555555");
+
+        accountVerification.setBillingPrimaryAddress("Address1");
+        accountVerification.setBillingSecondaryAddress("Address2");
+        accountVerification.setBillingFirstname("John");
+        accountVerification.setBillingLastname("Doe");
+        accountVerification.setBillingCity("New York");
+        accountVerification.setBillingCountry("US");
+        accountVerification.setBillingZipCode("1000");
+        accountVerification.setBillingState("NY");
     }
 
     public void setMissingParams() {
-        accountVerification.getBillingAddress().setCountry(null).done();
+        accountVerification.setBillingCountry(null);
     }
 
     @Test
@@ -47,7 +54,13 @@ public class AccountVerificationTest {
         elements = accountVerification.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), accountVerification.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", accountVerification.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), accountVerification.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -60,7 +73,7 @@ public class AccountVerificationTest {
         assertEquals(mappedParams.get("expiration_year"), "2020");
         assertEquals(mappedParams.get("customer_email"), "john@example.com");
         assertEquals(mappedParams.get("customer_phone"), "+5555555555");
-        assertEquals(mappedParams.get("billing_address"), accountVerification.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), accountVerification.getBillingAddress().getElements());
     }
 
     @Test
@@ -69,7 +82,7 @@ public class AccountVerificationTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = accountVerification.getBillingAddress().getElements();
+        elements = accountVerification.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), accountVerification.getBillingAddress().getElements().get(i).getValue());

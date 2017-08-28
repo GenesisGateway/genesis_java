@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.sdd;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -35,7 +37,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDInitRecurringSaleRequest extends Request {
+public class SDDInitRecurringSaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -53,9 +55,6 @@ public class SDDInitRecurringSaleRequest extends Request {
 	private String currency;
 	private String iban;
 	private String bic;
-
-	private SDDInitRecurringAddressRequest billingAddress;
-	private SDDInitRecurringAddressRequest shippingAddress;
 
 	public SDDInitRecurringSaleRequest() {
 		super();
@@ -113,16 +112,6 @@ public class SDDInitRecurringSaleRequest extends Request {
 		return this;
 	}
 
-	public SDDInitRecurringAddressRequest billingAddress() {
-		billingAddress = new SDDInitRecurringAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public SDDInitRecurringAddressRequest shippingAddress() {
-		shippingAddress = new SDDInitRecurringAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -148,7 +137,8 @@ public class SDDInitRecurringSaleRequest extends Request {
 				.addElement("amount", convertedAmount).addElement("currency", currency)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
 				.addElement("iban", iban).addElement("bic", bic)
-				.addElement("billing_address", billingAddress).addElement("shipping_address", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -166,9 +156,5 @@ public class SDDInitRecurringSaleRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public SDDInitRecurringAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

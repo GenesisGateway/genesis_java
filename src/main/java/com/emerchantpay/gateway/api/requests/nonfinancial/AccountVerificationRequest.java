@@ -6,12 +6,14 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
 
-public class AccountVerificationRequest extends Request implements RiskParamsAttributes {
+public class AccountVerificationRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -30,9 +32,6 @@ public class AccountVerificationRequest extends Request implements RiskParamsAtt
 	private String cvv;
 	private String customerEmail;
 	private String customerPhone;
-
-	private AccountVerificationAddressRequest billingAddress;
-	private AccountVerificationAddressRequest shippingAddress;
 
 	public AccountVerificationRequest() {
 		super();
@@ -99,16 +98,6 @@ public class AccountVerificationRequest extends Request implements RiskParamsAtt
 		return this;
 	}
 
-	public AccountVerificationAddressRequest billingAddress() {
-		billingAddress = new AccountVerificationAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public AccountVerificationAddressRequest shippingAddress() {
-		shippingAddress = new AccountVerificationAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -127,8 +116,9 @@ public class AccountVerificationRequest extends Request implements RiskParamsAtt
 				.addElement("card_number", cardnumber).addElement("expiration_month", expirationMonth)
 				.addElement("expiration_year", expirationYear).addElement("cvv", cvv)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress)
-				.addElement("risk_params", buildRiskParams("risk_params").toXML());
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML())
+				.addElement("risk_params", buildRiskParams());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -147,8 +137,4 @@ public class AccountVerificationRequest extends Request implements RiskParamsAtt
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
 	}
-
-    public AccountVerificationAddressRequest getBillingAddress() {
-        return billingAddress;
-    }
 }

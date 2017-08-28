@@ -35,14 +35,21 @@ public class TrustlyTest {
         trustlySale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Berlin")
-                .setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin")
-                .setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        trustlySale.setBillingPrimaryAddress("Berlin");
+        trustlySale.setBillingSecondaryAddress("Berlin");
+        trustlySale.setBillingFirstname("Plamen");
+        trustlySale.setBillingLastname("Petrov");
+        trustlySale.setBillingCity("Berlin");
+        trustlySale.setBillingCountry("DE");
+        trustlySale.setBillingZipCode("M4B1B3");
+        trustlySale.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        trustlySale.billingAddress().setCountry(null).done();
-        trustlyWithdrawal.billingAddress().setCountry(null).done();
+        trustlySale.setBillingCountry(null);
+        trustlyWithdrawal.setBillingCountry(null);
     }
 
     @Before
@@ -53,10 +60,16 @@ public class TrustlyTest {
         trustlyWithdrawal.setTransactionId(uidWithdrawal).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Berlin")
-                .setAddress2("Berlin").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin")
-                .setCountry(Country.Germany.getCode()).setZipCode("M4B1B3").setState("BE").done()
-                .setBirthDate("24-04-1988");
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setBirthDate("24-04-1988");
+
+        trustlyWithdrawal.setBillingPrimaryAddress("Berlin");
+        trustlyWithdrawal.setBillingSecondaryAddress("Berlin");
+        trustlyWithdrawal.setBillingFirstname("Plamen");
+        trustlyWithdrawal.setBillingLastname("Petrov");
+        trustlyWithdrawal.setBillingCity("Berlin");
+        trustlyWithdrawal.setBillingCountry("DE");
+        trustlyWithdrawal.setBillingZipCode("M4B1B3");
+        trustlyWithdrawal.setBillingState("BE");
     }
 
     @Test
@@ -66,8 +79,14 @@ public class TrustlyTest {
 
         elements = trustlySale.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), trustlySale.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", trustlySale.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), trustlySale.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidSale);
@@ -79,7 +98,7 @@ public class TrustlyTest {
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), trustlySale.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), trustlySale.getBillingAddress().getElements());
     }
 
     @Test
@@ -90,7 +109,13 @@ public class TrustlyTest {
         elements = trustlyWithdrawal.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), trustlyWithdrawal.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", trustlyWithdrawal.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), trustlyWithdrawal.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidWithdrawal);
@@ -103,7 +128,7 @@ public class TrustlyTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("birth_date"), "24-04-1988");
-        assertEquals(mappedParams.get("billing_address"), trustlyWithdrawal.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), trustlyWithdrawal.getBillingAddress().getElements());
     }
 
     @Test
@@ -112,13 +137,13 @@ public class TrustlyTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = trustlySale.getBillingAddress().getElements();
+        elements = trustlySale.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), trustlySale.getBillingAddress().getElements().get(i).getValue());
         }
 
-        assertEquals(mappedParams.get("country"), null);
+        assertNull(mappedParams.get("country"));
     }
 
     @Test
@@ -127,7 +152,7 @@ public class TrustlyTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = trustlyWithdrawal.getBillingAddress().getElements();
+        elements = trustlyWithdrawal.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), trustlySale.getBillingAddress().getElements().get(i).getValue());

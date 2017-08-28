@@ -23,7 +23,9 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Environments {
+import java.io.Serializable;
+
+public class Environments implements Serializable {
 
 	private String environmentName;
 

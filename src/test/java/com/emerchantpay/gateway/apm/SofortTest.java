@@ -34,13 +34,20 @@ public class SofortTest {
         sofort.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Street 1")
-                .setAddress2("Street 2").setFirstname("Plamen").setLastname("Petrov").setCity("Berlin").setCountry("DE")
-                .setZipCode("M4B1B3").setState("BE").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        sofort.setBillingPrimaryAddress("Berlin");
+        sofort.setBillingSecondaryAddress("Berlin");
+        sofort.setBillingFirstname("Plamen");
+        sofort.setBillingLastname("Petrov");
+        sofort.setBillingCity("Berlin");
+        sofort.setBillingCountry("DE");
+        sofort.setBillingZipCode("M4B1B3");
+        sofort.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        sofort.billingAddress().setCountry(null).done();
+        sofort.setBillingCountry(null);
     }
 
     @Test
@@ -51,7 +58,13 @@ public class SofortTest {
         elements = sofort.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), sofort.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", sofort.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), sofort.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -63,7 +76,7 @@ public class SofortTest {
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), sofort.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), sofort.getBillingAddress().getElements());
     }
 
     @Test
@@ -72,7 +85,7 @@ public class SofortTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = sofort.getBillingAddress().getElements();
+        elements = sofort.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), sofort.getBillingAddress().getElements().get(i).getValue());

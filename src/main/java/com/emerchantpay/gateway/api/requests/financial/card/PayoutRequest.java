@@ -7,6 +7,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -35,7 +37,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PayoutRequest extends Request {
+public class PayoutRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -57,9 +59,6 @@ public class PayoutRequest extends Request {
 	private String customerEmail;
 	private String customerPhone;
 	private String birthDate;
-
-	PayoutAddressRequest billingAddress;
-	PayoutAddressRequest shippingAddress;
 
 	public PayoutRequest() {
 		super();
@@ -136,16 +135,6 @@ public class PayoutRequest extends Request {
 		return this;
 	}
 
-	public PayoutAddressRequest billingAddress() {
-		billingAddress = new PayoutAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public PayoutAddressRequest shippingAddress() {
-		shippingAddress = new PayoutAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -173,8 +162,8 @@ public class PayoutRequest extends Request {
 				.addElement("card_number", cardnumber).addElement("expiration_month", expirationMonth)
 				.addElement("expiration_year", expirationYear).addElement("cvv", cvv)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("birth_date", birthDate).addElement("billing_address", billingAddress)
-				.addElement("shippingAddress", shippingAddress);
+				.addElement("birth_date", birthDate).addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -192,9 +181,5 @@ public class PayoutRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public PayoutAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

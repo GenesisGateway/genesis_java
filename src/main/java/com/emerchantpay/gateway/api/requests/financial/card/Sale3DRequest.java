@@ -8,7 +8,9 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -37,7 +39,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Sale3DRequest extends Request implements RiskParamsAttributes {
+public class Sale3DRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -65,8 +67,6 @@ public class Sale3DRequest extends Request implements RiskParamsAttributes {
 	private String customerPhone;
 	private String birthDate;
 
-	private Sale3DAddressRequest billingAddress;
-	private Sale3DAddressRequest shippingAddress;
 	private Sale3DDynamicDescriptorParamsRequest dynamicDescriptorParams;
 	private Sale3DMpiParamsRequest mpiParams;
 
@@ -171,16 +171,6 @@ public class Sale3DRequest extends Request implements RiskParamsAttributes {
 		return this;
 	}
 
-	public Sale3DAddressRequest billingAddress() {
-		billingAddress = new Sale3DAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public Sale3DAddressRequest shippingAddress() {
-		shippingAddress = new Sale3DAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	public Sale3DDynamicDescriptorParamsRequest dynimicDescriptionParams() {
 		dynamicDescriptorParams = new Sale3DDynamicDescriptorParamsRequest(this);
 		return dynamicDescriptorParams;
@@ -220,10 +210,10 @@ public class Sale3DRequest extends Request implements RiskParamsAttributes {
 				.addElement("card_number", cardnumber).addElement("expiration_month", expirationMonth)
 				.addElement("expiration_year", expirationYear).addElement("cvv", cvv)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("birth_date", birthDate).addElement("billing_address", billingAddress)
-				.addElement("shippingAddress", shippingAddress)
+				.addElement("birth_date", birthDate).addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamicDescriptorParams", dynamicDescriptorParams).addElement("mpi_params", mpiParams)
-				.addElement("risk_params", buildRiskParams("risk_params").toXML());
+				.addElement("risk_params", buildRiskParams().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -237,10 +227,6 @@ public class Sale3DRequest extends Request implements RiskParamsAttributes {
 
 	public NodeWrapper getResponse() {
 		return response;
-	}
-
-	public Sale3DAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

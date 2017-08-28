@@ -35,14 +35,20 @@ public class AlipayTest {
                 .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
                 .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"))
-                .billingAddress().setAddress1("First Avenue").setAddress2("Second Avenue")
-                .setFirstname("John").setLastname("Doe").setCity("Beijing")
-                .setCountry(Country.China.getCode()).setZipCode("M4B1B3").setState("BJ").done();
+                .setNotificationUrl(new URL("https://example.com/notification"));
+
+        alipay.setBillingPrimaryAddress("First Avenue");
+        alipay.setBillingSecondaryAddress("Second Avenue");
+        alipay.setBillingFirstname("John");
+        alipay.setBillingLastname("Doe");
+        alipay.setBillingCity("Beijing");
+        alipay.setBillingCountry(Country.China.getCode());
+        alipay.setBillingZipCode("M4B1B3");
+        alipay.setBillingState("BJ");
     }
 
     public void setMissingParams() {
-        alipay.billingAddress().setCountry(null).done();
+        alipay.setBillingCountry(null);
     }
 
     @Test
@@ -53,7 +59,13 @@ public class AlipayTest {
         elements = alipay.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), alipay.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", alipay.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), alipay.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uid);
@@ -66,7 +78,7 @@ public class AlipayTest {
         assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("billing_address"), alipay.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), alipay.getBillingAddress().getElements());
     }
 
     @Test
@@ -75,7 +87,7 @@ public class AlipayTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = alipay.getBillingAddress().getElements();
+        elements = alipay.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), alipay.getBillingAddress().getElements().get(i).getValue());

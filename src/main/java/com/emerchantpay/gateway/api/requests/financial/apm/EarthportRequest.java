@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -35,7 +37,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class EarthportRequest extends Request {
+public class EarthportRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -61,9 +63,6 @@ public class EarthportRequest extends Request {
     private String accountSuffix;
     private String sortCode;
     private String abaRoutingNum;
-
-    private EarthportAddressRequest billingAddress;
-    private EarthportAddressRequest shippingAddress;
 
     public EarthportRequest() {
         super();
@@ -161,16 +160,6 @@ public class EarthportRequest extends Request {
         return this;
     }
 
-    public EarthportAddressRequest billingAddress() {
-        billingAddress = new EarthportAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
-    public EarthportAddressRequest shippingAddress() {
-        shippingAddress = new EarthportAddressRequest(this, "shipping_address");
-        return shippingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -200,7 +189,8 @@ public class EarthportRequest extends Request {
                 .addElement("account_number", accountNumber).addElement("bank_code", bankCode)
                 .addElement("branch_code", branchCode).addElement("account_number_suffix", accountSuffix)
                 .addElement("sort_code", sortCode).addElement("aba_routing_number", abaRoutingNum)
-                .addElement("billing_address", billingAddress).addElement("shipping_address", shippingAddress);
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML());
     }
 
     public Request execute(Configuration configuration) {
@@ -218,9 +208,5 @@ public class EarthportRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public EarthportAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

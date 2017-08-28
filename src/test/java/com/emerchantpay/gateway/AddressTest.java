@@ -22,18 +22,38 @@ public class AddressTest {
 	public void buildAddress() {
 		GenesisClient client = new GenesisClient(configuration);
 
-		assertEquals("<billing_address>" + "<first_name>John</first_name>" + "<last_name>Doe</last_name>"
-				+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
-				+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>" + "</billing_address>",
-				client.setSale().billingAddress().setFirstname("John").setLastname("Doe").setAddress1("Fifth avenue")
-						.setAddress2("Fourth avenue").setCountry("US").setCity("New York").setState("NY")
-						.setZipCode("16000").toXML());
+		// Billing Address
+		client.setSale().setBillingFirstname("John");
+		client.setSale().setBillingLastname("Doe");
+		client.setSale().setBillingPrimaryAddress("Fifth avenue");
+		client.setSale().setBillingSecondaryAddress("Fourth avenue");
+		client.setSale().setBillingCountry("US");
+		client.setSale().setBillingCity("New York");
+		client.setSale().setBillingState("NY");
+		client.setSale().setBillingZipCode("16000");
 
-		assertEquals("<shipping_address>" + "<first_name>John</first_name>" + "<last_name>Doe</last_name>"
-				+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
-				+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>" + "</shipping_address>",
-				client.setSale().shippingAddress().setFirstname("John").setLastname("Doe").setAddress1("Fifth avenue")
-						.setAddress2("Fourth avenue").setCountry("US").setCity("New York").setState("NY")
-						.setZipCode("16000").toXML());
+		client.setSale().buildBillingAddress();
+
+		assertEquals("<first_name>John</first_name>" + "<last_name>Doe</last_name>"
+						+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
+						+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>",
+				client.setSale().getBillingAddress().toXML());
+
+		// Shipping Address
+		client.setSale().setShippingFirstname("John");
+		client.setSale().setShippingLastname("Doe");
+		client.setSale().setShippingPrimaryAddress("Fifth avenue");
+		client.setSale().setShippingSecondaryAddress("Fourth avenue");
+		client.setSale().setShippingCountry("US");
+		client.setSale().setShippingCity("New York");
+		client.setSale().setShippingState("NY");
+		client.setSale().setShippingZipCode("16000");
+
+		client.setSale().buildShippingAddress();
+
+		assertEquals("<first_name>John</first_name>" + "<last_name>Doe</last_name>"
+						+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
+						+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>",
+				client.setSale().getShippingAddress().toXML());
 	}
 }

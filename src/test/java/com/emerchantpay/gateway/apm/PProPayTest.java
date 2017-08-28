@@ -35,13 +35,20 @@ public class PProPayTest {
                 .setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
                 .setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure")).setBIC("GENODETT488")
-                .setIBAN("DE07444488880123456789").billingAddress().setAddress1("Berlin").setAddress2("Berlin")
-                .setFirstname("Plamen").setLastname("Petrov").setCity("Berlin").setCountry("DE")
-                .setZipCode("M4B1B3").setState("BE").done();
+                .setIBAN("DE07444488880123456789");
+
+        ppro.setBillingPrimaryAddress("Berlin");
+        ppro.setBillingSecondaryAddress("Berlin");
+        ppro.setBillingFirstname("Plamen");
+        ppro.setBillingLastname("Petrov");
+        ppro.setBillingCity("Berlin");
+        ppro.setBillingCountry("DE");
+        ppro.setBillingZipCode("M4B1B3");
+        ppro.setBillingState("BE");
     }
 
     public void setMissingParams() {
-        ppro.billingAddress().setCountry(null).done();
+        ppro.setBillingCountry(null);
     }
 
     @Test
@@ -51,8 +58,14 @@ public class PProPayTest {
 
         elements = ppro.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), ppro.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", ppro.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), ppro.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -65,7 +78,7 @@ public class PProPayTest {
         assertEquals(mappedParams.get("payment_type"), "giropay");
         assertEquals(mappedParams.get("bic"), "GENODETT488");
         assertEquals(mappedParams.get("iban"), "DE07444488880123456789");
-        assertEquals(mappedParams.get("billing_address"), ppro.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), ppro.getBillingAddress().getElements());
     }
 
     @Test
@@ -74,7 +87,7 @@ public class PProPayTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = ppro.getBillingAddress().getElements();
+        elements = ppro.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), ppro.getBillingAddress().getElements().get(i).getValue());

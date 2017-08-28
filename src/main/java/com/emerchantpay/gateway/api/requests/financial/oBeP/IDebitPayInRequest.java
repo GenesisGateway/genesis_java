@@ -3,7 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.financial.apm.TrustlySaleAddressRequest;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -37,7 +38,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class IDebitPayInRequest extends Request {
+public class IDebitPayInRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -56,9 +57,6 @@ public class IDebitPayInRequest extends Request {
     private BigDecimal amount;
     private BigDecimal convertedAmount;
     private String currency;
-
-    private IDebitAddressRequest billingAddress;
-    private IDebitAddressRequest shippingAddress;
 
     public IDebitPayInRequest() {
         super();
@@ -120,16 +118,6 @@ public class IDebitPayInRequest extends Request {
         return this;
     }
 
-    public IDebitAddressRequest billingAddress() {
-        billingAddress = new IDebitAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
-    public IDebitAddressRequest shippingAddress() {
-        shippingAddress = new IDebitAddressRequest(this, "shipping_address");
-        return shippingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -154,8 +142,9 @@ public class IDebitPayInRequest extends Request {
                 .addElement("usage", usage).addElement("return_url", returnUrl).addElement("notification_url", notificationUrl)
                 .addElement("remote_ip", remoteIP).addElement("customer_account_id", customerAccountId)
                 .addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-                .addElement("amount", convertedAmount).addElement("currency", currency).addElement("billing_address", billingAddress)
-                .addElement("shippingAddress", shippingAddress);
+                .addElement("amount", convertedAmount).addElement("currency", currency)
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML());
     }
 
     public Request execute(Configuration configuration) {
@@ -173,9 +162,5 @@ public class IDebitPayInRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public IDebitAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

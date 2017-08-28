@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class WebMoneyRequest extends Request {
+public class WebMoneyRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -56,9 +58,6 @@ public class WebMoneyRequest extends Request {
 	private URL failureUrl;
 	private String customerEmail;
 	private String customerPhone;
-
-	private WebMoneyAddressRequest billingAddress;
-	private WebMoneyAddressRequest shippingAddress;
 
 	public WebMoneyRequest() {
 		super();
@@ -126,16 +125,6 @@ public class WebMoneyRequest extends Request {
 		return this;
 	}
 
-	public WebMoneyAddressRequest billingAddress() {
-		billingAddress = new WebMoneyAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public WebMoneyAddressRequest shippingAddress() {
-		shippingAddress = new WebMoneyAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -162,8 +151,8 @@ public class WebMoneyRequest extends Request {
 				.addElement("currency", currency).addElement("is_payout", isPayout)
 				.addElement("customer_account_id", customerAccount).addElement("return_success_url", successUrl)
 				.addElement("return_failure_url", failureUrl).addElement("customer_email", customerEmail)
-				.addElement("customer_phone", customerPhone).addElement("billing_address", billingAddress)
-				.addElement("shipping_address", shippingAddress);
+				.addElement("customer_phone", customerPhone).addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -181,9 +170,5 @@ public class WebMoneyRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public WebMoneyAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

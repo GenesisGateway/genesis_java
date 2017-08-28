@@ -36,15 +36,22 @@ public class InitRecurringSale3DTest {
                 .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
                 .setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
                 .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").billingAddress().setAddress1("Address1").setAddress2("Address2")
-                .setFirstname("John").setLastname("Doe").setCountry("US").setCity("New York").setZipCode("1000")
-                .setState("NY").done().setNotificationUrl(new URL("http://www.example.com/notification"))
+                .setCustomerPhone("+5555555555").setNotificationUrl(new URL("http://www.example.com/notification"))
                 .setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        initrecsale3d.setBillingPrimaryAddress("Address1");
+        initrecsale3d.setBillingSecondaryAddress("Address2");
+        initrecsale3d.setBillingFirstname("John");
+        initrecsale3d.setBillingLastname("Doe");
+        initrecsale3d.setBillingCity("New York");
+        initrecsale3d.setBillingCountry("US");
+        initrecsale3d.setBillingZipCode("1000");
+        initrecsale3d.setBillingState("NY");
     }
 
     public void setMissingParams() {
-        initrecsale3d.billingAddress().setCountry(null).done();
+        initrecsale3d.setBillingCountry(null);
     }
 
 
@@ -56,7 +63,13 @@ public class InitRecurringSale3DTest {
         elements = initrecsale3d.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), initrecsale3d.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", initrecsale3d.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), initrecsale3d.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -69,7 +82,7 @@ public class InitRecurringSale3DTest {
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), initrecsale3d.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), initrecsale3d.getBillingAddress().getElements());
     }
 
     @Test
@@ -78,7 +91,7 @@ public class InitRecurringSale3DTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = initrecsale3d.getBillingAddress().getElements();
+        elements = initrecsale3d.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), initrecsale3d.getBillingAddress().getElements().get(i).getValue());

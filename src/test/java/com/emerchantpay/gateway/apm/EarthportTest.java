@@ -32,14 +32,20 @@ public class EarthportTest {
                 .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
                 .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
                 .setAccountName("John Doe").setBankName("Barclays Bank PLC").setIBAN("DK5000400440116243")
-                .setBIC("APMMDKKK").setAccountNumber("10352719").setBankCode("063").setBranchCode("169")
-                .billingAddress().setAddress1("14, Copenhagen").setAddress2("24, Copenhagen")
-                .setFirstname("Plamen").setLastname("Petrov").setCity("Copenhagen")
-                .setCountry(Country.Denmark.getCode()).setZipCode("M4B1B3").setState("CH").done();
+                .setBIC("APMMDKKK").setAccountNumber("10352719").setBankCode("063").setBranchCode("169");
+
+        earthport.setBillingPrimaryAddress("14, Copenhagen");
+        earthport.setBillingSecondaryAddress("24, Copenhagen");
+        earthport.setBillingFirstname("Plamen");
+        earthport.setBillingLastname("Petrov");
+        earthport.setBillingCity("Copenhagen");
+        earthport.setBillingCountry(Country.Denmark.getCode());
+        earthport.setBillingZipCode("M4B1B3");
+        earthport.setBillingState("CH");
     }
 
     public void setMissingParams() {
-        earthport.billingAddress().setCountry(null).done();
+        earthport.setBillingCountry(null);
     }
 
     @Test
@@ -50,7 +56,13 @@ public class EarthportTest {
         elements = earthport.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), earthport.getElements().get(i).getValue());
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", earthport.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), earthport.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uid);
@@ -67,7 +79,7 @@ public class EarthportTest {
         assertEquals(mappedParams.get("account_number"), "10352719");
         assertEquals(mappedParams.get("bank_code"), "063");
         assertEquals(mappedParams.get("branch_code"), "169");
-        assertEquals(mappedParams.get("billing_address"), earthport.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), earthport.getBillingAddress().getElements());
     }
 
     @Test
@@ -76,7 +88,7 @@ public class EarthportTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = earthport.getBillingAddress().getElements();
+        elements = earthport.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), earthport.getBillingAddress().getElements().get(i).getValue());

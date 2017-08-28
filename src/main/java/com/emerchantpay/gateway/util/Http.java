@@ -1,9 +1,6 @@
 package com.emerchantpay.gateway.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -60,7 +57,7 @@ import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Http {
+public class Http implements Serializable {
 
 	enum RequestMethod {
 		DELETE, GET, POST, PUT;

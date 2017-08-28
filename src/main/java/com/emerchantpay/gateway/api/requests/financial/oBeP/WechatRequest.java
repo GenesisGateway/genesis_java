@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class WechatRequest extends Request {
+public class WechatRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -59,9 +61,6 @@ public class WechatRequest extends Request {
     private URL returnSuccessUrl;
     private URL returnFailureUrl;
     private URL notificationUrl;
-
-    private WechatAddressRequest billingAddress;
-    private WechatAddressRequest shippingAddress;
 
     public WechatRequest() {
         super();
@@ -144,16 +143,6 @@ public class WechatRequest extends Request {
         return this;
     }
 
-    public WechatAddressRequest billingAddress() {
-        billingAddress = new WechatAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
-    public WechatAddressRequest shippingAddress() {
-        shippingAddress = new WechatAddressRequest(this, "shipping_address");
-        return shippingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -182,7 +171,7 @@ public class WechatRequest extends Request {
                 .addElement("product_num", productNumber).addElement("product_desc", productDescription)
                 .addElement("return_url", returnUrl).addElement("return_success_url", returnSuccessUrl)
                 .addElement("return_failure_url", returnFailureUrl).addElement("notification_url", notificationUrl)
-                .addElement("billing_address", billingAddress).addElement("shipping_address", shippingAddress);
+                .addElement("billing_address", buildBillingAddress().toXML()).addElement("shipping_address", buildBillingAddress());
     }
 
     public Request execute(Configuration configuration) {
@@ -200,9 +189,5 @@ public class WechatRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public WechatAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

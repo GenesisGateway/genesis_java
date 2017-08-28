@@ -44,7 +44,6 @@ import com.emerchantpay.gateway.api.requests.financial.sdd.SDDSaleRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.EzeewalletRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.NetellerRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.WebMoneyRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.AVSRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.AccountVerificationRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.BlacklistRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ChargebackByDateRequest;
@@ -135,7 +134,6 @@ public class GenesisClient extends Request {
 
 	// Nonfinancial Requests
 	private AccountVerificationRequest accountverificationRequest;
-	private AVSRequest avsRequest;
 	private BlacklistRequest blacklistRequest;
 	private ChargebackRequest chargebackRequest;
 	private ChargebackByDateRequest chargebackbydateRequest;
@@ -384,11 +382,6 @@ public class GenesisClient extends Request {
 	public AccountVerificationRequest setAccountVerification() {
 		accountverificationRequest = new AccountVerificationRequest(configuration);
 		return accountverificationRequest;
-	}
-
-	public AVSRequest setAVS() {
-		avsRequest = new AVSRequest(configuration);
-		return avsRequest;
 	}
 
 	public BlacklistRequest setBlacklist() {

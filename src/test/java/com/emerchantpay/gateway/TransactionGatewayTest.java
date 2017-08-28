@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.emerchantpay.gateway.api.TransactionResult;
@@ -33,13 +32,21 @@ public class TransactionGatewayTest {
 		request.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setGaming(true).setMoto(true)
 				.setAmount(new BigDecimal("22.00")).setCurrency("USD").setCardholder("JOHN DOE")
 				.setCardNumber("4200000000000000").setExpirationMonth("02").setExpirationYear("2020").setCvv("123")
-				.setCustomerEmail("test@example.com").setCustomerPhone("5555555555").billingAddress()
-				.setAddress1("Address1").setAddress2("Address2").setFirstname("John").setLastname("Doe")
-				.setCountry("US").setCity("New York").setZipCode("1000").setState("NY").done().setUsage("TICKETS")
-				.execute(configuration);
+				.setCustomerEmail("test@example.com").setCustomerPhone("5555555555").setUsage("TICKETS");
+
+		request.setBillingPrimaryAddress("Address1");
+		request.setBillingSecondaryAddress("Address2");
+		request.setBillingFirstname("John");
+		request.setBillingLastname("Doe");
+		request.setBillingCity("New York");
+		request.setBillingCountry("US");
+		request.setBillingZipCode("1000");
+		request.setBillingState("NY");
+
+		request.execute(configuration);
 
 		TransactionResult<? extends Transaction> result = this.client.getTransaction().getAuthorize(request);
-			
+
 		assertEquals("approved", result.getTransaction().getStatus());
 	}
 }

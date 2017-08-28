@@ -34,13 +34,20 @@ public class POLiTest {
         poli.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
                 .setCurrency(Currency.AUD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
                 .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).billingAddress().setAddress1("Sydney 1")
-                .setAddress2("Sydney 2").setFirstname("Plamen").setLastname("Petrov").setCity("Sydney")
-                .setCountry(Country.Australia.getCode()).setZipCode("S4C1C3").setState("SY").done();
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        poli.setBillingPrimaryAddress("Sydney 1");
+        poli.setBillingSecondaryAddress("Sydney 2");
+        poli.setBillingFirstname("Plamen");
+        poli.setBillingLastname("Petrov");
+        poli.setBillingCity("Sydney");
+        poli.setBillingCountry(Country.Australia.getCode());
+        poli.setBillingZipCode("S4C1C3");
+        poli.setBillingState("SY");
     }
 
     public void setMissingParams() {
-        poli.billingAddress().setCountry(null).done();
+        poli.setBillingCountry(null);
     }
 
     @Test
@@ -50,8 +57,14 @@ public class POLiTest {
 
         elements = poli.getElements();
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), poli.getElements().get(i).getValue());
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).getKey() == "billing_address")
+            {
+                mappedParams.put("billing_address", poli.getBillingAddress().getElements());
+            }
+            else {
+                mappedParams.put(elements.get(i).getKey(), poli.getElements().get(i).getValue());
+            }
         }
 
         assertEquals(mappedParams.get("transaction_id"), uniqueId);
@@ -63,7 +76,7 @@ public class POLiTest {
         assertEquals(mappedParams.get("customer_phone"), "+55555555");
         assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
         assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("billing_address"), poli.getBillingAddress());
+        assertEquals(mappedParams.get("billing_address"), poli.getBillingAddress().getElements());
     }
 
 
@@ -74,7 +87,7 @@ public class POLiTest {
         setMissingParams();
 
         mappedParams = new HashMap<String, Object>();
-        elements = poli.getBillingAddress().getElements();
+        elements = poli.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), poli.getBillingAddress().getElements().get(i).getValue());

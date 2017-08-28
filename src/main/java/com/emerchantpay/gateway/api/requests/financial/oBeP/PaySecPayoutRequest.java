@@ -3,6 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PaySecPayoutRequest extends Request {
+public class PaySecPayoutRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
     protected Configuration configuration;
     private Http http;
@@ -60,9 +62,6 @@ public class PaySecPayoutRequest extends Request {
     private URL returnSuccessUrl;
     private URL returnFailureUrl;
     private URL notificationUrl;
-
-    private PaySecPayoutAddressRequest billingAddress;
-    private PaySecPayoutAddressRequest shippingAddress;
 
     public PaySecPayoutRequest() {
         super();
@@ -150,16 +149,6 @@ public class PaySecPayoutRequest extends Request {
         return this;
     }
 
-    public PaySecPayoutAddressRequest billingAddress() {
-        billingAddress = new PaySecPayoutAddressRequest(this, "billing_address");
-        return billingAddress;
-    }
-
-    public PaySecPayoutAddressRequest shippingAddress() {
-        shippingAddress = new PaySecPayoutAddressRequest(this, "shipping_address");
-        return shippingAddress;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
@@ -188,8 +177,9 @@ public class PaySecPayoutRequest extends Request {
                 .addElement("bank_name", bankName).addElement("bank_branch", bankBranch)
                 .addElement("bank_account_name", bankAccountName).addElement("bank_account_number", bankAccountNumber)
                 .addElement("return_success_url", returnSuccessUrl).addElement("return_failure_url", returnFailureUrl)
-                .addElement("notification_url", notificationUrl).addElement("billing_address", billingAddress)
-                .addElement("shipping_address", shippingAddress);
+                .addElement("notification_url", notificationUrl)
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML());
     }
 
     public Request execute(Configuration configuration) {
@@ -207,9 +197,5 @@ public class PaySecPayoutRequest extends Request {
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public PaySecPayoutAddressRequest getBillingAddress() {
-        return billingAddress;
     }
 }

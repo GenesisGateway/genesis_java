@@ -7,7 +7,9 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSaleRequest extends Request implements RiskParamsAttributes {
+public class InitRecurringSaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -60,8 +62,6 @@ public class InitRecurringSaleRequest extends Request implements RiskParamsAttri
 	private String customerPhone;
 	private String birthDate;
 
-	private InitRecurringSaleAddressRequest billingAddress;
-	private InitRecurringSaleAddressRequest shippingAddress;
 	private InitRecurringSaleDynamicDescriptorParamsRequest dynamicDescriptorParams;
 
 	public InitRecurringSaleRequest() {
@@ -144,16 +144,6 @@ public class InitRecurringSaleRequest extends Request implements RiskParamsAttri
 		return this;
 	}
 
-	public InitRecurringSaleAddressRequest billingAddress() {
-		billingAddress = new InitRecurringSaleAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public InitRecurringSaleAddressRequest shippingAddress() {
-		shippingAddress = new InitRecurringSaleAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	public InitRecurringSaleDynamicDescriptorParamsRequest dynimicDescriptionParams() {
 		dynamicDescriptorParams = new InitRecurringSaleDynamicDescriptorParamsRequest(this);
 		return dynamicDescriptorParams;
@@ -186,10 +176,10 @@ public class InitRecurringSaleRequest extends Request implements RiskParamsAttri
 				.addElement("card_number", cardnumber).addElement("expiration_month", expirationMonth)
 				.addElement("expiration_year", expirationYear).addElement("cvv", cvv)
 				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("birth_date", birthDate).addElement("billing_address", billingAddress)
-				.addElement("shippingAddress", shippingAddress)
+				.addElement("birth_date", birthDate).addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", dynamicDescriptorParams)
-				.addElement("risk_params", buildRiskParams("risk_params").toXML());
+				.addElement("risk_params", buildRiskParams().toXML());
 
 	}
 
@@ -208,9 +198,5 @@ public class InitRecurringSaleRequest extends Request implements RiskParamsAttri
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public InitRecurringSaleAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

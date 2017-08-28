@@ -8,6 +8,8 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -36,7 +38,7 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InPayRequest extends Request {
+public class InPayRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
 
 	protected Configuration configuration;
 	private Http http;
@@ -65,9 +67,6 @@ public class InPayRequest extends Request {
 	private String ownerAddress;
 	private String customerEmail;
 	private String customerPhone;
-
-	private InPayAddressRequest billingAddress;
-	private InPayAddressRequest shippingAddress;
 
 	public InPayRequest() {
 		super();
@@ -179,16 +178,6 @@ public class InPayRequest extends Request {
 		return this;
 	}
 
-	public InPayAddressRequest billingAddress() {
-		billingAddress = new InPayAddressRequest(this, "billing_address");
-		return billingAddress;
-	}
-
-	public InPayAddressRequest shippingAddress() {
-		shippingAddress = new InPayAddressRequest(this, "shipping_address");
-		return shippingAddress;
-	}
-
 	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
@@ -220,7 +209,8 @@ public class InPayRequest extends Request {
 				.addElement("payout_bank_name", bankName).addElement("payout_swift", swift)
 				.addElement("payout_acc_number", accNumber).addElement("payout_bank_address", bankAddress)
 				.addElement("payout_owner_name", ownerName).addElement("payout_owner_address", ownerAddress)
-				.addElement("billing_address", billingAddress).addElement("shippingAddress", shippingAddress);
+				.addElement("billing_address", buildBillingAddress().toXML())
+				.addElement("shipping_address", buildShippingAddress().toXML());
 	}
 
 	public Request execute(Configuration configuration) {
@@ -238,9 +228,5 @@ public class InPayRequest extends Request {
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
-	}
-
-	public InPayAddressRequest getBillingAddress() {
-		return billingAddress;
 	}
 }

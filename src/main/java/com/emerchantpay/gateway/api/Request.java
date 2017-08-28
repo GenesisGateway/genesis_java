@@ -22,10 +22,12 @@ package com.emerchantpay.gateway.api;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
+import java.io.Serializable;
+
 /**
  * Abstract class for fluent interface request builders.
  */
-public abstract class Request {
+public abstract class Request implements Serializable {
 	public String toXML() {
 		throw new UnsupportedOperationException();
 	}

@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.api.requests;
+package com.emerchantpay.gateway.api.interfaces;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 
@@ -39,7 +39,7 @@ public interface RiskParamsAttributes {
     }
 
     default void setRiskRemoteIp(String remoteIp) {
-       paramMap.put("remote_ip", remoteIp);
+        paramMap.put("remote_ip", remoteIp);
     }
 
     default void setRiskSerialNumber(String serialNumber) {
@@ -89,14 +89,15 @@ public interface RiskParamsAttributes {
         paramMap.put("bin_phone", binPhone);
     }
 
-    default RequestBuilder buildRiskParams(String root) {
+    default RequestBuilder buildRiskParams() {
 
-        return new RequestBuilder(root).addElement("ssn", paramMap.get("ssn"))
+        return new RequestBuilder("").addElement("ssn", paramMap.get("ssn"))
                 .addElement("mac_address", paramMap.get("mac_address"))
                 .addElement("session_id", paramMap.get("session_id"))
                 .addElement("user_id", paramMap.get("user_id"))
                 .addElement("user_level", paramMap.get("user_level"))
-                .addElement("email", "").addElement("phone", "")
+                .addElement("email", paramMap.get("email"))
+                .addElement("phone", paramMap.get("phone"))
                 .addElement("remote_ip", paramMap.get("remote_ip"))
                 .addElement("serial_number", paramMap.get("serial_number"))
                 .addElement("pan_tail", paramMap.get("pan_tail"))

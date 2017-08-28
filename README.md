@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
 </dependency>
 ```
 
@@ -56,11 +56,13 @@ public class GenesisExample {
         configuration.setPassword("SET_YOUR_PASSWORD");
         configuration.setToken("SET_YOUR_TOKEN");
 
+        String uniqueId = new StringUtils().generateUID();
+
         GenesisClient client = new GenesisClient(configuration);
 
-        AuthorizeRequest  authorize = new AuthorizeRequest();
+        AuthorizeRequest authorize = new AuthorizeRequest();
 
-        authorize.setTransactionId("43671")
+        authorize.setTransactionId(uniqueId)
                 .setUsage("40208 concert tickets")
                 .setGaming(true)
                 .setRemoteIp("245.253.2.12").setCurrency("USD")
@@ -69,21 +71,21 @@ public class GenesisExample {
                 .setCardNumber("4200000000000000")
                 .setExpirationMonth("01")
                 .setExpirationYear("2020")
-                .setCvv("123")
-                .billingAddress()
-                .setFirstname("Travis")
-                .setLastname("Pastrana")
-                .setAddress1("Muster Str. 12")
-                .setZipCode("10178")
-                .setCity("Los Angeles")
-                .setState("CA")
-                .setCountry("USA").done();
+                .setCvv("123");
+
+        authorize.setBillingFirstname("Travis");
+        authorize.setBillingLastname("Pastrana");
+        authorize.setBillingPrimaryAddress("Muster Str. 12");
+        authorize.setBillingZipCode("10178");
+        authorize.setBillingCity("Los Angeles");
+        authorize.setBillingState("CA");
+        authorize.setBillingCountry("US");
 
         authorize.execute(configuration);
 
         // Parse Payment result
         TransactionResult<? extends Transaction> result = client.getTransaction().getAuthorize(authorize);
-        System.out("Transaction Id: " + result.getTransaction.getTransactionId());
+        System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
     }
 }
 ```
@@ -159,7 +161,6 @@ api.requests.financial.wallets.NetellerRequest
 api.requests.financial.wallets.WebMoneyRequest
 
 // Generic (Non-Financial) requests
-api.requests.nonfinancial.AVSRequest
 api.requests.nonfinancial.AccountVerificationRequest
 api.requests.nonfinancial.BlacklistRequest
 
