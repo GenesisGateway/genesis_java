@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
@@ -37,7 +39,7 @@ public class WPFCreateRequest extends Request implements BillingAddressAttribute
     private String currency;
     private Locale language;
     
-    private TransactionTypesRequest transactionTypes;
+    private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
     private WPFDynamicDescriptorParamsRequest dynamicDescriptorParams;
     
     public WPFCreateRequest() {
@@ -105,17 +107,42 @@ public class WPFCreateRequest extends Request implements BillingAddressAttribute
         this.cancelUrl = cancelUrl;
         return this;
     }
-    
-    public TransactionTypesRequest transactionTypes() {
-        transactionTypes = new TransactionTypesRequest(this);
+
+    public TransactionTypesRequest addTransactionType(String transactionType) {
+        transactionTypes.addTransaction(transactionType);
         return transactionTypes;
     }
-    
+
+    public TransactionTypesRequest addTransactionType(String transactionType, ArrayList<HashMap<String, String>> params) {
+        transactionTypes.addTransaction(transactionType);
+
+        for (HashMap<String, String> map : params) {
+            for (Map.Entry<String, String> mapEntry : map.entrySet())
+            {
+                String key = mapEntry.getKey();
+                String value = mapEntry.getValue();
+
+                transactionTypes.addParam(key, value);
+            }
+        }
+
+        return transactionTypes;
+    }
+
+    public TransactionTypesRequest addTransactionTypes(ArrayList<String> transactions) {
+
+        for (String t: transactions) {
+            transactionTypes.addTransaction(t);
+        }
+
+        return transactionTypes;
+    }
+
     public WPFDynamicDescriptorParamsRequest dynamicDescriptors() {
         dynamicDescriptorParams = new WPFDynamicDescriptorParamsRequest(this);
         return dynamicDescriptorParams;
     }
-    
+
     public WPFCreateRequest setLanguage(Locale language) {
         this.language = language;
         return this;
@@ -148,7 +175,7 @@ public class WPFCreateRequest extends Request implements BillingAddressAttribute
         .addElement("return_cancel_url", cancelUrl).addElement("amount", convertedAmount)
         .addElement("currency", currency).addElement("billing_address", buildBillingAddress().toXML())
         .addElement("shipping_address", buildShippingAddress().toXML()).addElement("transaction_types", transactionTypes)
-        .addElement("risk_params", buildRiskParams())
+        .addElement("risk_params", buildRiskParams().toXML())
         .addElement("dynamic_descriptor_params", dynamicDescriptorParams);
     }
     

@@ -61,7 +61,7 @@ public interface RiskParamsAttributes {
         paramMap.put("last_name", lastname);
     }
 
-    default void setRiskCounry(String country) {
+    default void setRiskCountry(String country) {
         paramMap.put("country", country);
     }
 

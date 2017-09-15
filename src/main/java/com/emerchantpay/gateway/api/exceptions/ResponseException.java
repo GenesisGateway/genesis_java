@@ -11,8 +11,9 @@ public class ResponseException extends GenesisException {
 		message = "Invalid/Unexpected format!";
 	}
 
-	public ResponseException(Integer code) {
-		super("code: "+ code + " message: " + ErrorCodes.getErrorDescription(code), null);
+	public ResponseException(Integer code, String message) {
+		super("Code: " + code + " Description: " + ErrorCodes.getErrorDescription(code),
+				new GenesisException("Technical Message: " + message));
 	}
 
 	public ResponseException() {

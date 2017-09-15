@@ -42,13 +42,13 @@ public class TransactionTypesRequest extends Request {
 		this.parent = parent;
 	}
 
-	public TransactionTypesRequest addTransactionType(String transactionType) {
-		this.customAttributes = new CustomAttributesRequest(this, transactionType);
-		this.customAttributesList.add(customAttributes);
+	protected TransactionTypesRequest addTransaction(String transactionType) {
+		customAttributes = new CustomAttributesRequest(this, transactionType);
+		customAttributesList.add(customAttributes);
 		return this;
 	}
 
-	public TransactionTypesRequest addCustomParam(String key, String value) {
+	public TransactionTypesRequest addParam(String key, String value) {
 		this.customAttributes.addAttributeKey(key).addAttributeValue(value);
 		return this;
 	}
@@ -67,8 +67,8 @@ public class TransactionTypesRequest extends Request {
 
 		RequestBuilder builder = new RequestBuilder(root);
 
-		for (Integer i = 0; i < customAttributesList.size(); i++) {
-			builder.addElement(null, customAttributesList.get(i));
+		for (CustomAttributesRequest attribute: customAttributesList) {
+			builder.addElement(null, attribute);
 		}
 
 		return builder;

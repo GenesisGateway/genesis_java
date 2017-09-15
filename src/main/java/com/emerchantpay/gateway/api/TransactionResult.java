@@ -32,17 +32,6 @@ public class TransactionResult<T> {
 	}
 
 	public TransactionResult(NodeWrapper node, Class<T> klass) {
-		if (node.isSuccess()) {
-			this.target = newInstanceFromNode(klass, node);
-		} else {
-			this.errors = new ValidationErrors(node);
-
-			NodeWrapper transactionNode = node.findFirst("payment_response");
-			if (transactionNode != null) {
-				this.transaction = new Transaction(transactionNode);
-			}
-		}
-
 		this.transaction = new Transaction(node);
 	}
 

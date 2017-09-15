@@ -69,7 +69,7 @@ public class Transaction {
 		}
 
 		if(getStatus().equals("error")) {
-			throw new ResponseException(getCode());
+			throw new ResponseException(getCode(), getTechnicalMessage());
 		}
 	}
 
