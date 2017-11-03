@@ -22,12 +22,16 @@ package com.emerchantpay.gateway.api;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
+import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
+
 import java.io.Serializable;
 
 /**
  * Abstract class for fluent interface request builders.
  */
-public abstract class Request implements Serializable {
+public abstract class Request implements BaseAttributes, AddressAttributes, Serializable {
+
 	public String toXML() {
 		throw new UnsupportedOperationException();
 	}
@@ -50,5 +54,13 @@ public abstract class Request implements Serializable {
 
 	protected String buildXMLElement(String name, Object element) {
 		return RequestBuilder.buildXMLElement(name, element);
+	}
+
+	public Request getRequest() {
+		return this;
+	}
+
+	public String getTransactionType() {
+		return null;
 	}
 }

@@ -2,58 +2,46 @@ package com.emerchantpay.gateway;
 
 import static org.junit.Assert.assertEquals;
 
+import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.emerchantpay.gateway.api.constants.Endpoints;
-import com.emerchantpay.gateway.api.constants.Environments;
-import com.emerchantpay.gateway.util.Configuration;
-
 public class AddressTest {
 
-	private Configuration configuration;
+	SaleRequest sale;
 
 	@Before
-	public void createConfiguration() {
-		this.configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
+	public void createAddress() {
+		sale = new SaleRequest();
+
+		// Billing Address
+		sale.setBillingFirstname("John").setBillingLastname("Doe").setBillingPrimaryAddress("Fifth avenue")
+				.setBillingSecondaryAddress("Fourth avenue").setBillingCity("New York")
+				.setBillingZipCode("16000").setBillingState("NY")
+				.setBillingCountry("US");
+
+		sale.buildBillingAddress();
+
+		// Shipping Address
+		sale.setShippingFirstname("John").setShippingLastname("Doe").setShippingPrimaryAddress("Fifth avenue")
+				.setShippingSecondaryAddress("Fourth avenue").setShippingCity("New York")
+				.setShippingZipCode("16000").setShippingState("NY")
+				.setShippingCountry("US");
+
+		sale.buildShippingAddress();
 	}
 
 	@Test
 	public void buildAddress() {
-		GenesisClient client = new GenesisClient(configuration);
-
-		// Billing Address
-		client.setSale().setBillingFirstname("John");
-		client.setSale().setBillingLastname("Doe");
-		client.setSale().setBillingPrimaryAddress("Fifth avenue");
-		client.setSale().setBillingSecondaryAddress("Fourth avenue");
-		client.setSale().setBillingCountry("US");
-		client.setSale().setBillingCity("New York");
-		client.setSale().setBillingState("NY");
-		client.setSale().setBillingZipCode("16000");
-
-		client.setSale().buildBillingAddress();
 
 		assertEquals("<first_name>John</first_name>" + "<last_name>Doe</last_name>"
 						+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
 						+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>",
-				client.setSale().getBillingAddress().toXML());
-
-		// Shipping Address
-		client.setSale().setShippingFirstname("John");
-		client.setSale().setShippingLastname("Doe");
-		client.setSale().setShippingPrimaryAddress("Fifth avenue");
-		client.setSale().setShippingSecondaryAddress("Fourth avenue");
-		client.setSale().setShippingCountry("US");
-		client.setSale().setShippingCity("New York");
-		client.setSale().setShippingState("NY");
-		client.setSale().setShippingZipCode("16000");
-
-		client.setSale().buildShippingAddress();
+				sale.getBillingAddress().toXML());
 
 		assertEquals("<first_name>John</first_name>" + "<last_name>Doe</last_name>"
 						+ "<address1>Fifth avenue</address1>" + "<address2>Fourth avenue</address2>" + "<city>New York</city>"
 						+ "<zip_code>16000</zip_code>" + "<state>NY</state>" + "<country>US</country>",
-				client.setSale().getShippingAddress().toXML());
+				sale.getShippingAddress().toXML());
 	}
 }

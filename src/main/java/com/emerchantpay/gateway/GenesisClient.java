@@ -1,64 +1,9 @@
 package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.requests.financial.CaptureRequest;
-import com.emerchantpay.gateway.api.requests.financial.RefundRequest;
-import com.emerchantpay.gateway.api.requests.financial.VoidRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.CashURequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.InPayRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.P24Request;
-import com.emerchantpay.gateway.api.requests.financial.apm.POLiRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.PProRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.PaySafeCardRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.SofortRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.CitadelPayInRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.CitadelPayOutRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.PayPalExpressRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.TrustlySaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.TrustlyWithdrawalRequest;
-import com.emerchantpay.gateway.api.requests.financial.apm.EarthportRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.CreditRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.PayoutRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.Sale3DRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSale3DRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.card.recurring.RecurringSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayInRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayOutRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayInRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.InstaDebitPayOutRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.AlipayRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.WechatRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecRequest;
-import com.emerchantpay.gateway.api.requests.financial.oBeP.PaySecPayoutRequest;
-import com.emerchantpay.gateway.api.requests.financial.pbv.PBVSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.pbv.PBVYeePayRequest;
-import com.emerchantpay.gateway.api.requests.financial.sct.SCTPayoutRequest;
-import com.emerchantpay.gateway.api.requests.financial.sdd.SDDInitRecurringSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRecurringSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.sdd.SDDRefundRequest;
-import com.emerchantpay.gateway.api.requests.financial.sdd.SDDSaleRequest;
-import com.emerchantpay.gateway.api.requests.financial.wallets.EzeewalletRequest;
-import com.emerchantpay.gateway.api.requests.financial.wallets.NetellerRequest;
-import com.emerchantpay.gateway.api.requests.financial.wallets.WebMoneyRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.AccountVerificationRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.BlacklistRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ChargebackByDateRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ChargebackRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ReportsByDateRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.ReportsRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.RetrievalByDateRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.RetrievalRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileByDateRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.retrieve.AbnIDealBanksRetrieveRequest;
-import com.emerchantpay.gateway.api.requests.nonfinancial.retrieve.InPayBanksRetrieveRequest;
-import com.emerchantpay.gateway.api.requests.wpf.WPFCreateRequest;
-import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
 import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.util.Http;
+import com.emerchantpay.gateway.util.NodeWrapper;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -86,372 +31,110 @@ import com.emerchantpay.gateway.util.Configuration;
 public class GenesisClient extends Request {
 
 	private Configuration configuration;
+	private Request request;
 
-	// Financial Requests
-	private AuthorizeRequest authorizeRequest;
-	private Authorize3DRequest authorize3dRequest;
-	private CaptureRequest captureRequest;
-	private RefundRequest refundRequest;
-	private VoidRequest voidRequest;
-	private CreditRequest creditRequest;
-	private PayoutRequest payoutRequest;
-	private SaleRequest saleRequest;
-	private Sale3DRequest sale3dRequest;
-	private InitRecurringSaleRequest initrecurringsaleRequest;
-	private InitRecurringSale3DRequest initrecurringsale3dRequest;
-	private RecurringSaleRequest recurringsaleRequest;
-	private EzeewalletRequest ezeewalletRequest;
-	private NetellerRequest netellerRequest;
-	private WebMoneyRequest webmoneyRequest;
-	private PBVYeePayRequest pbvyeepayRequest;
-	private PBVSaleRequest pbvsaleRequest;
-	private CashURequest cashuRequest;
-	private InPayRequest inpayRequest;
-	private PaySafeCardRequest paysafecardRequest;
-	private POLiRequest poliRequest;
-	private PProRequest pproRequest;
-	private SofortRequest sofortRequest;
-	private P24Request p24Request;
-	private SDDSaleRequest sddsaleRequest;
-	private SDDRecurringSaleRequest sddrecurringsaleRequest;
-	private SDDInitRecurringSaleRequest sddinitrecurringsaleRequest;
-	private SDDRefundRequest sddrefundRequest;
-	private SCTPayoutRequest sctPayoutRequest;
-	private IDebitPayInRequest idebitpayinRequest;
-	private IDebitPayOutRequest idebitpayoutRequest;
-	private InstaDebitPayInRequest instadebitpayinRequest;
-	private InstaDebitPayOutRequest instadebitpayoutRequest;
-	private CitadelPayInRequest citadelpayinRequest;
-	private CitadelPayOutRequest citadelpayoutRequest;
-	private PayPalExpressRequest paypalRequest;
-	private TrustlySaleRequest trustlysaleRequest;
-	private TrustlyWithdrawalRequest trustlywithdrawalRequest;
-	private EarthportRequest earthportRequest;
-	private AlipayRequest alipayRequest;
-	private WechatRequest wechatRequest;
-	private PaySecRequest paysecRequest;
-	private PaySecPayoutRequest paysecpayoutRequest;
+	// Execute
+	private Http http;
+	private NodeWrapper response;
 
-	// Nonfinancial Requests
-	private AccountVerificationRequest accountverificationRequest;
-	private BlacklistRequest blacklistRequest;
-	private ChargebackRequest chargebackRequest;
-	private ChargebackByDateRequest chargebackbydateRequest;
-	private ReportsRequest reportsRequest;
-	private ReportsByDateRequest reportsbydateRequest;
-	private RetrievalRequest retrievalRequest;
-	private RetrievalByDateRequest retrievalbydateRequest;
-	private ReconcileRequest reconcileRequest;
-	private ReconcileByDateRequest reconcilebydateRequest;
-	private AbnIDealBanksRetrieveRequest abnidealbanksRequest;
-	private InPayBanksRetrieveRequest inpaybanksRequest;
-
-	// WPF Requests
-	private WPFCreateRequest wpfcreateRequest;
-	private WPFReconcileRequest wpfreconcileRequest;
-
-	public GenesisClient(Configuration configuration) {
+	public GenesisClient(Configuration configuration, Request request) {
 
 		super();
 		this.configuration = configuration;
+		this.request = request;
 	}
 
-	public AuthorizeRequest setAuthorize() {
-		authorizeRequest = new AuthorizeRequest();
-		return authorizeRequest;
+	public GenesisClient debugMode(Boolean enabled) {
+		configuration.setDebugMode(enabled);
+		return this;
 	}
 
-	public Authorize3DRequest setAuthorize3D() {
-		authorize3dRequest = new Authorize3DRequest(configuration);
-		return authorize3dRequest;
-	}
-
-	public CaptureRequest setCapture() {
-		captureRequest = new CaptureRequest(configuration);
-		return captureRequest;
-	}
-
-	public RefundRequest setRefund() {
-		refundRequest = new RefundRequest(configuration);
-		return refundRequest;
-	}
-
-	public VoidRequest setVoid() {
-		voidRequest = new VoidRequest(configuration);
-		return voidRequest;
-	}
-
-	public CreditRequest setCredit() {
-		creditRequest = new CreditRequest(configuration);
-		return creditRequest;
-	}
-
-	public PayoutRequest setPayout() {
-		payoutRequest = new PayoutRequest(configuration);
-		return payoutRequest;
-	}
-
-	public SaleRequest setSale() {
-		saleRequest = new SaleRequest(configuration);
-		return saleRequest;
-	}
-
-	public Sale3DRequest setSale3D() {
-		sale3dRequest = new Sale3DRequest(configuration);
-		return sale3dRequest;
-	}
-
-	public InitRecurringSaleRequest setInitRecurringSale() {
-		initrecurringsaleRequest = new InitRecurringSaleRequest(configuration);
-		return initrecurringsaleRequest;
-	}
-
-	public InitRecurringSale3DRequest setInitRecurringSale3D() {
-		initrecurringsale3dRequest = new InitRecurringSale3DRequest(configuration);
-		return initrecurringsale3dRequest;
-	}
-
-	public RecurringSaleRequest setRecurringSale() {
-		recurringsaleRequest = new RecurringSaleRequest(configuration);
-		return recurringsaleRequest;
-	}
-
-	public EzeewalletRequest setEzeewallet() {
-		ezeewalletRequest = new EzeewalletRequest(configuration);
-		return ezeewalletRequest;
-	}
-
-	public NetellerRequest setNeteller() {
-		netellerRequest = new NetellerRequest(configuration);
-		return netellerRequest;
-	}
-
-	public WebMoneyRequest setWebmoney() {
-		webmoneyRequest = new WebMoneyRequest(configuration);
-		return webmoneyRequest;
-	}
-
-	public PBVYeePayRequest setPBVYeePay() {
-		pbvyeepayRequest = new PBVYeePayRequest(configuration);
-		return pbvyeepayRequest;
-	}
-
-	public PBVSaleRequest setPBVSale() {
-		pbvsaleRequest = new PBVSaleRequest(configuration);
-		return pbvsaleRequest;
-	}
-
-	public CashURequest setCashU() {
-		cashuRequest = new CashURequest(configuration);
-		return cashuRequest;
-	}
-
-	public InPayRequest setInPay() {
-		inpayRequest = new InPayRequest(configuration);
-		return inpayRequest;
-	}
-
-	public PaySafeCardRequest setPaySafeCard() {
-		paysafecardRequest = new PaySafeCardRequest(configuration);
-		return paysafecardRequest;
-	}
-
-	public PProRequest setPPro() {
-		pproRequest = new PProRequest(configuration);
-		return pproRequest;
-	}
-
-	public POLiRequest setPOLi() {
-		poliRequest = new POLiRequest(configuration);
-		return poliRequest;
-	}
-
-	public SofortRequest setSofort() {
-		sofortRequest = new SofortRequest(configuration);
-		return sofortRequest;
-	}
-
-	public P24Request setP24() {
-		p24Request = new P24Request(configuration);
-		return p24Request;
-	}
-
-	// SDD Requests
-	public SDDSaleRequest setSDDSale() {
-		sddsaleRequest = new SDDSaleRequest(configuration);
-		return sddsaleRequest;
-	}
-
-	public SDDRecurringSaleRequest setSDDRecurringSale() {
-		sddrecurringsaleRequest = new SDDRecurringSaleRequest(configuration);
-		return sddrecurringsaleRequest;
-	}
-
-	public SDDInitRecurringSaleRequest setSDDInitRecurringSale() {
-		sddinitrecurringsaleRequest = new SDDInitRecurringSaleRequest(configuration);
-		return sddinitrecurringsaleRequest;
-	}
-
-	public SDDRefundRequest setSDDRefundSale() {
-		sddrefundRequest = new SDDRefundRequest(configuration);
-		return sddrefundRequest;
-	}
-
-	// SCT Payout Request
-	public SCTPayoutRequest setSCTPayout() {
-		sctPayoutRequest = new SCTPayoutRequest(configuration);
-		return sctPayoutRequest;
-	}
-
-	// OBEP Requests
-	public IDebitPayInRequest setIDebitPayIn() {
-		idebitpayinRequest = new IDebitPayInRequest(configuration);
-		return idebitpayinRequest;
-	}
-
-	public IDebitPayOutRequest setIDebitPayOut() {
-		idebitpayoutRequest = new IDebitPayOutRequest(configuration);
-		return idebitpayoutRequest;
-	}
-
-	public InstaDebitPayInRequest setInstaDebitPayIn() {
-		instadebitpayinRequest = new InstaDebitPayInRequest(configuration);
-		return instadebitpayinRequest;
-	}
-
-	public InstaDebitPayOutRequest setInstaDebitPayOut() {
-		instadebitpayoutRequest = new InstaDebitPayOutRequest(configuration);
-		return instadebitpayoutRequest;
-	}
-
-	public AlipayRequest setAliPay() {
-		alipayRequest = new AlipayRequest(configuration);
-		return alipayRequest;
-	}
-
-	public WechatRequest setWechat() {
-		wechatRequest = new WechatRequest(configuration);
-		return wechatRequest;
-	}
-
-	public PaySecRequest setPaySec() {
-		paysecRequest = new PaySecRequest(configuration);
-		return paysecRequest;
-	}
-
-	public PaySecPayoutRequest setPaySecPayout() {
-		paysecpayoutRequest = new PaySecPayoutRequest(configuration);
-		return paysecpayoutRequest;
-	}
-
-	// Citadel Requests
-	public CitadelPayInRequest setCitadelPayIn() {
-		citadelpayinRequest = new CitadelPayInRequest(configuration);
-		return citadelpayinRequest;
-	}
-
-	public CitadelPayOutRequest setCitadelPayOut() {
-		citadelpayoutRequest = new CitadelPayOutRequest(configuration);
-		return citadelpayoutRequest;
-	}
-
-	// PayPal Express Request
-	public PayPalExpressRequest setPayPalExpress() {
-		paypalRequest = new PayPalExpressRequest(configuration);
-		return paypalRequest;
-	}
-
-	// Trustly Requests
-	public TrustlySaleRequest setTrustlySale() {
-		trustlysaleRequest = new TrustlySaleRequest(configuration);
-		return trustlysaleRequest;
-	}
-
-	public TrustlyWithdrawalRequest setTrustlyWithdrawal() {
-		trustlywithdrawalRequest = new TrustlyWithdrawalRequest(configuration);
-		return trustlywithdrawalRequest;
-	}
-
-	// Earthport Request
-	public EarthportRequest setEarthport() {
-		earthportRequest = new EarthportRequest(configuration);
-		return earthportRequest;
-	}
-
-	// Nonfinancial Requests
-	public AccountVerificationRequest setAccountVerification() {
-		accountverificationRequest = new AccountVerificationRequest(configuration);
-		return accountverificationRequest;
-	}
-
-	public BlacklistRequest setBlacklist() {
-		blacklistRequest = new BlacklistRequest(configuration);
-		return blacklistRequest;
-	}
-
-	public ChargebackRequest setChargeback() {
-		chargebackRequest = new ChargebackRequest(configuration);
-		return chargebackRequest;
-	}
-
-	public ChargebackByDateRequest setChargebackByDate() {
-		chargebackbydateRequest = new ChargebackByDateRequest(configuration);
-		return chargebackbydateRequest;
-	}
-
-	public ReportsRequest setReports() {
-		reportsRequest = new ReportsRequest(configuration);
-		return reportsRequest;
-	}
-
-	public ReportsByDateRequest setReportsByDate() {
-		reportsbydateRequest = new ReportsByDateRequest(configuration);
-		return reportsbydateRequest;
-	}
-
-	public RetrievalRequest setRetrieval() {
-		retrievalRequest = new RetrievalRequest(configuration);
-		return retrievalRequest;
-	}
-
-	public RetrievalByDateRequest setRetrievalByDate() {
-		retrievalbydateRequest = new RetrievalByDateRequest(configuration);
-		return retrievalbydateRequest;
-	}
-
-	public ReconcileRequest setReconcile() {
-		reconcileRequest = new ReconcileRequest(configuration);
-		return reconcileRequest;
-	}
-
-	public ReconcileByDateRequest setReconcileByDate() {
-		reconcilebydateRequest = new ReconcileByDateRequest(configuration);
-		return reconcilebydateRequest;
-	}
-
-	public AbnIDealBanksRetrieveRequest setAbnIdealBanks() {
-		abnidealbanksRequest = new AbnIDealBanksRetrieveRequest(configuration);
-		return abnidealbanksRequest;
-	}
-
-	public InPayBanksRetrieveRequest setInPayBanks() {
-		inpaybanksRequest = new InPayBanksRetrieveRequest(configuration);
-		return inpaybanksRequest;
-	}
-
-	// WPF Requests
-	public WPFCreateRequest setWPFCreate() {
-		wpfcreateRequest = new WPFCreateRequest(configuration);
-		return wpfcreateRequest;
-	}
-
-	public WPFReconcileRequest setWPFReconcile() {
-		wpfreconcileRequest = new WPFReconcileRequest(configuration);
-		return wpfreconcileRequest;
+	public GenesisClient changeRequest(Request request) {
+		this.request = request;
+		return this;
 	}
 
 	public TransactionGateway getTransaction() {
 
-		return new TransactionGateway(configuration);
+		return new TransactionGateway(configuration, getResponse());
+	}
+
+	public Request execute() {
+		switch (request.getTransactionType()) {
+			case "wpf_payment":
+				configuration.setWpfEnabled(true);
+				configuration.setTokenEnabled(false);
+
+				if (configuration.getLanguage() != null) {
+					configuration.setAction(configuration.getLanguage() + "/wpf");
+				} else {
+					configuration.setAction("wpf");
+				}
+				break;
+			case "wpf_reconcile":
+				configuration.setWpfEnabled(true);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("wpf/reconcile");
+				break;
+			case "reconcile":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(true);
+				configuration.setAction("reconcile");
+				break;
+			case "reconcile_by_date":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(true);
+				configuration.setAction("reconcile/by_date");
+				break;
+			case "blacklist":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("blacklists");
+				break;
+			case "chargeback":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("chargebacks");
+				break;
+			case "chargeback_by_date":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("chargebacks/by_date");
+				break;
+			case "reports_fraud":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("fraud_reports");
+				break;
+			case "reports_fraud_by_date":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("fraud_reports/by_date");
+				break;
+			case "retrieval_requests":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("retrieval_requests");
+				break;
+			case "retrieval_requests_by_date":
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(false);
+				configuration.setAction("retrieval_requests/by_date");
+				break;
+			default:
+				configuration.setWpfEnabled(false);
+				configuration.setTokenEnabled(true);
+				configuration.setAction("process");
+				break;
+		}
+
+		http = new Http(configuration);
+		response = http.post(configuration.getBaseUrl(), request);
+
+		return this;
+	}
+
+	public NodeWrapper getResponse() {
+		return response;
 	}
 }

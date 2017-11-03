@@ -3,10 +3,7 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,28 +32,16 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class IDebitPayOutRequest extends Request {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class IDebitPayOutRequest extends Request implements PaymentAttributes {
 
     private String transactionType = TransactionTypes.IDEBIT_PAYOUT;
     private String transactionId;
     private String referenceId;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
 
     public IDebitPayOutRequest() {
         super();
-    }
-
-    public IDebitPayOutRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
     }
 
     public IDebitPayOutRequest setTransactionId(String transactionId) {
@@ -69,16 +54,32 @@ public class IDebitPayOutRequest extends Request {
         return this;
     }
 
-    public IDebitPayOutRequest setAmount(BigDecimal amount) {
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public IDebitPayOutRequest setCurrency(String currency) {
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
+
+    @Override
+    public String getTransactionType() {
+        return transactionType;
+    }
 
     @Override
     public String toXML() {
@@ -92,29 +93,10 @@ public class IDebitPayOutRequest extends Request {
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("reference_id", referenceId).addElement("amount", convertedAmount).addElement("currency", currency);
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
+        return new RequestBuilder(root).addElement("transaction_id", transactionId)
+                .addElement("transaction_type", transactionType)
+                .addElement("reference_id", referenceId)
+                .addElement(buildPaymentParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

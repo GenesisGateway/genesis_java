@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,23 +31,12 @@ import java.util.Map;
 
 public class ReportsByDateRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String startdate;
 	private String enddate;
 	private Integer page;
 
 	public ReportsByDateRequest() {
 		super();
-	}
-
-	public ReportsByDateRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public ReportsByDateRequest setStartDate(String startdate) {
@@ -69,6 +55,11 @@ public class ReportsByDateRequest extends Request {
 	}
 
 	@Override
+	public String getTransactionType() {
+		return "fraud_reports_by_date";
+	}
+
+	@Override
 	public String toXML() {
 		return buildRequest("fraud_report_request").toXML();
 	}
@@ -82,20 +73,6 @@ public class ReportsByDateRequest extends Request {
 
 		return new RequestBuilder(root).addElement("start_date", startdate).addElement("end_date", enddate)
 				.addElement("page", page);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setTokenEnabled(false);
-		configuration.setAction("fraud_reports/by_date");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

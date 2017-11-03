@@ -30,34 +30,45 @@ public class PBVTest {
 
     @Before
     public void createSale() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidSale = new StringUtils().generateUID();
 
         // Sale
-        pbvSale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setCardholder("PLAMEN PETROV").setExpirationMonth("05").setExpirationYear("2020")
+        pbvSale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        pbvSale.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
+        pbvSale.setCustomerEmail("john@example.com")
+                .setCustomerPhone("+55555555");
+        pbvSale.setCardHolder("PLAMEN PETROV").setExpirationMonth("05").setExpirationYear("2020")
                 .setCardNumber("4200000000000000").setCvv("123").setBirthDate("24-04-1988");
 
-        pbvSale.setBillingPrimaryAddress("New York");
-        pbvSale.setBillingSecondaryAddress("New York");
-        pbvSale.setBillingFirstname("Plamen");
-        pbvSale.setBillingLastname("Petrov");
-        pbvSale.setBillingCity("New York");
-        pbvSale.setBillingCountry("US");
-        pbvSale.setBillingZipCode("N4C1C3");
-        pbvSale.setBillingState("NY");
+        pbvSale.setBillingPrimaryAddress("New York").setBillingSecondaryAddress("New York")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("New York").setBillingCountry("US")
+                .setBillingZipCode("N4C1C3").setBillingState("NY");
+
+        mappedParams.put("base_attributes", pbvSale.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", pbvSale.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", pbvSale.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", pbvSale.buildCustomerInfoParams().getElements());
     }
 
     @Before
     public void createYeePay() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidYeepay = new StringUtils().generateUID();
 
         // YeePay
-        pbvYeepay.setTransactionId(uidYeepay).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setProductName("Interstellar").setProductCategory("Movie")
-                .setCustomerId("120104198302030841").setCustomerBankId(Banks.ICBC).setCustomerName("李珊珊")
+        pbvYeepay.setTransactionId(uidYeepay).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        pbvYeepay.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
+        pbvYeepay.setCustomerEmail("john@example.com")
+                .setCustomerPhone("+55555555");
+        pbvYeepay.setProductName("Interstellar").setProductCategory("Movie").setCustomerId("120104198302030841")
+                .setCustomerBankId(Banks.ICBC).setCustomerName("李珊珊")
                 .setBankAccountNumber("6222020302063077036");
+
+        mappedParams.put("base_attributes", pbvYeepay.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", pbvYeepay.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", pbvYeepay.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -67,32 +78,14 @@ public class PBVTest {
     @Test
     public void testSale() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = pbvSale.getElements();
 
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", pbvSale.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), pbvSale.getElements().get(i).getValue());
-            }
-        }
+        mappedParams.put("billing_address", pbvSale.getBillingAddress().getElements());
 
-        assertEquals(mappedParams.get("transaction_id"), uidSale);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("card_number"), "4200000000000000");
-        assertEquals(mappedParams.get("card_holder"), "PLAMEN PETROV");
-        assertEquals(mappedParams.get("expiration_month"), "05");
-        assertEquals(mappedParams.get("expiration_year"), "2020");
-        assertEquals(mappedParams.get("birth_date"), "24-04-1988");
+        assertEquals(mappedParams.get("base_attributes"), pbvSale.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), pbvSale.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), pbvSale.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), pbvSale.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("billing_address"), pbvSale.getBillingAddress().getElements());
     }
 
@@ -101,7 +94,6 @@ public class PBVTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = pbvSale.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -114,21 +106,15 @@ public class PBVTest {
     @Test
     public void testYeePay() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = pbvYeepay.getElements();
 
         for (int i = 0; i < elements.size() ; i++) {
             mappedParams.put(elements.get(i).getKey(), pbvYeepay.getElements().get(i).getValue());
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidYeepay);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), pbvYeepay.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), pbvYeepay.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), pbvYeepay.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("product_name"), "Interstellar");
         assertEquals(mappedParams.get("product_category"), "Movie");
         assertEquals(mappedParams.get("customer_name"), "李珊珊");
@@ -136,5 +122,4 @@ public class PBVTest {
         assertEquals(mappedParams.get("customer_bank_id"), Banks.ICBC);
         assertEquals(mappedParams.get("bank_account_number"), "6222020302063077036");
     }
-
 }

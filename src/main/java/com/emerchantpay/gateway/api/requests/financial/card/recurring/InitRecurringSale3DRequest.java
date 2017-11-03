@@ -8,13 +8,13 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,108 +39,43 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSale3DRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
+		CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, MpiAttributes, RiskParamsAttributes {
 
 	private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
-	private String transactionId;
-	private String usage;
-	private String remoteIP;
 	private Boolean moto;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
-	private String cardholder;
-	private String cardnumber;
-	private String expirationMonth;
-	private String expirationYear;
-	private String cvv;
-	private String customerEmail;
-	private String customerPhone;
-	private String birthDate;
-	private URL notificationUrl;
-	private URL returnSuccessUrl;
-	private URL returnFailureUrl;
 
-	private InitRecurringSale3DDynamicDescriptorParamsRequest dynamicDescriptorParams;
-	private InitRecurringSale3DMpiParamsRequest mpiParams;
+	private URL notificationUrl;
 
 	public InitRecurringSale3DRequest() {
 		super();
 	}
 
-	public InitRecurringSale3DRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public InitRecurringSale3DRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setAmount(BigDecimal amount) {
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
 		return this;
 	}
 
-	public InitRecurringSale3DRequest setCurrency(String currency) {
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
 		this.currency = currency;
 		return this;
 	}
 
-	public InitRecurringSale3DRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
 	public InitRecurringSale3DRequest setMoto(Boolean moto) {
 		this.moto = moto;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setCardNumber(String cardnumber) {
-		this.cardnumber = cardnumber;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setCardHolder(String cardholder) {
-		this.cardholder = cardholder;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setCvv(String cvv) {
-		this.cvv = cvv;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setExpirationMonth(String expirationMonth) {
-		this.expirationMonth = expirationMonth;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setExpirationYear(String expirationYear) {
-		this.expirationYear = expirationYear;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setCustomerPhone(String customerPhone) {
-		this.customerPhone = customerPhone;
 		return this;
 	}
 
@@ -149,29 +84,9 @@ public class InitRecurringSale3DRequest extends Request implements BillingAddres
 		return this;
 	}
 
-	public InitRecurringSale3DRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-		this.returnSuccessUrl = returnSuccessUrl;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setReturnFailureUrl(URL returnFailureUrl) {
-		this.returnFailureUrl = returnFailureUrl;
-		return this;
-	}
-
-	public InitRecurringSale3DRequest setBirthDate(String birthDate) {
-		this.birthDate = birthDate;
-		return this;
-	}
-
-	public InitRecurringSale3DDynamicDescriptorParamsRequest dynimicDescriptionParams() {
-		dynamicDescriptorParams = new InitRecurringSale3DDynamicDescriptorParamsRequest(this);
-		return dynamicDescriptorParams;
-	}
-
-	public InitRecurringSale3DMpiParamsRequest mpiParams() {
-		mpiParams = new InitRecurringSale3DMpiParamsRequest(this);
-		return mpiParams;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -186,40 +101,19 @@ public class InitRecurringSale3DRequest extends Request implements BillingAddres
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage)
-				.addElement("remote_ip", remoteIP).addElement("moto", moto).addElement("amount", convertedAmount)
-				.addElement("currency", currency).addElement("card_holder", cardholder)
-				.addElement("card_number", cardnumber).addElement("expiration_month", expirationMonth)
-				.addElement("expiration_year", expirationYear).addElement("cvv", cvv)
-				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("notification_url", notificationUrl).addElement("return_success_url", returnSuccessUrl)
-				.addElement("return_failure_url", returnFailureUrl).addElement("birth_date", birthDate)
+				.addElement(buildBaseParams().toXML())
+				.addElement(buildPaymentParams().toXML())
+				.addElement(buildCreditCardParams().toXML())
+				.addElement("moto", moto)
+				.addElement(buildCustomerInfoParams().toXML())
+				.addElement(buildAsyncParams().toXML())
+				.addElement("notification_url", notificationUrl)
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
-				.addElement("dynamicDescriptorParams", dynamicDescriptorParams).addElement("mpi_params", mpiParams)
+				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
+				.addElement("mpi_params", buildMpiParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML());
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

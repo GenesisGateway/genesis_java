@@ -27,27 +27,29 @@ public class WechatTest {
 
     @Before
     public void createWechat() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uid = new StringUtils().generateUID();
 
         // Wechat
-        wechat.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("20.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setProductCode("Test product code").setProductNumber(1234)
+        wechat.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        wechat.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("20.00"));
+        wechat.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        wechat.setProductCode("Test product code").setProductNumber(1234)
                 .setProductDescription("Test product description")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
-                .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setReturnUrl(new URL("https://example.com/return"))
+                .setReturnFailureUrl(new URL("https://example.com/return_failure"));
+        wechat.setReturnUrl(new URL("https://example.com/return"))
                 .setNotificationUrl(new URL("https://example.com/notification"));
 
-        wechat.setBillingPrimaryAddress("First Avenue");
-        wechat.setBillingSecondaryAddress("Second Avenue");
-        wechat.setBillingFirstname("John");
-        wechat.setBillingLastname("Doe");
-        wechat.setBillingCity("Berlin");
-        wechat.setBillingCountry(Country.Germany.getCode());
-        wechat.setBillingZipCode("M4B1B3");
-        wechat.setBillingState("BE");
+        wechat.setBillingPrimaryAddress("First Avenue").setBillingSecondaryAddress("Second Avenue")
+                .setBillingFirstname("John").setBillingLastname("Doe")
+                .setBillingCity("Berlin").setBillingCountry(Country.Germany.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", wechat.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", wechat.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", wechat.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", wechat.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -56,8 +58,6 @@ public class WechatTest {
 
     @Test
     public void testWechat() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = wechat.getElements();
 
@@ -71,19 +71,14 @@ public class WechatTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uid);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2000"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), wechat.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), wechat.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), wechat.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), wechat.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("product_code"), "Test product code");
         assertEquals(mappedParams.get("product_num"), 1234);
         assertEquals(mappedParams.get("product_desc"), "Test product description");
         assertEquals(mappedParams.get("return_url"), new URL("https://example.com/return"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
         assertEquals(mappedParams.get("billing_address"), wechat.getBillingAddress().getElements());
     }
@@ -93,7 +88,6 @@ public class WechatTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = wechat.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

@@ -12,23 +12,12 @@ import com.emerchantpay.gateway.util.NodeWrapper;
 
 public class ReconcileByDateRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String startdate;
 	private String enddate;
 	private Integer page;
 
 	public ReconcileByDateRequest() {
 		super();
-	}
-
-	public ReconcileByDateRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public ReconcileByDateRequest setStartDate(String startdate) {
@@ -47,6 +36,11 @@ public class ReconcileByDateRequest extends Request {
 	}
 
 	@Override
+	public String getTransactionType() {
+		return "reconcile_by_date";
+	}
+
+	@Override
 	public String toXML() {
 		return buildRequest("reconcile").toXML();
 	}
@@ -60,19 +54,6 @@ public class ReconcileByDateRequest extends Request {
 
 		return new RequestBuilder(root).addElement("start_date", startdate).addElement("end_date", enddate)
 				.addElement("page", page);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("reconcile");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

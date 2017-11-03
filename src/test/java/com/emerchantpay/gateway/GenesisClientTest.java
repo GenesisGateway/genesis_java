@@ -3,6 +3,7 @@ package com.emerchantpay.gateway;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,22 +29,22 @@ public class GenesisClientTest {
 
 		UUID uniqueId = UUID.randomUUID();
 
-		GenesisClient client = new GenesisClient(configuration);
 
-		client.setSale().setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setGaming(true).setMoto(true)
-				.setAmount(new BigDecimal("20.00")).setCurrency("USD").setCardholder("JOHN DOE")
-				.setCardNumber("4200000000000000").setExpirationMonth("02").setExpirationYear("2020").setCvv("123")
-				.setCustomerEmail("john@example.com").setCustomerPhone("555555").setUsage("TICKETS");
+		SaleRequest sale = new SaleRequest();
 
-		client.setSale().setBillingPrimaryAddress("New York");
-		client.setSale().setBillingSecondaryAddress("Dallas");
-		client.setSale().setBillingFirstname("Plamen");
-		client.setSale().setBillingLastname("Petrov");
-		client.setSale().setBillingCity("Sofia");
-		client.setSale().setBillingCountry(Country.Bulgaria.getCode());
-		client.setSale().setBillingZipCode("1000");
-		client.setSale().setBillingState("NY");
+		sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+		sale.setGaming(true).setMoto(true);
+		sale.setAmount(new BigDecimal("20.00")).setCurrency("USD");
+		sale.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+				.setExpirationYear("2020").setCvv("123");
+		sale.setCustomerEmail("john@example.com").setCustomerPhone("555555");
 
-		client.setSale().execute(configuration);
+		sale.setBillingPrimaryAddress("New York").setBillingSecondaryAddress("Dallas")
+				.setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Sofia")
+				.setBillingCountry(Country.Bulgaria.getCode()).setBillingZipCode("1000")
+				.setBillingState("NY");
+
+		GenesisClient client = new GenesisClient(configuration, sale);
+		client.execute();
 	}
 }

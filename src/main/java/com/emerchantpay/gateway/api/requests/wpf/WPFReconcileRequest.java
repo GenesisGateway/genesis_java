@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.wpf;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,27 +31,22 @@ import java.util.Map;
 
 public class WPFReconcileRequest extends Request {
 
-	private Http http;
-	protected Configuration configuration;
-
-	private NodeWrapper response;
-
 	private String uniqueId;
 
 	public WPFReconcileRequest() {
 		super();
 	}
 
-	public WPFReconcileRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
 	public WPFReconcileRequest setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
 		return this;
 	}
+
+	@Override
+	public String getTransactionType() {
+		return "wpf_reconcile";
+	}
+
 
 	@Override
 	public String toXML() {
@@ -69,21 +61,6 @@ public class WPFReconcileRequest extends Request {
 	protected RequestBuilder buildRequest(String root) {
 
 		return new RequestBuilder(root).addElement("unique_id", uniqueId);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setWpfEnabled(true);
-		configuration.setTokenEnabled(false);
-		configuration.setAction("wpf/reconcile");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

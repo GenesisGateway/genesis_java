@@ -27,23 +27,26 @@ public class AuthorizeTest {
     @Before
     public void createAuthorize() {
 
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Authorize
-        authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"))
-                .setCardNumber("4200000000000000").setCardholder("PLAMEN PETROV").setCvv("123").setExpirationMonth("02")
-                .setExpirationYear("2020").setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-                .setBirthDate("24-04-1988");
+        authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"));
+        authorize.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
+                .setExpirationMonth("02").setExpirationYear("2020");
+        authorize.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        authorize.setBirthDate("24-04-1988");
 
-        authorize.setBillingPrimaryAddress("Berlin");
-        authorize.setBillingSecondaryAddress("Berlin");
-        authorize.setBillingFirstname("Plamen");
-        authorize.setBillingLastname("Petrov");
-        authorize.setBillingCity("New York");
-        authorize.setBillingCountry("US");
-        authorize.setBillingZipCode("M4B1B3");
-        authorize.setBillingState("CA");
+        authorize.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("New York").setBillingCountry("US")
+                .setBillingZipCode("M4B1B3").setBillingState("CA");
+
+        mappedParams.put("base_attributes", authorize.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", authorize.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", authorize.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", authorize.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -53,32 +56,14 @@ public class AuthorizeTest {
     @Test
     public void testAuthorize() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = authorize.getElements();
 
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", authorize.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), authorize.getElements().get(i).getValue());
-            }
-        }
+        mappedParams.put("billing_address", authorize.getBillingAddress().getElements());
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("1000"));
-        assertEquals(mappedParams.get("card_number"), "4200000000000000");
-        assertEquals(mappedParams.get("card_holder"), "PLAMEN PETROV");
-        assertEquals(mappedParams.get("expiration_month"), "02");
-        assertEquals(mappedParams.get("expiration_year"), "2020");
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("birth_date"), "24-04-1988");
+        assertEquals(mappedParams.get("base_attributes"), authorize.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), authorize.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), authorize.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), authorize.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("billing_address"), authorize.getBillingAddress().getElements());
     }
 

@@ -25,23 +25,24 @@ public class EarthportTest {
 
     @Before
     public void createEarthport() {
+        mappedParams = new HashMap<String, Object>();
         uid = new StringUtils().generateUID();
 
         // Earthport
-        earthport.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setAccountName("John Doe").setBankName("Barclays Bank PLC").setIBAN("DK5000400440116243")
+        earthport.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        earthport.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        earthport.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        earthport.setAccountName("John Doe").setBankName("Barclays Bank PLC").setIBAN("DK5000400440116243")
                 .setBIC("APMMDKKK").setAccountNumber("10352719").setBankCode("063").setBranchCode("169");
 
-        earthport.setBillingPrimaryAddress("14, Copenhagen");
-        earthport.setBillingSecondaryAddress("24, Copenhagen");
-        earthport.setBillingFirstname("Plamen");
-        earthport.setBillingLastname("Petrov");
-        earthport.setBillingCity("Copenhagen");
-        earthport.setBillingCountry(Country.Denmark.getCode());
-        earthport.setBillingZipCode("M4B1B3");
-        earthport.setBillingState("CH");
+        earthport.setBillingPrimaryAddress("14, Copenhagen").setBillingSecondaryAddress("24, Copenhagen")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Copenhagen")
+                .setBillingCountry(Country.Denmark.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("CH");
+
+        mappedParams.put("base_attributes", earthport.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", earthport.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", earthport.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -50,8 +51,6 @@ public class EarthportTest {
 
     @Test
     public void testEarthport() {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = earthport.getElements();
 
@@ -65,13 +64,9 @@ public class EarthportTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uid);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), earthport.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), earthport.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), earthport.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("account_name"), "John Doe");
         assertEquals(mappedParams.get("bank_name"), "Barclays Bank PLC");
         assertEquals(mappedParams.get("iban"), "DK5000400440116243");
@@ -87,7 +82,6 @@ public class EarthportTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = earthport.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

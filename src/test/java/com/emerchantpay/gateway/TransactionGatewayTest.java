@@ -27,25 +27,20 @@ public class TransactionGatewayTest {
 
 		Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
 
-		client = new GenesisClient(configuration);
+		request.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+		request.setGaming(true).setMoto(true).setAmount(new BigDecimal("22.00")).setCurrency("USD");
+		request.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+				.setExpirationYear("2020").setCvv("123");
+		request.setCustomerEmail("test@example.com").setCustomerPhone("5555555555");
 
-		request.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setGaming(true).setMoto(true)
-				.setAmount(new BigDecimal("22.00")).setCurrency("USD").setCardholder("JOHN DOE")
-				.setCardNumber("4200000000000000").setExpirationMonth("02").setExpirationYear("2020").setCvv("123")
-				.setCustomerEmail("test@example.com").setCustomerPhone("5555555555").setUsage("TICKETS");
+		request.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
+				.setBillingFirstname("John").setBillingLastname("Doe").setBillingCity("New York")
+				.setBillingCountry("US").setBillingZipCode("1000").setBillingState("NY");
 
-		request.setBillingPrimaryAddress("Address1");
-		request.setBillingSecondaryAddress("Address2");
-		request.setBillingFirstname("John");
-		request.setBillingLastname("Doe");
-		request.setBillingCity("New York");
-		request.setBillingCountry("US");
-		request.setBillingZipCode("1000");
-		request.setBillingState("NY");
+		client = new GenesisClient(configuration, request);
+		client.execute();
 
-		request.execute(configuration);
-
-		TransactionResult<? extends Transaction> result = this.client.getTransaction().getAuthorize(request);
+		TransactionResult<? extends Transaction> result = this.client.getTransaction().getRequest();
 
 		assertEquals("approved", result.getTransaction().getStatus());
 	}

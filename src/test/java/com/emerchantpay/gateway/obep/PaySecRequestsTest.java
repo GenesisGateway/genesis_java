@@ -30,48 +30,54 @@ public class PaySecRequestsTest {
 
     @Before
     public void createPaySec() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uid = new StringUtils().generateUID();
 
         // PaySec
-        paysec.setTransactionId(uid).setRemoteIp("94.26.28.135").setUsage("TICKETS")
-                .setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("10.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setReturnSuccessUrl(new URL("https://example.com/return_success"))
-                .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"));
+        paysec.setTransactionId(uid).setRemoteIp("94.26.28.135").setUsage("TICKETS");
+        paysec.setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("10.00"));
+        paysec.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        paysec.setReturnSuccessUrl(new URL("https://example.com/return_success"))
+                .setReturnFailureUrl(new URL("https://example.com/return_failure"));
+        paysec.setNotificationUrl(new URL("https://example.com/notification"));
 
-        paysec.setBillingPrimaryAddress("First Avenue");
-        paysec.setBillingSecondaryAddress("Second Avenue");
-        paysec.setBillingFirstname("John");
-        paysec.setBillingLastname("Doe");
-        paysec.setBillingCity("Beijing");
-        paysec.setBillingCountry(Country.China.getCode());
-        paysec.setBillingZipCode("M4B1B3");
-        paysec.setBillingState("BJ");
+        paysec.setBillingPrimaryAddress("First Avenue").setBillingSecondaryAddress("Second Avenue")
+                .setBillingFirstname("John").setBillingLastname("Doe")
+                .setBillingCity("Beijing").setBillingCountry(Country.China.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("BJ");
+
+        mappedParams.put("base_attributes", paysec.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", paysec.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", paysec.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", paysec.buildAsyncParams().getElements());
     }
 
     @Before
     public void createPaySecPayout() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidPayout = new StringUtils().generateUID();
 
         // PaySec Payout
-        paysecPayout.setTransactionId(uidPayout).setRemoteIp("94.26.28.135").setUsage("TICKETS")
-                .setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("600.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setBankCode("BOC").setBankName("深圳发展银行").setBankBranch("Test Bank Branch")
+        paysecPayout.setTransactionId(uidPayout).setRemoteIp("94.26.28.135").setUsage("TICKETS");
+        paysecPayout
+                .setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("600.00"));
+        paysecPayout
+                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        paysecPayout.setBankCode("BOC").setBankName("深圳发展银行").setBankBranch("Test Bank Branch")
                 .setBankAccountName("Test Bank Account Name").setBankAccountNumber("1234123412341234")
                 .setReturnSuccessUrl(new URL("https://example.com/return_success"))
-                .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"));
+                .setReturnFailureUrl(new URL("https://example.com/return_failure"));
+        paysecPayout.setNotificationUrl(new URL("https://example.com/notification"));
 
-        paysecPayout.setBillingPrimaryAddress("First Avenue");
-        paysecPayout.setBillingSecondaryAddress("Berlin");
-        paysecPayout.setBillingFirstname("John");
-        paysecPayout.setBillingLastname("Doe");
-        paysecPayout.setBillingCity(Country.China.getCode());
-        paysecPayout.setBillingCountry("DE");
-        paysecPayout.setBillingZipCode("M4B1B3");
-        paysecPayout.setBillingState("BJ");
+        paysecPayout.setBillingPrimaryAddress("First Avenue").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("John").setBillingLastname("Doe")
+                .setBillingCity(Country.China.getCode()).setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BJ");
+
+        mappedParams.put("base_attributes", paysecPayout.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", paysecPayout.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", paysecPayout.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", paysecPayout.buildAsyncParams().getElements());
 
     }
 
@@ -82,8 +88,6 @@ public class PaySecRequestsTest {
 
     @Test
     public void testPaySec() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = paysec.getElements();
 
@@ -97,15 +101,10 @@ public class PaySecRequestsTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uid);
-        assertEquals(mappedParams.get("remote_ip"), "94.26.28.135");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.CNY.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("1000"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
+        assertEquals(mappedParams.get("base_attributes"), paysec.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), paysec.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), paysec.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), paysec.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
         assertEquals(mappedParams.get("billing_address"), paysec.getBillingAddress().getElements());
     }
@@ -115,7 +114,6 @@ public class PaySecRequestsTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = paysec.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -127,8 +125,6 @@ public class PaySecRequestsTest {
 
     @Test
     public void testPaySecPayout() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = paysecPayout.getElements();
 
@@ -142,20 +138,15 @@ public class PaySecRequestsTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidPayout);
-        assertEquals(mappedParams.get("remote_ip"), "94.26.28.135");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.CNY.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("60000"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), paysec.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), paysec.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), paysec.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), paysec.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("bank_code"), "BOC");
         assertEquals(mappedParams.get("bank_name"), "深圳发展银行");
         assertEquals(mappedParams.get("bank_branch"), "Test Bank Branch");
         assertEquals(mappedParams.get("bank_account_number"), "1234123412341234");
         assertEquals(mappedParams.get("bank_account_name"), "Test Bank Account Name");
-        assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
         assertEquals(mappedParams.get("billing_address"), paysecPayout.getBillingAddress().getElements());
     }
@@ -165,7 +156,6 @@ public class PaySecRequestsTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = paysecPayout.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

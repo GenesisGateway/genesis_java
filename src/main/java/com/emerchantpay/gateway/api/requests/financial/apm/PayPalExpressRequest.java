@@ -3,15 +3,11 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -38,78 +34,41 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PayPalExpressRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class PayPalExpressRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.PAYPAL_EXPRESS_CHECKOUT;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
 
     public PayPalExpressRequest() {
         super();
     }
 
-    public PayPalExpressRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public PayPalExpressRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
-
-    public PayPalExpressRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
-        return this;
-    }
-
-    public PayPalExpressRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
-        return this;
-    }
-
-    public PayPalExpressRequest setAmount(BigDecimal amount) {
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
     public PayPalExpressRequest setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public PayPalExpressRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
+    @Override
+    public String getCurrency() {
+        return currency;
     }
 
-    public PayPalExpressRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
-        return this;
-    }
-
-    public PayPalExpressRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public PayPalExpressRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     @Override
@@ -124,34 +83,12 @@ public class PayPalExpressRequest extends Request implements BillingAddressAttri
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_success_url", returnSuccessUrl)
-                .addElement("return_failure_url", returnFailureUrl).addElement("remote_ip", remoteIP)
-                .addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-                .addElement("amount", convertedAmount).addElement("currency", currency)
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+                .addElement(buildAsyncParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

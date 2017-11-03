@@ -5,10 +5,7 @@ import java.math.BigDecimal;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,51 +30,37 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RefundRequest extends Request {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class RefundRequest extends Request implements PaymentAttributes {
 
 	private String transactionType = TransactionTypes.REFUND;
-	private String transactionId;
-	private String usage;
-	private String remoteIP;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
-	private String referenceId;
 	private String currency;
+	private String referenceId;
 
 	public RefundRequest() {
 		super();
 	}
 
-	public RefundRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public RefundRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public RefundRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public RefundRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
-	}
-
-	public RefundRequest setAmount(BigDecimal amount) {
-
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
 		return this;
+	}
+
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
+		this.currency = currency;
+		return this;
+	}
+
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
 	public RefundRequest setReferencialId(String referencialId) {
@@ -85,9 +68,9 @@ public class RefundRequest extends Request {
 		return this;
 	}
 
-	public RefundRequest setCurrency(String currency) {
-		this.currency = currency;
-		return this;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -102,30 +85,8 @@ public class RefundRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage)
-				.addElement("remote_ip", remoteIP).addElement("amount", convertedAmount)
-				.addElement("reference_id", referenceId).addElement("currency", currency);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
+				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+				.addElement("reference_id", referenceId);
 	}
 }

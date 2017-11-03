@@ -143,4 +143,12 @@ public class TransactionTypes {
 
 	// PaySec Payout
 	public static String PAYSEC_PAYOUT = "paysec_payout";
+
+	// RPN
+	public static String RPN = "rpn_payment";
+
+	// Gift Cards
+	public static String FASHIONCHEQUE = "fashioncheque";
+	public static String INTERSOLVE = "intersolve";
+	public static String TCS = "container_store";
 }

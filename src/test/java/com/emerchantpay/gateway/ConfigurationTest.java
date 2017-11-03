@@ -17,7 +17,7 @@ public class ConfigurationTest {
 	public void testEnvironment() {
 		Configuration configuration = new Configuration(environment, endpoint);
 
-		assertEquals(Environments.STAGING.toString(), configuration.getEnvironment().toString());
-		assertEquals(Endpoints.EMERCHANTPAY.toString(), endpoint.toString());
+		assertEquals(Environments.STAGING.getEnvironmentName(), configuration.getEnvironment().getEnvironmentName());
+		assertEquals(Endpoints.EMERCHANTPAY.getEndpointName(), configuration.getEndpoint().getEndpointName());
 	}
 }

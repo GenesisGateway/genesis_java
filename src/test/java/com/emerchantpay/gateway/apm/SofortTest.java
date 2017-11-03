@@ -27,23 +27,25 @@ public class SofortTest {
 
     @Before
     public void createSofort() throws MalformedURLException {
-
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Sofort
-        sofort.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        sofort.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        sofort.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        sofort.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        sofort.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        sofort.setBillingPrimaryAddress("Berlin");
-        sofort.setBillingSecondaryAddress("Berlin");
-        sofort.setBillingFirstname("Plamen");
-        sofort.setBillingLastname("Petrov");
-        sofort.setBillingCity("Berlin");
-        sofort.setBillingCountry("DE");
-        sofort.setBillingZipCode("M4B1B3");
-        sofort.setBillingState("BE");
+        sofort.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", sofort.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", sofort.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", sofort.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  sofort.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -52,8 +54,6 @@ public class SofortTest {
 
     @Test
     public void testSofort() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = sofort.getElements();
 
@@ -67,15 +67,10 @@ public class SofortTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
+        assertEquals(mappedParams.get("base_attributes"), sofort.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), sofort.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), sofort.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), sofort.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), sofort.getBillingAddress().getElements());
     }
 
@@ -84,7 +79,6 @@ public class SofortTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = sofort.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

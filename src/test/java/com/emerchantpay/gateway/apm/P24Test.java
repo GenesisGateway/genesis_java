@@ -27,23 +27,24 @@ public class P24Test {
 
 	@Before
 	public void createP24() throws MalformedURLException {
-
+		mappedParams = new HashMap<String, Object>();
 		uniqueId = new StringUtils().generateUID();
 
-		request.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-				.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
-				.setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-				.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
+		request.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+		request.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+		request.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+		request.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
 				.setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
 
-		request.setBillingPrimaryAddress("Berlin");
-		request.setBillingSecondaryAddress("Berlin");
-		request.setBillingFirstname("Plamen");
-		request.setBillingLastname("Petrov");
-		request.setBillingCity("Berlin");
-		request.setBillingCountry("DE");
-		request.setBillingZipCode("M4B1B3");
-		request.setBillingState("BE");
+		request.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+				.setBillingFirstname("Plamen").setBillingLastname("Petrov")
+				.setBillingCity("Berlin").setBillingCountry("DE")
+				.setBillingZipCode("M4B1B3").setBillingState("BE");
+
+		mappedParams.put("base_attributes", request.buildBaseParams().getElements());
+		mappedParams.put("payment_attributes", request.buildPaymentParams().getElements());
+		mappedParams.put("customer_info_attributes", request.buildCustomerInfoParams().getElements());
+		mappedParams.put("async_attributes",  request.buildAsyncParams().getElements());
 	}
 
 	public void setMissingParams() {
@@ -52,7 +53,6 @@ public class P24Test {
 
 	@Test
 	public void testP24() throws MalformedURLException {
-		mappedParams = new HashMap<String, Object>();
 
 		elements = request.getElements();
 
@@ -66,16 +66,11 @@ public class P24Test {
 			}
 		}
 
-		assertEquals(mappedParams.get("transaction_id"), uniqueId);
-		assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-		assertEquals(mappedParams.get("usage"), "TICKETS");
-		assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-		assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-		assertEquals(mappedParams.get("customer_email"), "john@example.com");
-		assertEquals(mappedParams.get("customer_phone"), "+55555555");
+		assertEquals(mappedParams.get("base_attributes"), request.buildBaseParams().getElements());
+		assertEquals(mappedParams.get("payment_attributes"), request.buildPaymentParams().getElements());
+		assertEquals(mappedParams.get("customer_info_attributes"), request.buildCustomerInfoParams().getElements());
+		assertEquals(mappedParams.get("async_attributes"), request.buildAsyncParams().getElements());
 		assertEquals(mappedParams.get("is_payout"), null);
-		assertEquals(mappedParams.get("return_success_url"),  new URL("https://example.com/return_success_url"));
-		assertEquals(mappedParams.get("return_failure_url"),  new URL("https://example.com/return_failure_url"));
 		assertEquals(mappedParams.get("billing_address"), request.getBillingAddress().getElements());
 	}
 
@@ -84,7 +79,6 @@ public class P24Test {
 
 		setMissingParams();
 
-		mappedParams = new HashMap<String, Object>();
 		elements = request.buildBillingAddress().getElements();
 
 		for (int i = 0; i < elements.size(); i++) {

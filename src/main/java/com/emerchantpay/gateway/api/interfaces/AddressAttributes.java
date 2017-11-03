@@ -1,6 +1,5 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
+package com.emerchantpay.gateway.api.interfaces;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 /*
@@ -26,44 +25,12 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Sale3DDynamicDescriptorParamsRequest extends Request {
+public interface AddressAttributes extends BillingAddressAttributes, ShippingAddressAttributes {
+    default RequestBuilder getBillingAddress() {
+        return buildBillingAddress();
+    }
 
-	private Sale3DRequest parent;
-
-	private String merchantname;
-	private String merchantcity;
-
-	Sale3DDynamicDescriptorParamsRequest(Sale3DRequest parent) {
-		this.parent = parent;
-	}
-
-	public Sale3DDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
-
-	public Sale3DDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public Sale3DRequest done() {
-		return parent;
-	}
+    default RequestBuilder getShippingAddress() {
+        return buildShippingAddress();
+    }
 }

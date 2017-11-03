@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.2.1</version>
+        <version>1.3.0</version>
 </dependency>
 ```
 
@@ -58,33 +58,34 @@ public class GenesisExample {
 
         String uniqueId = new StringUtils().generateUID();
 
-        GenesisClient client = new GenesisClient(configuration);
-
         AuthorizeRequest authorize = new AuthorizeRequest();
 
         authorize.setTransactionId(uniqueId)
                 .setUsage("40208 concert tickets")
-                .setGaming(true)
-                .setRemoteIp("245.253.2.12").setCurrency("USD")
-                .setAmount(new BigDecimal(50.00))
-                .setCardholder("Emil Example")
+                .setRemoteIp("245.253.2.12");
+        authorize.setGaming(true);
+
+        authorize.setCurrency("USD").setAmount(new BigDecimal(50.00));
+
+        authorize.setCardHolder("Emil Example")
                 .setCardNumber("4200000000000000")
                 .setExpirationMonth("01")
                 .setExpirationYear("2020")
                 .setCvv("123");
 
-        authorize.setBillingFirstname("Travis");
-        authorize.setBillingLastname("Pastrana");
-        authorize.setBillingPrimaryAddress("Muster Str. 12");
-        authorize.setBillingZipCode("10178");
-        authorize.setBillingCity("Los Angeles");
-        authorize.setBillingState("CA");
-        authorize.setBillingCountry("US");
+        authorize.setBillingFirstname("Travis")
+                .setBillingLastname("Pastrana")
+                .setBillingPrimaryAddress("Muster Str. 12")
+                .setBillingZipCode("10178")
+                .setBillingCity("Los Angeles")
+                .setBillingState("CA").setBillingCountry("US");
 
-        authorize.execute(configuration);
+        GenesisClient client = new GenesisClient(configuration, authorize);
+        client.debugMode(true);
+        client.execute();
 
         // Parse Payment result
-        TransactionResult<? extends Transaction> result = client.getTransaction().getAuthorize(authorize);
+        TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
         System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
     }
 }
@@ -128,7 +129,7 @@ api.requests.financial.pbv.PBVYeePayRequest
 // Credit Cards transactions
 api.requests.financial.card.AuthorizeRequest
 api.requests.financial.card.Authorize3DRequest
-api.requests.financial.card.CreditRequesst
+api.requests.financial.card.CreditRequest
 api.requests.financial.card.PayoutRequest
 api.requests.financial.card.SaleRequest
 api.requests.financial.card.Sale3DRequest
@@ -154,6 +155,7 @@ api.requests.financial.oBeP.AlipayRequest
 api.requests.financial.oBeP.WechatRequest
 api.requests.financial.oBeP.PaySecRequest
 api.requests.financial.oBeP.PaySecPayoutRequest
+api.requests.financial.oBeP.RPNRequest
 
 // Electronic Wallets transactions
 api.requests.financial.wallets.eZeeWalletRequest
@@ -186,6 +188,11 @@ api.requests.nonfinancial.retrieve.AbnIDealBanksRetrieveRequest
 // Web Payment Form (Checkout) requests
 api.requests.wpf.WPFCreateRequest
 api.requests.wpf.WPFReconcileRequest
+
+// Gift Card requests
+api.requests.financial.giftcards.FashionchequeRequest
+api.requests.financial.giftcards.IntersolveRequest
+api.requests.financial.giftcards.TCSRequest
 ```
 
 

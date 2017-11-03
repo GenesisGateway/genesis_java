@@ -3,15 +3,11 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -38,23 +34,10 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class TrustlySaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class TrustlySaleRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.TRUSTLY_SALE;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
     private String birthDate;
 
@@ -62,60 +45,36 @@ public class TrustlySaleRequest extends Request implements BillingAddressAttribu
         super();
     }
 
-    public TrustlySaleRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public TrustlySaleRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
-
-    public TrustlySaleRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
-        return this;
-    }
-
-    public TrustlySaleRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
-        return this;
-    }
-
-    public TrustlySaleRequest setAmount(BigDecimal amount) {
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public TrustlySaleRequest setCurrency(String currency) {
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public TrustlySaleRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public TrustlySaleRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
-        return this;
-    }
-
-    public TrustlySaleRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public TrustlySaleRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
+    @Override
+    public String getCurrency() {
+        return currency;
     }
 
     public TrustlySaleRequest setBirthDate(String birthDate) {
         this.birthDate = birthDate;
         return this;
+    }
+
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     @Override
@@ -130,34 +89,11 @@ public class TrustlySaleRequest extends Request implements BillingAddressAttribu
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_success_url", returnSuccessUrl)
-                .addElement("return_failure_url", returnFailureUrl).addElement("remote_ip", remoteIP)
-                .addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-                .addElement("amount", convertedAmount).addElement("currency", currency)
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
                 .addElement("birth_date", birthDate).addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

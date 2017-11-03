@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.card.recurring;
 
-import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -27,24 +26,30 @@ public class InitRecurringSaleTest {
 
     @Before
     public void createInitRecurring() {
-
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Init Recurring
-        initRecurring.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"))
-                .setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123").setExpirationMonth("02")
-                .setExpirationYear("2020").setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-                .setBirthDate("24-04-1988");
+        initRecurring.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        initRecurring.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"));
+        initRecurring.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
+                .setExpirationMonth("02").setExpirationYear("2020");
+        initRecurring.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        initRecurring.setBirthDate("24-04-1988");
 
-        initRecurring.setBillingPrimaryAddress("Berlin");
-        initRecurring.setBillingSecondaryAddress("Berlin");
-        initRecurring.setBillingFirstname("Plamen");
-        initRecurring.setBillingLastname("Petrov");
-        initRecurring.setBillingCity("Berlin");
-        initRecurring.setBillingCountry("US");
-        initRecurring.setBillingZipCode("M4B1B3");
-        initRecurring.setBillingState("CA");
+        initRecurring.setBillingPrimaryAddress("Berlin")
+                .setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen")
+                .setBillingLastname("Petrov")
+                .setBillingCity("Berlin")
+                .setBillingCountry("US")
+                .setBillingZipCode("M4B1B3")
+                .setBillingState("CA");
+
+        mappedParams.put("base_attributes", initRecurring.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", initRecurring.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", initRecurring.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", initRecurring.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -54,32 +59,14 @@ public class InitRecurringSaleTest {
     @Test
     public void testInitRecurring() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = initRecurring.getElements();
 
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", initRecurring.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), initRecurring.getElements().get(i).getValue());
-            }
-        }
+        mappedParams.put("billing_address", initRecurring.getBillingAddress().getElements());
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("1000"));
-        assertEquals(mappedParams.get("card_number"), "4200000000000000");
-        assertEquals(mappedParams.get("card_holder"), "PLAMEN PETROV");
-        assertEquals(mappedParams.get("expiration_month"), "02");
-        assertEquals(mappedParams.get("expiration_year"), "2020");
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("birth_date"), "24-04-1988");
+        assertEquals(mappedParams.get("base_attributes"), initRecurring.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), initRecurring.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), initRecurring.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), initRecurring.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("billing_address"), initRecurring.getBillingAddress().getElements());
     }
 

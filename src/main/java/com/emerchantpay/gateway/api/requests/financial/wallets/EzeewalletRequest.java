@@ -8,64 +8,42 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
-public class EzeewalletRequest extends Request {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class EzeewalletRequest extends Request implements PaymentAttributes, AsyncAttributes {
 
 	private String transactionType = TransactionTypes.EZEEWALLET;
-	private String transactionId;
-	private String usage;
-	private String remoteIP;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
 	private String sourceWalletId;
 	private String sourceWalletPwd;
-	private URL successUrl;
-	private URL failureUrl;
 	private URL notificationUrl;
 
 	public EzeewalletRequest() {
 		super();
 	}
 
-	public EzeewalletRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public EzeewalletRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public EzeewalletRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public EzeewalletRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
-	}
-
-	public EzeewalletRequest setAmount(BigDecimal amount) {
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
 		return this;
 	}
 
-	public EzeewalletRequest setCurrency(String currency) {
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
 		this.currency = currency;
 		return this;
+	}
+
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
 	public EzeewalletRequest setSourceWalletId(String sourceWalletId) {
@@ -78,19 +56,14 @@ public class EzeewalletRequest extends Request {
 		return this;
 	}
 
-	public EzeewalletRequest setReturnSuccessUrl(URL successUrl) {
-		this.successUrl = successUrl;
-		return this;
-	}
-
-	public EzeewalletRequest setReturnFailureUrl(URL failureUrl) {
-		this.failureUrl = failureUrl;
-		return this;
-	}
-
 	public EzeewalletRequest setNotificationURL(URL notificationUrl) {
 		this.notificationUrl = notificationUrl;
 		return this;
+	}
+
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -105,33 +78,13 @@ public class EzeewalletRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage)
-				.addElement("remote_ip", remoteIP).addElement("amount", convertedAmount)
-				.addElement("currency", currency).addElement("source_wallet_id", sourceWalletId)
-				.addElement("source_wallet_pwd", sourceWalletPwd).addElement("return_success_url", successUrl)
-				.addElement("return_failure_url", failureUrl).addElement("notification_url", notificationUrl);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
+				.addElement(buildBaseParams().toXML())
+				.addElement(buildPaymentParams().toXML())
+				.addElement(buildAsyncParams().toXML())
+				.addElement("source_wallet_id", sourceWalletId)
+				.addElement("source_wallet_pwd", sourceWalletPwd)
+				.addElement("notification_url", notificationUrl);
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

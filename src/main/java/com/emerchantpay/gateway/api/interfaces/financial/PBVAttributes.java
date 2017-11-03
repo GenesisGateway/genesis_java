@@ -1,7 +1,4 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
-
-import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.RequestBuilder;
+package com.emerchantpay.gateway.api.interfaces.financial;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,44 +23,24 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SaleDynamicDescriptorParamsRequest extends Request {
+import com.emerchantpay.gateway.api.RequestBuilder;
 
-	private SaleRequest parent;
+public interface PBVAttributes {
 
-	private String merchantname;
-	private String merchantcity;
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-	SaleDynamicDescriptorParamsRequest(SaleRequest parent) {
-		this.parent = parent;
-	}
+    // PBV Params
+    default PBVAttributes setCardType(String cardType) {
+        requestBuilder.addElement("card_type", cardType);
+        return this;
+    }
 
-	public SaleDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
+    default PBVAttributes setRedeemType(String redeemType) {
+        requestBuilder.addElement("redeem_type", redeemType);
+        return this;
+    }
 
-	public SaleDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public SaleRequest done() {
-		return parent;
-	}
+    default RequestBuilder buildPBVParams() {
+        return requestBuilder;
+    }
 }

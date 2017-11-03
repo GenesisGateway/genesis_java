@@ -1,19 +1,15 @@
 package com.emerchantpay.gateway.api.requests.financial.apm;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,24 +34,11 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SofortRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
+public class SofortRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
-	private String transactionId;
 	private String transactionType = TransactionTypes.SOFORT;
-	private String usage;
-	private String remoteIp;
-	private URL successUrl;
-	private URL failureUrl;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
-	private String customerEmail;
-	private String customerPhone;
 	private String customerBankId;
 	private String bankAccountNumber;
 
@@ -63,46 +46,26 @@ public class SofortRequest extends Request implements BillingAddressAttributes, 
 		super();
 	}
 
-	public SofortRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public SofortRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public SofortRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public SofortRequest setRemoteIp(String remoteIp) {
-		this.remoteIp = remoteIp;
-		return this;
-	}
-
-	public SofortRequest setAmount(BigDecimal amount) {
-
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
 		return this;
 	}
 
-	public SofortRequest setCurrency(String currency) {
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
 		this.currency = currency;
 		return this;
 	}
 
-	public SofortRequest setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
-		return this;
-	}
-
-	public SofortRequest setCustomerPhone(String customerPhone) {
-		this.customerPhone = customerPhone;
-		return this;
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
 	public SofortRequest setCustomerBankId(String customerBankId) {
@@ -115,14 +78,9 @@ public class SofortRequest extends Request implements BillingAddressAttributes, 
 		return this;
 	}
 
-	public SofortRequest setReturnSuccessUrl(URL successUrl) {
-		this.successUrl = successUrl;
-		return this;
-	}
-
-	public SofortRequest setReturnFailureUrl(URL failureUrl) {
-		this.failureUrl = failureUrl;
-		return this;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -137,36 +95,13 @@ public class SofortRequest extends Request implements BillingAddressAttributes, 
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage)
-				.addElement("remote_ip", remoteIp).addElement("customer_email", customerEmail)
-				.addElement("customer_phone", customerPhone).addElement("return_success_url", successUrl)
-				.addElement("return_failure_url", failureUrl).addElement("amount", convertedAmount)
-				.addElement("currency", currency).addElement("customer_bank_id", customerBankId)
+				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+				.addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
+				.addElement("customer_bank_id", customerBankId)
 				.addElement("ban_account_number", bankAccountNumber)
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML());
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

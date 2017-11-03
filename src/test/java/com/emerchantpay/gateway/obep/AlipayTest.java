@@ -27,24 +27,26 @@ public class AlipayTest {
 
     @Before
     public void createAliPay() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uid = new StringUtils().generateUID();
 
         // AliPay
-        alipay.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("1000.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setReturnSuccessUrl(new URL("https://example.com/return_success"))
-                .setReturnFailureUrl(new URL("https://example.com/return_failure"))
-                .setNotificationUrl(new URL("https://example.com/notification"));
+        alipay.setTransactionId(uid).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        alipay.setCurrency(Currency.CNY.getCurrency()).setAmount(new BigDecimal("1000.00"));
+        alipay.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        alipay.setReturnSuccessUrl(new URL("https://example.com/return_success"))
+                .setReturnFailureUrl(new URL("https://example.com/return_failure"));
+        alipay.setNotificationUrl(new URL("https://example.com/notification"));
 
-        alipay.setBillingPrimaryAddress("First Avenue");
-        alipay.setBillingSecondaryAddress("Second Avenue");
-        alipay.setBillingFirstname("John");
-        alipay.setBillingLastname("Doe");
-        alipay.setBillingCity("Beijing");
-        alipay.setBillingCountry(Country.China.getCode());
-        alipay.setBillingZipCode("M4B1B3");
-        alipay.setBillingState("BJ");
+        alipay.setBillingPrimaryAddress("First Avenue").setBillingSecondaryAddress("Second Avenue")
+                .setBillingFirstname("John").setBillingLastname("Doe").setBillingCity("Beijing")
+                .setBillingCountry(Country.China.getCode()).setBillingZipCode("M4B1B3")
+                .setBillingState("BJ");
+
+        mappedParams.put("base_attributes", alipay.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", alipay.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", alipay.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", alipay.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -53,8 +55,6 @@ public class AlipayTest {
 
     @Test
     public void testAliPay() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = alipay.getElements();
 
@@ -68,15 +68,10 @@ public class AlipayTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uid);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.CNY.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("100000"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("https://example.com/return_success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("https://example.com/return_failure"));
+        assertEquals(mappedParams.get("base_attributes"), alipay.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), alipay.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), alipay.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), alipay.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
         assertEquals(mappedParams.get("billing_address"), alipay.getBillingAddress().getElements());
     }
@@ -86,7 +81,6 @@ public class AlipayTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = alipay.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

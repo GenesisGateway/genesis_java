@@ -7,13 +7,11 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,67 +36,17 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class AuthorizeRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes, RiskParamsAttributes {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
+		CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes {
 
 	private String transactionType = TransactionTypes.AUTHORIZE;
-	private String transactionId;
-	private String usage;
-	private String remoteIP;
 	private Boolean moto;
 	private Boolean gaming;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
-	private String cardholder;
-	private String cardnumber;
-	private String expirationMonth;
-	private String expirationYear;
-	private String cvv;
-	private String customerEmail;
-	private String customerPhone;
-	private String birthDate;
-
-	private AuthorizeDynamicDescriptorParamsRequest dynamicDescriptorParams;
 
 	public AuthorizeRequest() {
 		super();
-	}
-
-	public AuthorizeRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public AuthorizeRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public AuthorizeRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public AuthorizeRequest setAmount(BigDecimal amount) {
-
-		this.amount = amount;
-		return this;
-	}
-
-	public AuthorizeRequest setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	public AuthorizeRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
 	}
 
 	public AuthorizeRequest setMoto(Boolean moto) {
@@ -111,49 +59,31 @@ public class AuthorizeRequest extends Request implements BillingAddressAttribute
 		return this;
 	}
 
-	public AuthorizeRequest setCardNumber(String cardnumber) {
-		this.cardnumber = cardnumber;
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
+		this.amount = amount;
 		return this;
 	}
 
-	public AuthorizeRequest setCardholder(String cardholder) {
-		this.cardholder = cardholder;
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
+		this.currency = currency;
 		return this;
 	}
 
-	public AuthorizeRequest setCvv(String cvv) {
-		this.cvv = cvv;
-		return this;
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
-	public AuthorizeRequest setExpirationMonth(String expirationMonth) {
-		this.expirationMonth = expirationMonth;
-		return this;
-	}
-
-	public AuthorizeRequest setExpirationYear(String expirationYear) {
-		this.expirationYear = expirationYear;
-		return this;
-	}
-
-	public AuthorizeRequest setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
-		return this;
-	}
-
-	public AuthorizeRequest setCustomerPhone(String customerPhone) {
-		this.customerPhone = customerPhone;
-		return this;
-	}
-
-	public AuthorizeRequest setBirthDate(String birthDate) {
-		this.birthDate = birthDate;
-		return this;
-	}
-
-	public AuthorizeDynamicDescriptorParamsRequest dynimicDescriptionParams() {
-		dynamicDescriptorParams = new AuthorizeDynamicDescriptorParamsRequest(this);
-		return dynamicDescriptorParams;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -169,42 +99,18 @@ public class AuthorizeRequest extends Request implements BillingAddressAttribute
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage)
-				.addElement("remote_ip", remoteIP).addElement("gaming", gaming).addElement("moto", moto)
-				.addElement("amount", convertedAmount).addElement("currency", currency)
-				.addElement("card_holder", cardholder).addElement("card_number", cardnumber)
-				.addElement("expiration_month", expirationMonth).addElement("expiration_year", expirationYear)
-				.addElement("cvv", cvv).addElement("customer_email", customerEmail)
-				.addElement("customer_phone", customerPhone).addElement("birth_date", birthDate)
+				.addElement(buildBaseParams().toXML())
+				.addElement(buildPaymentParams().toXML())
+				.addElement(buildCreditCardParams().toXML())
+				.addElement("gaming", gaming)
+				.addElement("moto", moto)
+				.addElement(buildCustomerInfoParams().toXML())
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
-				.addElement("dynamicDescriptorParams", dynamicDescriptorParams)
+				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML());
 	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
-	}
-
-
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();

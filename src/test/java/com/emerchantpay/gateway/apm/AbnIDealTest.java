@@ -27,23 +27,25 @@ public class AbnIDealTest {
 
     @Before
     public void createAbnIDeal() throws MalformedURLException {
-
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // AbnIDeal
-        abnIDeal.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("20.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setCustomerBankId("INGBNL2A");
+        abnIDeal.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        abnIDeal.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("20.00"));
+        abnIDeal.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        abnIDeal.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        abnIDeal.setCustomerBankId("INGBNL2A");
 
-        abnIDeal.setBillingPrimaryAddress("Amsterdam Street 1");
-        abnIDeal.setBillingSecondaryAddress("Amsterdam Street 2");
-        abnIDeal.setBillingFirstname("Plamen");
-        abnIDeal.setBillingLastname("Petrov");
-        abnIDeal.setBillingCity("Amsterdam");
-        abnIDeal.setBillingCountry("NL");
-        abnIDeal.setBillingZipCode("NLB1B3");
-        abnIDeal.setBillingState("NL");
+        abnIDeal.setBillingPrimaryAddress("Amsterdam Street 1").setBillingSecondaryAddress("Amsterdam Street 2")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Amsterdam")
+                .setBillingCountry("NL").setBillingZipCode("NLB1B3").setBillingState("NL");
+
+        mappedParams.put("base_attributes", abnIDeal.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", abnIDeal.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", abnIDeal.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  abnIDeal.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -52,7 +54,6 @@ public class AbnIDealTest {
 
     @Test
     public void testAbnIDeal() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = abnIDeal.getElements();
 
@@ -66,16 +67,11 @@ public class AbnIDealTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2000"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), abnIDeal.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), abnIDeal.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), abnIDeal.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), abnIDeal.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("customer_bank_id"), "INGBNL2A");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("billing_address"), abnIDeal.getBillingAddress().getElements());
     }
 
@@ -83,8 +79,6 @@ public class AbnIDealTest {
     public void testAbnIDealWithMissingParams() throws MalformedURLException {
 
         setMissingParams();
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = abnIDeal.getElements();
 

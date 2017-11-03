@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.model;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import com.emerchantpay.gateway.api.exceptions.ResponseException;
 import com.emerchantpay.gateway.util.Currency;
@@ -33,6 +34,14 @@ public class Transaction {
 	private String avsResponseText;
 	private List<String> dynamicDescriptorParams;
 	private String customParam;
+	private String referenceTransactionUId;
+	private String arn;
+	private String cardBrand;
+	private String cardNumber;
+	private String invalidTypesForAmount;
+	private String splitPayment;
+	private Integer leftoverAmount;
+	private Map<String, String> mapPaymentResponses;
 
 	public Transaction(NodeWrapper node) {
 
@@ -59,6 +68,14 @@ public class Transaction {
 		this.avsResponseCode = node.findString("avs_response_code");
 		this.avsResponseText = node.findString("avs_response_text");
 		this.dynamicDescriptorParams = node.findAllStrings("dynamic_descriptor_params");
+		this.referenceTransactionUId = node.findString("reference_transaction_unique_id");
+		this.arn = node.findString("arn");
+		this.cardBrand = node.findString("card_brand");
+		this.cardNumber = node.findString("card_number");
+		this.invalidTypesForAmount = node.findString("invalid_transactions_for_amount");
+		this.splitPayment = node.findString("split_payment");
+		this.leftoverAmount = node.findInteger("leftover_amount");
+		this.mapPaymentResponses = node.getFormParameters();
 
 		if (this.amount != null && this.currency != null) {
 
@@ -68,7 +85,7 @@ public class Transaction {
 			this.amount = curr.getAmount();
 		}
 
-		if(getStatus().equals("error")) {
+		if("error".equals(getStatus())) {
 			throw new ResponseException(getCode(), getTechnicalMessage());
 		}
 	}
@@ -168,7 +185,39 @@ public class Transaction {
 		return customParam;
 	}
 
+	public String getReferenceTransactionUId() {
+		return referenceTransactionUId;
+	}
+
+	public String getARN() {
+		return arn;
+	}
+
+	public String getCardBrand() {
+		return cardBrand;
+	}
+
+	public String getCardNumber() {
+		return cardNumber;
+	}
+
+	public String getInvalidTypesForAmount() {
+		return invalidTypesForAmount;
+	}
+
+	public String getSplitPayment() {
+		return splitPayment;
+	}
+
+	public Integer getLeftoverAmount() {
+		return leftoverAmount;
+	}
+
 	public String getDocument() {
 		return rawDocument;
+	}
+
+	public Map<String, String> getPaymentResponses() {
+		return mapPaymentResponses;
 	}
 }

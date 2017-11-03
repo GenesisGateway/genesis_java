@@ -27,24 +27,27 @@ public class PProPayTest {
 
     @Before
     public void createPPro() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // PPro
-        ppro.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS").setPaymentType("giropay")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
-                .setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-                .setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setBIC("GENODETT488")
-                .setIBAN("DE07444488880123456789");
+        ppro.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        ppro.setPaymentType("giropay");
+        ppro.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        ppro.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        ppro.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        ppro.setBIC("GENODETT488").setIBAN("DE07444488880123456789");
 
-        ppro.setBillingPrimaryAddress("Berlin");
-        ppro.setBillingSecondaryAddress("Berlin");
-        ppro.setBillingFirstname("Plamen");
-        ppro.setBillingLastname("Petrov");
-        ppro.setBillingCity("Berlin");
-        ppro.setBillingCountry("DE");
-        ppro.setBillingZipCode("M4B1B3");
-        ppro.setBillingState("BE");
+        ppro.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", ppro.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", ppro.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", ppro.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  ppro.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -53,8 +56,6 @@ public class PProPayTest {
 
     @Test
     public void testPPro() {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = ppro.getElements();
 
@@ -68,13 +69,10 @@ public class PProPayTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), ppro.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), ppro.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), ppro.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), ppro.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("payment_type"), "giropay");
         assertEquals(mappedParams.get("bic"), "GENODETT488");
         assertEquals(mappedParams.get("iban"), "DE07444488880123456789");
@@ -86,7 +84,6 @@ public class PProPayTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = ppro.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

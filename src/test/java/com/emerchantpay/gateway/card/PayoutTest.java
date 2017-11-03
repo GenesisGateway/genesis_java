@@ -27,23 +27,29 @@ public class PayoutTest {
 
     @Before
     public void createPayout() {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Payout
-        payout.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
-                .setCardholder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555");
+        payout.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        payout.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
+        payout.setCardHolder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123");
+        payout.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
 
-        payout.setBillingPrimaryAddress("Address1");
-        payout.setBillingSecondaryAddress("Address2");
-        payout.setBillingFirstname("John");
-        payout.setBillingLastname("Doe");
-        payout.setBillingCity("New York");
-        payout.setBillingCountry("US");
-        payout.setBillingZipCode("1000");
-        payout.setBillingState("NY");
+        payout.setBillingPrimaryAddress("Address1")
+                .setBillingSecondaryAddress("Address2")
+                .setBillingFirstname("John")
+                .setBillingLastname("Doe")
+                .setBillingCity("New York")
+                .setBillingCountry("US")
+                .setBillingZipCode("1000")
+                .setBillingState("NY");
+
+        mappedParams.put("base_attributes", payout.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", payout.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", payout.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", payout.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -52,8 +58,6 @@ public class PayoutTest {
 
     @Test
     public void testPayout() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = payout.getElements();
 
@@ -67,17 +71,10 @@ public class PayoutTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2200"));
-        assertEquals(mappedParams.get("card_number"), "4200000000000000");
-        assertEquals(mappedParams.get("card_holder"), "PLAMEN PETROV");
-        assertEquals(mappedParams.get("expiration_month"), "02");
-        assertEquals(mappedParams.get("expiration_year"), "2020");
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+5555555555");
+        assertEquals(mappedParams.get("base_attributes"), payout.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), payout.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), payout.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), payout.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("billing_address"), payout.getBillingAddress().getElements());
     }
 

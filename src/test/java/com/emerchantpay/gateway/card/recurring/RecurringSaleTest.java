@@ -26,13 +26,16 @@ public class RecurringSaleTest {
 
     @Before
     public void createInitRecurring() {
-
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Recurring
-        recurringSale.setTransactionId(uniqueId).setUsage("TICKETS").setRemoteIp("192.168.0.1")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"))
-                .setReferenceId("2ee4287e67971380ef7f97d5743bb523");
+        recurringSale.setTransactionId(uniqueId).setUsage("TICKETS").setRemoteIp("192.168.0.1");
+        recurringSale.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"));
+        recurringSale.setReferenceId("2ee4287e67971380ef7f97d5743bb523");
+
+        mappedParams.put("base_attributes", recurringSale.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", recurringSale.buildPaymentParams().getElements());
 }
 
     public void setMissingParams() {
@@ -42,19 +45,14 @@ public class RecurringSaleTest {
     @Test
     public void testRecurring() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = recurringSale.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
             mappedParams.put(elements.get(i).getKey(), recurringSale.getElements().get(i).getValue());
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("1000"));
+        assertEquals(mappedParams.get("base_attributes"), recurringSale.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), recurringSale.buildPaymentParams().getElements());
         assertEquals(mappedParams.get("reference_id"), "2ee4287e67971380ef7f97d5743bb523");
     }
 

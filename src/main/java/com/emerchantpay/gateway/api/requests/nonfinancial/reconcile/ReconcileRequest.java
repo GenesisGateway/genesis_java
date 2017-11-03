@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.reconcile;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +30,6 @@ import java.util.Map;
  */
 
 public class ReconcileRequest extends Request {
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
 
 	private String uniqueId;
 	private String arn;
@@ -44,11 +37,6 @@ public class ReconcileRequest extends Request {
 
 	public ReconcileRequest() {
 		super();
-	}
-
-	public ReconcileRequest(Configuration configuration) {
-		super();
-		this.configuration = configuration;
 	}
 
 	public ReconcileRequest setUniqueId(String uniqueId) {
@@ -67,6 +55,11 @@ public class ReconcileRequest extends Request {
 	}
 
 	@Override
+	public String getTransactionType() {
+		return "reconcile";
+	}
+
+	@Override
 	public String toXML() {
 		return buildRequest("reconcile").toXML();
 	}
@@ -79,20 +72,6 @@ public class ReconcileRequest extends Request {
 	protected RequestBuilder buildRequest(String root) {
 		return new RequestBuilder(root).addElement("unique_id", uniqueId)
 				.addElement("transaction_id", transactionId).addElement("arn", arn);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("reconcile");
-		http = new Http(configuration);
-
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

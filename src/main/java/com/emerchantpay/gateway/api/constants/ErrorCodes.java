@@ -96,7 +96,11 @@ public enum ErrorCodes {
         }
         return UNKNOWN_VALIDATION_ERROR;
     }
-	 	
+
+	 public int getCode() {
+		return code;
+	 }
+
 	 public static String getErrorDescription(Integer errorCode) {
 			switch (errorCode) {
 			default:
@@ -361,5 +365,4 @@ public enum ErrorCodes {
 
 	        return null;
 	    }
-
 }

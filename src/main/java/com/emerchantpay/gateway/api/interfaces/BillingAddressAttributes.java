@@ -3,8 +3,6 @@ package com.emerchantpay.gateway.api.interfaces;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.util.Country;
 
-import java.util.HashMap;
-
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -30,56 +28,53 @@ import java.util.HashMap;
 
 public interface BillingAddressAttributes {
 
-    HashMap<String, String> addressMap = new HashMap<String, String>();
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
     // Billing Address
-    default void setBillingFirstname(String firstname) {
-        addressMap.put("first_name", firstname);
+    default BillingAddressAttributes setBillingFirstname(String firstname) {
+        requestBuilder.addElement("first_name", firstname);
+        return this;
     }
 
-    default void setBillingLastname(String lastname) {
-        addressMap.put("last_name", lastname);
+    default BillingAddressAttributes setBillingLastname(String lastname) {
+        requestBuilder.addElement("last_name", lastname);
+        return this;
     }
 
-    default void setBillingPrimaryAddress(String primaryAddress) {
-        addressMap.put("address1", primaryAddress);
+    default BillingAddressAttributes setBillingPrimaryAddress(String primaryAddress) {
+        requestBuilder.addElement("address1", primaryAddress);
+        return this;
     }
 
-    default void setBillingSecondaryAddress(String secondaryAddress) {
-        addressMap.put("address2", secondaryAddress);
+    default BillingAddressAttributes setBillingSecondaryAddress(String secondaryAddress) {
+        requestBuilder.addElement("address2", secondaryAddress);
+        return this;
     }
 
-    default void setBillingCity(String city) {
-        addressMap.put("city", city);
+    default BillingAddressAttributes setBillingCity(String city) {
+        requestBuilder.addElement("city", city);
+        return this;
     }
 
-    default void setBillingZipCode(String zipCode) {
-        addressMap.put("zip_code", zipCode);
+    default BillingAddressAttributes setBillingZipCode(String zipCode) {
+        requestBuilder.addElement("zip_code", zipCode);
+        return this;
     }
 
-    default void setBillingState(String state) {
-        addressMap.put("state", state);
+    default BillingAddressAttributes setBillingState(String state) {
+        requestBuilder.addElement("state", state);
+        return this;
     }
 
-    default void setBillingCountry(String country) {
+    default BillingAddressAttributes setBillingCountry(String country) {
         Country c = new Country();
 
-        addressMap.put("country", c.getIsoCode(country));
+        requestBuilder.addElement("country", c.getIsoCode(country));
+
+        return this;
     }
 
     default RequestBuilder buildBillingAddress() {
-
-        return new RequestBuilder("").addElement("first_name", addressMap.get("first_name"))
-                .addElement("last_name", addressMap.get("last_name"))
-                .addElement("address1", addressMap.get("address1"))
-                .addElement("address2", addressMap.get("address2"))
-                .addElement("city", addressMap.get("city"))
-                .addElement("zip_code", addressMap.get("zip_code"))
-                .addElement("state", addressMap.get("state"))
-                .addElement("country", addressMap.get("country"));
-    }
-
-    default RequestBuilder getBillingAddress() {
-        return buildBillingAddress();
+        return requestBuilder;
     }
 }

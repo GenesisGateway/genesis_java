@@ -1,7 +1,8 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
+package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,30 +27,21 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class AuthorizeDynamicDescriptorParamsRequest extends Request {
+public class FashionchequeRequest extends GiftCardRequest {
 
-	private AuthorizeRequest parent;
-
-	private String merchantname;
-	private String merchantcity;
-
-	AuthorizeDynamicDescriptorParamsRequest(AuthorizeRequest parent) {
-		this.parent = parent;
+	private String transactionType = TransactionTypes.FASHIONCHEQUE;
+	public FashionchequeRequest() {
+		super();
 	}
 
-	public AuthorizeDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
-
-	public AuthorizeDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
 	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
+		return buildRequest("payment_transaction").toXML();
 	}
 
 	@Override
@@ -59,11 +51,7 @@ public class AuthorizeDynamicDescriptorParamsRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public AuthorizeRequest done() {
-		return parent;
+		return new RequestBuilder(root).addElement("transaction_type", transactionType)
+				.addElement(buildGiftcardParams().toXML());
 	}
 }

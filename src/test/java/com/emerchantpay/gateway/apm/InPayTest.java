@@ -28,23 +28,25 @@ public class InPayTest {
 
     @Before
     public void createInPay() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // InPay
-        inPay.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
-                .setCustomerEmail("john@example.com").setCustomerPhone("+55555555")
-                .setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
+        inPay.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        inPay.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        inPay.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        inPay.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
                 .setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
 
-        inPay.setBillingPrimaryAddress("Berlin");
-        inPay.setBillingSecondaryAddress("Berlin");
-        inPay.setBillingFirstname("Plamen");
-        inPay.setBillingLastname("Petrov");
-        inPay.setBillingCity("Berlin");
-        inPay.setBillingCountry("DE");
-        inPay.setBillingZipCode("M4B1B3");
-        inPay.setBillingState("BE");
+        inPay.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", inPay.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", inPay.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", inPay.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  inPay.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -53,8 +55,6 @@ public class InPayTest {
 
     @Test
     public void testInPay() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = inPay.getElements();
 
@@ -68,16 +68,11 @@ public class InPayTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), inPay.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), inPay.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), inPay.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), inPay.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("is_payout"), null);
-        assertEquals(mappedParams.get("return_success_url"),  new URL("https://example.com/return_success_url"));
-        assertEquals(mappedParams.get("return_failure_url"),  new URL("https://example.com/return_failure_url"));
         assertEquals(mappedParams.get("billing_address"), inPay.getBillingAddress().getElements());
     }
 
@@ -86,7 +81,6 @@ public class InPayTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = inPay.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

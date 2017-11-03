@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.net.URL;;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,47 +30,50 @@ public class CitadelTest {
 
     @Before
     public void createCitadelPayin() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidPayIn = new StringUtils().generateUID();
 
         // PayIn
-        citadelPayIn.setTransactionId(uidPayIn).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"))
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555")
-                .setReturnSuccessUrl(new URL("https://www.gmail.com"))
-                .setReturnFailureUrl(new URL("https://www.google.com"))
-                .setNotificationUrl(new URL("http://www.example.com/notification"))
+        citadelPayIn.setTransactionId(uidPayIn).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        citadelPayIn.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        citadelPayIn.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        citadelPayIn.setReturnSuccessUrl(new URL("https://www.gmail.com"))
+                .setReturnFailureUrl(new URL("https://www.google.com"));
+        citadelPayIn.setNotificationUrl(new URL("http://www.example.com/notification"))
                 .setMerchantCustomerId("1534537");
 
-        citadelPayIn.setBillingPrimaryAddress("Berlin");
-        citadelPayIn.setBillingSecondaryAddress("Berlin");
-        citadelPayIn.setBillingFirstname("Plamen");
-        citadelPayIn.setBillingLastname("Petrov");
-        citadelPayIn.setBillingCity("Berlin");
-        citadelPayIn.setBillingCountry("DE");
-        citadelPayIn.setBillingZipCode("M4B1B3");
-        citadelPayIn.setBillingState("BE");
+        citadelPayIn.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Berlin")
+                .setBillingCountry("DE").setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", citadelPayIn.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", citadelPayIn.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", citadelPayIn.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  citadelPayIn.buildAsyncParams().getElements());
     }
 
     @Before
     public void createCitadelPayout() {
+        mappedParams = new HashMap<String, Object>();
         uidPayOut = new StringUtils().generateUID();
 
         // PayOut
-        citadelPayOut.setTransactionId(uidPayOut).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency())
-                .setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555").setHolderName("John Doe")
-                .setAccountNumber("1534537").setIBAN("DE89370400440532013000").setSwiftCode("DEUTDEDB899")
-                .setBankName("Royal Bank").setBankCity("Berlin").setBankCode("123567").setBranchCode("123567")
-                .setBranchCheckDigit("02");
+        citadelPayOut.setTransactionId(uidPayOut).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        citadelPayOut.setAmount(new BigDecimal("2.00")).setCurrency(Currency.EUR.getCurrency());
+        citadelPayOut.setCustomerEmail("john.doe@emerchantpay.com").setCustomerPhone("+55555555");
+        citadelPayOut.setHolderName("John Doe").setAccountNumber("1534537").setIBAN("DE89370400440532013000")
+                .setSwiftCode("DEUTDEDB899").setBankName("Royal Bank").setBankCity("Berlin")
+                .setBankCode("123567").setBranchCode("123567").setBranchCheckDigit("02");
 
-        citadelPayOut.setBillingPrimaryAddress("Toronto");
-        citadelPayOut.setBillingSecondaryAddress("Berlin");
-        citadelPayOut.setBillingFirstname("Plamen");
-        citadelPayOut.setBillingLastname("Petrov");
-        citadelPayOut.setBillingCity("Berlin");
-        citadelPayOut.setBillingCountry("DE");
-        citadelPayOut.setBillingZipCode("M4B1B3");
-        citadelPayOut.setBillingState("BE");
+        citadelPayOut.setBillingPrimaryAddress("Toronto").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", citadelPayOut.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", citadelPayOut.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", citadelPayOut.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  citadelPayOut.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -80,7 +83,6 @@ public class CitadelTest {
 
     @Test
     public void testCitadelPayin() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = citadelPayIn.getElements();
 
@@ -94,13 +96,10 @@ public class CitadelTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidPayIn);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), citadelPayIn.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), citadelPayIn.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), citadelPayIn.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), citadelPayIn.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
         assertEquals(mappedParams.get("billing_address"), citadelPayIn.getBillingAddress().getElements());
     }
@@ -109,7 +108,6 @@ public class CitadelTest {
     public void testCitadelPayinWithMissingParams() {
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = citadelPayIn.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -121,7 +119,6 @@ public class CitadelTest {
 
     @Test
     public void testCitadelPayout() {
-        mappedParams = new HashMap<String, Object>();
 
         elements = citadelPayOut.getElements();
 
@@ -135,13 +132,10 @@ public class CitadelTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidPayOut);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john.doe@emerchantpay.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), citadelPayOut.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), citadelPayOut.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), citadelPayOut.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), citadelPayOut.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("holder_name"), "John Doe");
         assertEquals(mappedParams.get("billing_address"), citadelPayOut.getBillingAddress().getElements());
         assertEquals(mappedParams.get("bank_name"), "Royal Bank");
@@ -156,7 +150,6 @@ public class CitadelTest {
     public void testCitadelPayoutWithMissingParams() {
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = citadelPayOut.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

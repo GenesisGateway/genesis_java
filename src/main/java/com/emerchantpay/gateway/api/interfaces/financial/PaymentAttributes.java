@@ -1,7 +1,4 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
-
-import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.RequestBuilder;
+package com.emerchantpay.gateway.api.interfaces.financial;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,49 +23,39 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Authorize3DMpiParamsRequest extends Request {
+import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.util.Currency;
 
-	private Authorize3DRequest parent;
+import java.math.BigDecimal;
 
-	private String cavv;
-	private String eci;
-	private String xid;
+public interface PaymentAttributes {
 
-	Authorize3DMpiParamsRequest(Authorize3DRequest parent) {
-		this.parent = parent;
-	}
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-	public Authorize3DMpiParamsRequest setCavv(String cavv) {
-		this.cavv = cavv;
-		return this;
-	}
+    // Payment Params
+    PaymentAttributes setAmount(BigDecimal amount);
 
-	public Authorize3DMpiParamsRequest setEci(String eci) {
-		this.eci = eci;
-		return this;
-	}
+    BigDecimal getAmount();
 
-	public Authorize3DMpiParamsRequest setXid(String xid) {
-		this.xid = xid;
-		return this;
-	}
+    PaymentAttributes setCurrency(String currency);
 
-	@Override
-	public String toXML() {
-		return buildRequest("mpi_params").toXML();
-	}
+    String getCurrency();
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    default RequestBuilder buildPaymentParams() {
 
-	protected RequestBuilder buildRequest(String root) {
+        BigDecimal convertedAmount = null;
 
-		return new RequestBuilder(root).addElement("cavv", cavv).addElement("eci", eci).addElement("xid", xid);
-	}
+        if (getAmount() != null && getCurrency() != null) {
 
-	public Authorize3DRequest done() {
-		return parent;
-	}
+            Currency curr = new Currency();
+
+            curr.setAmountToExponent(getAmount(), getCurrency());
+            convertedAmount = curr.getAmount();
+        }
+
+        requestBuilder.addElement("amount", convertedAmount)
+                .addElement("currency", getCurrency());
+
+        return requestBuilder;
+    }
 }

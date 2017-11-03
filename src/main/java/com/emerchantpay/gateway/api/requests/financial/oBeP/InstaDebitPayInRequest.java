@@ -3,12 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -38,39 +34,17 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InstaDebitPayInRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class InstaDebitPayInRequest extends Request implements PaymentAttributes, CustomerInfoAttributes {
 
     private String transactionType = TransactionTypes.INSTADEBIT_PAYIN;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
     private String customerAccountId;
-    private String customerEmail;
-    private String customerPhone;
     private URL returnUrl;
     private URL notificationUrl;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
 
     public InstaDebitPayInRequest() {
         super();
-    }
-
-    public InstaDebitPayInRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public InstaDebitPayInRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
     }
 
     public InstaDebitPayInRequest setCustomerAccountId(String customerAccountId) {
@@ -88,34 +62,31 @@ public class InstaDebitPayInRequest extends Request implements BillingAddressAtt
         return this;
     }
 
-    public InstaDebitPayInRequest setCurrency(String currency) {
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public InstaDebitPayInRequest setAmount(BigDecimal amount) {
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
+
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public InstaDebitPayInRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public InstaDebitPayInRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
-        return this;
-    }
-
-    public InstaDebitPayInRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public InstaDebitPayInRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     @Override
@@ -130,34 +101,15 @@ public class InstaDebitPayInRequest extends Request implements BillingAddressAtt
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_url", returnUrl).addElement("notification_url", notificationUrl)
-                .addElement("remote_ip", remoteIP).addElement("customer_account_id", customerAccountId)
-                .addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-                .addElement("amount", convertedAmount).addElement("currency", currency)
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML())
+                .addElement(buildPaymentParams().toXML())
+                .addElement("return_url", returnUrl)
+                .addElement("notification_url", notificationUrl)
+                .addElement("customer_account_id", customerAccountId)
+                .addElement(buildCustomerInfoParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

@@ -27,22 +27,25 @@ public class PayPalExpressTest {
 
     @Before
     public void createPayPal() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Checkout
-        paypalExpress.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        paypalExpress.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        paypalExpress.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        paypalExpress.setCustomerEmail("john@example.com").setCustomerPhone("555555");
+        paypalExpress.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        paypalExpress.setBillingPrimaryAddress("Berlin");
-        paypalExpress.setBillingSecondaryAddress("Berlin");
-        paypalExpress.setBillingFirstname("Plamen");
-        paypalExpress.setBillingLastname("Petrov");
-        paypalExpress.setBillingCity("Berlin");
-        paypalExpress.setBillingCountry("DE");
-        paypalExpress.setBillingZipCode("M4B1B3");
-        paypalExpress.setBillingState("BE");
+        paypalExpress.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE").setBillingZipCode("M4B1B3")
+                .setBillingState("BE");
+
+        mappedParams.put("base_attributes", paypalExpress.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", paypalExpress.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", paypalExpress.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  paypalExpress.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -51,7 +54,6 @@ public class PayPalExpressTest {
 
     @Test
     public void testPayPalExpress() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = paypalExpress.getElements();
 
@@ -65,13 +67,10 @@ public class PayPalExpressTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
+        assertEquals(mappedParams.get("base_attributes"), paypalExpress.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), paypalExpress.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), paypalExpress.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), paypalExpress.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), paypalExpress.getBillingAddress().getElements());
     }
 
@@ -80,7 +79,6 @@ public class PayPalExpressTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = paypalExpress.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

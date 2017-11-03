@@ -1,7 +1,8 @@
-package com.emerchantpay.gateway.api.requests.financial.card.recurring;
+package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,36 +27,22 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSale3DMpiParamsRequest extends Request {
+public class IntersolveRequest extends GiftCardRequest {
 
-	private InitRecurringSale3DRequest parent;
+	private String transactionType = TransactionTypes.INTERSOLVE;
 
-	private String cavv;
-	private String eci;
-	private String xid;
-
-	InitRecurringSale3DMpiParamsRequest(InitRecurringSale3DRequest parent) {
-		this.parent = parent;
+	public IntersolveRequest() {
+		super();
 	}
 
-	public InitRecurringSale3DMpiParamsRequest setCavv(String cavv) {
-		this.cavv = cavv;
-		return this;
-	}
-
-	public InitRecurringSale3DMpiParamsRequest setEci(String eci) {
-		this.eci = eci;
-		return this;
-	}
-
-	public InitRecurringSale3DMpiParamsRequest setXid(String xid) {
-		this.xid = xid;
-		return this;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
 	public String toXML() {
-		return buildRequest("mpi_params").toXML();
+		return buildRequest("payment_transaction").toXML();
 	}
 
 	@Override
@@ -65,10 +52,7 @@ public class InitRecurringSale3DMpiParamsRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		return new RequestBuilder(root).addElement("cavv", cavv).addElement("eci", eci).addElement("xid", xid);
-	}
-
-	public InitRecurringSale3DRequest done() {
-		return parent;
+		return new RequestBuilder(root).addElement("transaction_type", transactionType)
+				.addElement(buildGiftcardParams().toXML());
 	}
 }

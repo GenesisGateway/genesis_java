@@ -3,12 +3,8 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,21 +33,10 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class EarthportRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class EarthportRequest extends Request implements PaymentAttributes, CustomerInfoAttributes {
 
     private String transactionType = TransactionTypes.EARTHPORT;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
     private String accountName;
     private String bankName;
@@ -68,46 +53,26 @@ public class EarthportRequest extends Request implements BillingAddressAttribute
         super();
     }
 
-    public EarthportRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public EarthportRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
-
-    public EarthportRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public EarthportRequest setAmount(BigDecimal amount) {
-
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public EarthportRequest setCurrency(String currency) {
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public EarthportRequest setRemoteIp(String remoteIP) {
-        this.remoteIP = remoteIP;
-        return this;
-    }
-
-    public EarthportRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public EarthportRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
+    @Override
+    public String getCurrency() {
+        return currency;
     }
 
     public EarthportRequest setAccountName(String accountName) {
@@ -166,44 +131,28 @@ public class EarthportRequest extends Request implements BillingAddressAttribute
     }
 
     @Override
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    @Override
     public String toQueryString(String root) {
         return buildRequest(root).toQueryString();
     }
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
-                .addElement("transaction_id", transactionId).addElement("usage", usage)
-                .addElement("remote_ip", remoteIP).addElement("amount", convertedAmount)
-                .addElement("currency", currency).addElement("customer_email", customerEmail)
+                .addElement(buildBaseParams().toXML())
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML())
                 .addElement("account_name", accountName).addElement("bank_name", bankName)
-                .addElement("customer_phone", customerPhone).addElement("iban", iban).addElement("bic", bic)
+                .addElement("iban", iban).addElement("bic", bic)
                 .addElement("account_number", accountNumber).addElement("bank_code", bankCode)
                 .addElement("branch_code", branchCode).addElement("account_number_suffix", accountSuffix)
                 .addElement("sort_code", sortCode).addElement("aba_routing_number", abaRoutingNum)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

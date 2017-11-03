@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,22 +31,11 @@ import java.util.Map;
 
 public class RetrievalRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String arn;
 	private String originalTransactionUniqueId;
 
 	public RetrievalRequest() {
 		super();
-	}
-
-	public RetrievalRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public RetrievalRequest setArn(String arn) {
@@ -78,18 +64,9 @@ public class RetrievalRequest extends Request {
 				originalTransactionUniqueId);
 	}
 
-	public Request execute(Configuration configuration) {
-
-		configuration.setTokenEnabled(false);
-		configuration.setAction("retrieval_requests");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
+	@Override
+	public String getTransactionType() {
+		return "retrieval_requests";
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

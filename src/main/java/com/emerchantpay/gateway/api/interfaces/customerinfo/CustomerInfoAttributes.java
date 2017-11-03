@@ -1,6 +1,5 @@
-package com.emerchantpay.gateway.api.requests.financial.card.recurring;
+package com.emerchantpay.gateway.api.interfaces.customerinfo;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 /*
@@ -26,44 +25,22 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSaleDynamicDescriptorParamsRequest extends Request {
+public interface CustomerInfoAttributes {
 
-	private InitRecurringSaleRequest parent;
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-	private String merchantname;
-	private String merchantcity;
+    // Customer Info Params
+    default CustomerInfoAttributes setCustomerEmail(String customerEmail) {
+            requestBuilder.addElement("customer_email", customerEmail);
+            return this;
+    }
 
-	InitRecurringSaleDynamicDescriptorParamsRequest(InitRecurringSaleRequest parent) {
-		this.parent = parent;
-	}
+    default CustomerInfoAttributes setCustomerPhone(String customerPhone) {
+        requestBuilder.addElement("customer_phone", customerPhone);
+        return this;
+    }
 
-	public InitRecurringSaleDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
-
-	public InitRecurringSaleDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public InitRecurringSaleRequest done() {
-		return parent;
-	}
+    default RequestBuilder buildCustomerInfoParams() {
+        return requestBuilder;
+    }
 }

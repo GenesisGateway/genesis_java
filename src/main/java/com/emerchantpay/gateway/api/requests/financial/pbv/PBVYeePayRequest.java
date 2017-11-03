@@ -7,10 +7,9 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PBVAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,76 +34,42 @@ import com.emerchantpay.gateway.util.NodeWrapper;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PBVYeePayRequest extends Request {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class PBVYeePayRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, PBVAttributes {
 
 	private String transactionType = TransactionTypes.PAYBYVOUCHER_YEEPAY;
-	private String transactionId;
-	private String cardType;
-	private String redeemType;
-	private String usage;
-	private String remoteIP;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
 	private String productName;
 	private String productCategory;
 	private String customerId;
 	private String customerBankId;
 	private String customerName;
-	private String customerEmail;
-	private String customerPhone;
 	private String bankAccountNumber;
 
 	public PBVYeePayRequest() {
 		super();
 	}
 
-	public PBVYeePayRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public PBVYeePayRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public PBVYeePayRequest setCardType(String cardType) {
-		this.cardType = cardType;
-		return this;
-	}
-
-	public PBVYeePayRequest setRedeemType(String redeemType) {
-		this.redeemType = redeemType;
-		return this;
-	}
-
-	public PBVYeePayRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public PBVYeePayRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
-	}
-
-	public PBVYeePayRequest setAmount(BigDecimal amount) {
-
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
-
 		return this;
 	}
 
-	public PBVYeePayRequest setCurrency(String currency) {
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
 		this.currency = currency;
 		return this;
+	}
+
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
 	public PBVYeePayRequest setCustomerId(String customerId) {
@@ -119,16 +84,6 @@ public class PBVYeePayRequest extends Request {
 
 	public PBVYeePayRequest setCustomerName(String customerName) {
 		this.customerName = customerName;
-		return this;
-	}
-
-	public PBVYeePayRequest setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
-		return this;
-	}
-
-	public PBVYeePayRequest setCustomerPhone(String customerPhone) {
-		this.customerPhone = customerPhone;
 		return this;
 	}
 
@@ -148,6 +103,11 @@ public class PBVYeePayRequest extends Request {
 	}
 
 	@Override
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	@Override
 	public String toXML() {
 		return buildRequest("payment_transaction").toXML();
 	}
@@ -159,35 +119,16 @@ public class PBVYeePayRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("card_type", cardType)
-				.addElement("redeem_type", redeemType).addElement("usage", usage).addElement("remote_ip", remoteIP)
-				.addElement("amount", convertedAmount).addElement("currency", currency)
-				.addElement("customer_id_number", customerId).addElement("customer_bank_id", customerBankId)
-				.addElement("customer_name", customerName).addElement("customer_email", customerEmail)
-				.addElement("customer_phone", customerPhone).addElement("product_name", productName)
-				.addElement("product_category", productCategory).addElement("bank_account_number", bankAccountNumber);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
+				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+				.addElement(buildPBVParams().toXML())
+				.addElement(buildCustomerInfoParams().toXML())
+				.addElement("customer_id_number", customerId)
+				.addElement("customer_bank_id", customerBankId)
+				.addElement("customer_name", customerName)
+				.addElement("product_name", productName)
+				.addElement("product_category", productCategory)
+				.addElement("bank_account_number", bankAccountNumber);
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

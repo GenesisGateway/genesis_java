@@ -28,26 +28,31 @@ public class Authorize3DTest {
 
     @Before
     public void createAuthorize3D() throws MalformedURLException {
+
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Authorize
-        authorize3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS").setGaming(true)
-                .setMoto(true).setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
-                .setCardholder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").setNotificationUrl(new URL("http://www.example.com/notification"))
-                .setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        authorize3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        authorize3d.setGaming(true).setMoto(true);
+        authorize3d.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
+        authorize3d.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123");
+        authorize3d.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
+        authorize3d.setNotificationUrl(new URL("http://www.example.com/notification"));
+        authorize3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
 
-        authorize3d.setBillingPrimaryAddress("Address1");
-        authorize3d.setBillingSecondaryAddress("Address2");
-        authorize3d.setBillingFirstname("John");
-        authorize3d.setBillingLastname("Doe");
-        authorize3d.setBillingCity("New York");
-        authorize3d.setBillingCountry("US");
-        authorize3d.setBillingZipCode("1000");
-        authorize3d.setBillingState("CA");
+        authorize3d.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
+                .setBillingFirstname("John").setBillingLastname("Doe").setBillingCity("New York")
+                .setBillingCountry("US").setBillingZipCode("1000").setBillingState("CA");
+
+        mappedParams.put("base_attributes", authorize3d.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", authorize3d.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", authorize3d.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", authorize3d.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", authorize3d.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -56,7 +61,6 @@ public class Authorize3DTest {
 
     @Test
     public void testAuthorize3D() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = authorize3d.getElements();
 
@@ -70,16 +74,12 @@ public class Authorize3DTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+5555555555");
+        assertEquals(mappedParams.get("base_attributes"), authorize3d.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), authorize3d.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), authorize3d.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), authorize3d.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), authorize3d.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("billing_address"), authorize3d.getBillingAddress().getElements());
     }
 
@@ -88,7 +88,6 @@ public class Authorize3DTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = authorize3d.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

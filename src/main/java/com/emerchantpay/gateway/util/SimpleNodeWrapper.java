@@ -155,16 +155,18 @@ public class SimpleNodeWrapper extends NodeWrapper {
 
 	@Override
 	public Map<String, String> getFormParameters() {
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new LinkedHashMap<String, String>();
 		for (SimpleNodeWrapper node : childNodes()) {
 			node.buildParams("", params);
 		}
+		params.entrySet();
 		return params;
 	}
 
 	private void buildParams(String prefix, Map<String, String> params) {
 		List<SimpleNodeWrapper> childNodes = childNodes();
-		String newPrefix = "".equals(prefix) ? StringUtils.underscore(name)
+		String newPrefix = "".equals(prefix) ?  StringUtils.underscore(name + "[" +
+				findString("response_code")+ "]")
 				: prefix + "[" + StringUtils.underscore(name) + "]";
 		if (childNodes.isEmpty())
 			params.put(newPrefix, stringValue());

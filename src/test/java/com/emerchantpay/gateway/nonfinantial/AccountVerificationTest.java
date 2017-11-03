@@ -25,22 +25,23 @@ public class AccountVerificationTest {
 
     @Before
     public void createAuthorize3D() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Account Verification
-        accountVerification.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setMoto(true).setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555");
+        accountVerification.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        accountVerification.setMoto(true).setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123");
+        accountVerification.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
 
-        accountVerification.setBillingPrimaryAddress("Address1");
-        accountVerification.setBillingSecondaryAddress("Address2");
-        accountVerification.setBillingFirstname("John");
-        accountVerification.setBillingLastname("Doe");
-        accountVerification.setBillingCity("New York");
-        accountVerification.setBillingCountry("US");
-        accountVerification.setBillingZipCode("1000");
-        accountVerification.setBillingState("NY");
+        accountVerification.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
+                .setBillingFirstname("John").setBillingLastname("Doe")
+                .setBillingCity("New York").setBillingCountry("US")
+                .setBillingZipCode("1000").setBillingState("NY");
+
+        mappedParams.put("base_attributes", accountVerification.buildBaseParams().getElements());
+        mappedParams.put("credit_card_attributes", accountVerification.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", accountVerification.buildCustomerInfoParams().getElements());
     }
 
     public void setMissingParams() {
@@ -49,7 +50,6 @@ public class AccountVerificationTest {
 
     @Test
     public void testAccountVerification() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = accountVerification.getElements();
 
@@ -63,16 +63,10 @@ public class AccountVerificationTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
+        assertEquals(mappedParams.get("base_attributes"), accountVerification.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), accountVerification.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), accountVerification.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("moto"), true);
-        assertEquals(mappedParams.get("card_number"), "4200000000000000");
-        assertEquals(mappedParams.get("card_holder"), "JOHN DOE");
-        assertEquals(mappedParams.get("expiration_month"), "02");
-        assertEquals(mappedParams.get("expiration_year"), "2020");
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+5555555555");
         assertEquals(mappedParams.get("billing_address"), accountVerification.getBillingAddress().getElements());
     }
 

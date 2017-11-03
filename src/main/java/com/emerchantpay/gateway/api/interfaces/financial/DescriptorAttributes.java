@@ -1,6 +1,5 @@
-package com.emerchantpay.gateway.api.requests.financial.card.recurring;
+package com.emerchantpay.gateway.api.interfaces.financial;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 /*
@@ -26,44 +25,22 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSale3DDynamicDescriptorParamsRequest extends Request {
+public interface DescriptorAttributes {
 
-	private InitRecurringSale3DRequest parent;
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-	private String merchantname;
-	private String merchantcity;
+    // Descriptor Params
+    default DescriptorAttributes setDynamicMerchantName(String dynamicMerchantName) {
+        requestBuilder.addElement("merchant_name", dynamicMerchantName);
+        return this;
+    }
 
-	InitRecurringSale3DDynamicDescriptorParamsRequest(InitRecurringSale3DRequest parent) {
-		this.parent = parent;
-	}
+    default DescriptorAttributes setDynamicMerchantCity(String dynamicMerchantCity) {
+        requestBuilder.addElement("merchant_city", dynamicMerchantCity);
+        return this;
+    }
 
-	public InitRecurringSale3DDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
-
-	public InitRecurringSale3DDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public InitRecurringSale3DRequest done() {
-		return parent;
-	}
+    default RequestBuilder buildDescriptorParams() {
+        return requestBuilder;
+    }
 }

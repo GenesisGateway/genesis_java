@@ -25,12 +25,16 @@ public class CreditTest {
 
     @Before
     public void createCredit() {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Credit
-        credit.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"))
-                .setReferencialId("57b3a7b166ffe873d0a11863560b410c");
+        credit.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        credit.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
+        credit.setReferencialId("57b3a7b166ffe873d0a11863560b410c");
+
+        mappedParams.put("base_attributes", credit.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", credit.buildPaymentParams().getElements());
     }
 
     public void setMissingParams() {
@@ -39,7 +43,6 @@ public class CreditTest {
 
     @Test
     public void testCredit()  {
-        mappedParams = new HashMap<String, Object>();
 
         elements = credit.getElements();
 
@@ -47,11 +50,8 @@ public class CreditTest {
             mappedParams.put(elements.get(i).getKey(), credit.getElements().get(i).getValue());
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
+        assertEquals(mappedParams.get("base_attributes"), credit.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), credit.buildPaymentParams().getElements());
         assertEquals(mappedParams.get("reference_id"), "57b3a7b166ffe873d0a11863560b410c");
     }
 

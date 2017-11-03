@@ -27,23 +27,26 @@ public class POLiTest {
     private String uniqueId;
 
     @Before
-    public void createSale() throws MalformedURLException {
+    public void createPoli() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // POLi
-        poli.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.AUD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        poli.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        poli.setCurrency(Currency.AUD.getCurrency()).setAmount(new BigDecimal("2.00"));
+        poli.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        poli.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        poli.setBillingPrimaryAddress("Sydney 1");
-        poli.setBillingSecondaryAddress("Sydney 2");
-        poli.setBillingFirstname("Plamen");
-        poli.setBillingLastname("Petrov");
-        poli.setBillingCity("Sydney");
-        poli.setBillingCountry(Country.Australia.getCode());
-        poli.setBillingZipCode("S4C1C3");
-        poli.setBillingState("SY");
+        poli.setBillingPrimaryAddress("Sydney 1").setBillingSecondaryAddress("Sydney 2")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Sydney").setBillingCountry(Country.Australia.getCode())
+                .setBillingZipCode("S4C1C3").setBillingState("SY");
+
+        mappedParams.put("base_attributes", poli.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", poli.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", poli.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  poli.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -52,8 +55,6 @@ public class POLiTest {
 
     @Test
     public void testPoli() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = poli.getElements();
 
@@ -67,26 +68,18 @@ public class POLiTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.AUD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
+        assertEquals(mappedParams.get("base_attributes"), poli.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), poli.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), poli.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), poli.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), poli.getBillingAddress().getElements());
     }
-
-
 
     @Test
     public void testPoliWithMissingParams() {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = poli.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

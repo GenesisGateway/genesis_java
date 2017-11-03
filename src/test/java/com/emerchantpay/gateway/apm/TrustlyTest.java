@@ -29,22 +29,25 @@ public class TrustlyTest {
 
     @Before
     public void createSale() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidSale = new StringUtils().generateUID();
 
         // Sale
-        trustlySale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        trustlySale.setTransactionId(uidSale).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        trustlySale.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        trustlySale.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        trustlySale.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        trustlySale.setBillingPrimaryAddress("Berlin");
-        trustlySale.setBillingSecondaryAddress("Berlin");
-        trustlySale.setBillingFirstname("Plamen");
-        trustlySale.setBillingLastname("Petrov");
-        trustlySale.setBillingCity("Berlin");
-        trustlySale.setBillingCountry("DE");
-        trustlySale.setBillingZipCode("M4B1B3");
-        trustlySale.setBillingState("BE");
+        trustlySale.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", trustlySale.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", trustlySale.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", trustlySale.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  trustlySale.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -54,28 +57,30 @@ public class TrustlyTest {
 
     @Before
     public void createWithdrawal() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidWithdrawal = new StringUtils().generateUID();
 
         // Withdrawal
-        trustlyWithdrawal.setTransactionId(uidWithdrawal).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure")).setBirthDate("24-04-1988");
+        trustlyWithdrawal.setTransactionId(uidWithdrawal).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        trustlyWithdrawal.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
+        trustlyWithdrawal.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        trustlyWithdrawal.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        trustlyWithdrawal.setBirthDate("24-04-1988");
 
-        trustlyWithdrawal.setBillingPrimaryAddress("Berlin");
-        trustlyWithdrawal.setBillingSecondaryAddress("Berlin");
-        trustlyWithdrawal.setBillingFirstname("Plamen");
-        trustlyWithdrawal.setBillingLastname("Petrov");
-        trustlyWithdrawal.setBillingCity("Berlin");
-        trustlyWithdrawal.setBillingCountry("DE");
-        trustlyWithdrawal.setBillingZipCode("M4B1B3");
-        trustlyWithdrawal.setBillingState("BE");
+        trustlyWithdrawal.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry("DE")
+                .setBillingZipCode("M4B1B3").setBillingState("BE");
+
+        mappedParams.put("base_attributes", trustlyWithdrawal.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", trustlyWithdrawal.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", trustlyWithdrawal.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  trustlyWithdrawal.buildAsyncParams().getElements());
     }
 
     @Test
     public void testSale() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = trustlySale.getElements();
 
@@ -89,22 +94,15 @@ public class TrustlyTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidSale);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
+        assertEquals(mappedParams.get("base_attributes"), trustlySale.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), trustlySale.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), trustlySale.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), trustlySale.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), trustlySale.getBillingAddress().getElements());
     }
 
     @Test
     public void testWithdrawal() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = trustlyWithdrawal.getElements();
 
@@ -118,16 +116,10 @@ public class TrustlyTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidWithdrawal);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
-        assertEquals(mappedParams.get("birth_date"), "24-04-1988");
+        assertEquals(mappedParams.get("base_attributes"), trustlyWithdrawal.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), trustlyWithdrawal.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), trustlyWithdrawal.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), trustlyWithdrawal.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), trustlyWithdrawal.getBillingAddress().getElements());
     }
 

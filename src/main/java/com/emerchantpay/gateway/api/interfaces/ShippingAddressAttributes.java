@@ -3,8 +3,6 @@ package com.emerchantpay.gateway.api.interfaces;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.util.Country;
 
-import java.util.HashMap;
-
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -30,55 +28,53 @@ import java.util.HashMap;
 
 public interface ShippingAddressAttributes {
 
-    HashMap<String, String> addressMap = new HashMap<String, String>();
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
     // Shipping Address
-    default void setShippingFirstname(String firstname) {
-        addressMap.put("first_name", firstname);
+    default ShippingAddressAttributes setShippingFirstname(String firstname) {
+        requestBuilder.addElement("first_name", firstname);
+        return this;
     }
 
-    default void setShippingLastname(String lastname) {
-        addressMap.put("last_name", lastname);
+    default ShippingAddressAttributes setShippingLastname(String lastname) {
+        requestBuilder.addElement("last_name", lastname);
+        return this;
     }
 
-    default void setShippingPrimaryAddress(String primaryAddress) {
-        addressMap.put("address1", primaryAddress);
+    default ShippingAddressAttributes setShippingPrimaryAddress(String primaryAddress) {
+        requestBuilder.addElement("address1", primaryAddress);
+        return this;
     }
 
-    default void setShippingSecondaryAddress(String secondaryAddress) {
-        addressMap.put("address2", secondaryAddress);
+    default ShippingAddressAttributes setShippingSecondaryAddress(String secondaryAddress) {
+        requestBuilder.addElement("address2", secondaryAddress);
+        return this;
     }
 
-    default void setShippingCity(String city) {
-        addressMap.put("city", city);
+    default ShippingAddressAttributes setShippingCity(String city) {
+        requestBuilder.addElement("city", city);
+        return this;
     }
 
-    default void setShippingZipCode(String zipCode) {
-        addressMap.put("zip_code", zipCode);
+    default ShippingAddressAttributes setShippingZipCode(String zipCode) {
+        requestBuilder.addElement("zip_code", zipCode);
+        return this;
     }
 
-    default void setShippingState(String state) {
-        addressMap.put("state", state);
+    default ShippingAddressAttributes setShippingState(String state) {
+        requestBuilder.addElement("state", state);
+        return this;
     }
 
-    default void setShippingCountry(String country) {
+    default ShippingAddressAttributes setShippingCountry(String country) {
         Country c = new Country();
 
-        addressMap.put("country", c.getIsoCode(country));
+        requestBuilder.addElement("country", c.getIsoCode(country));
+
+        return this;
     }
 
     default RequestBuilder buildShippingAddress() {
-        return new RequestBuilder("").addElement("first_name", addressMap.get("first_name"))
-                .addElement("last_name", addressMap.get("last_name"))
-                .addElement("address1", addressMap.get("address1"))
-                .addElement("address2", addressMap.get("address2"))
-                .addElement("city", addressMap.get("city"))
-                .addElement("zip_code", addressMap.get("zip_code"))
-                .addElement("state", addressMap.get("state"))
-                .addElement("country", addressMap.get("country"));
-    }
-
-    default RequestBuilder getShippingAddress() {
-        return buildShippingAddress();
+        return requestBuilder;
     }
 }

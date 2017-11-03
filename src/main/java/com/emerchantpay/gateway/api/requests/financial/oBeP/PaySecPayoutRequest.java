@@ -3,12 +3,9 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -38,75 +35,42 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PaySecPayoutRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class PaySecPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.PAYSEC_PAYOUT;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
     private String bankCode;
     private String bankName;
     private String bankBranch;
     private String bankAccountName;
     private String bankAccountNumber;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
     private URL notificationUrl;
 
     public PaySecPayoutRequest() {
         super();
     }
 
-    public PaySecPayoutRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public PaySecPayoutRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
-
-    public PaySecPayoutRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public PaySecPayoutRequest setAmount(BigDecimal amount) {
-
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public PaySecPayoutRequest setCurrency(String currency) {
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public PaySecPayoutRequest setRemoteIp(String remoteIP) {
-        this.remoteIP = remoteIP;
-        return this;
-    }
-
-    public PaySecPayoutRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public PaySecPayoutRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
+    @Override
+    public String getCurrency() {
+        return currency;
     }
 
     public PaySecPayoutRequest setBankCode(String bankCode) {
@@ -134,19 +98,14 @@ public class PaySecPayoutRequest extends Request implements BillingAddressAttrib
         return this;
     }
 
-    public PaySecPayoutRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
-        return this;
-    }
-
-    public PaySecPayoutRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
-        return this;
-    }
-
     public PaySecPayoutRequest setNotificationUrl(URL notificationUrl) {
         this.notificationUrl = notificationUrl;
         return this;
+    }
+
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     @Override
@@ -161,38 +120,16 @@ public class PaySecPayoutRequest extends Request implements BillingAddressAttrib
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
-                .addElement("transaction_id", transactionId).addElement("usage", usage)
-                .addElement("remote_ip", remoteIP).addElement("amount", convertedAmount)
-                .addElement("currency", currency).addElement("customer_email", customerEmail)
-                .addElement("customer_phone", customerPhone).addElement("bank_code", bankCode)
-                .addElement("bank_name", bankName).addElement("bank_branch", bankBranch)
-                .addElement("bank_account_name", bankAccountName).addElement("bank_account_number", bankAccountNumber)
-                .addElement("return_success_url", returnSuccessUrl).addElement("return_failure_url", returnFailureUrl)
+                .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
+                .addElement("bank_code", bankCode).addElement("bank_name", bankName)
+                .addElement("bank_branch", bankBranch)
+                .addElement("bank_account_name", bankAccountName)
+                .addElement("bank_account_number", bankAccountNumber)
                 .addElement("notification_url", notificationUrl)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,22 +31,11 @@ import java.util.Map;
 
 public class ReportsRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String arn;
 	private String originalTransactionUniqueId;
 
 	public ReportsRequest() {
 		super();
-	}
-
-	public ReportsRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public ReportsRequest setArn(String arn) {
@@ -60,6 +46,11 @@ public class ReportsRequest extends Request {
 	public ReportsRequest setOriginalTransactionId(String originalTransactionUniqueId) {
 		this.originalTransactionUniqueId = originalTransactionUniqueId;
 		return this;
+	}
+
+	@Override
+	public String getTransactionType() {
+		return "fraud_reports";
 	}
 
 	@Override
@@ -76,20 +67,6 @@ public class ReportsRequest extends Request {
 
 		return new RequestBuilder(root).addElement("arn", arn).addElement("original_transaction_unique_id",
 				originalTransactionUniqueId);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setTokenEnabled(false);
-		configuration.setAction("fraud_reports");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

@@ -3,12 +3,9 @@ package com.emerchantpay.gateway.api.requests.financial.sdd;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.SDDAttributes;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,79 +34,42 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDInitRecurringSaleRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
+public class SDDInitRecurringSaleRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+		SDDAttributes {
 
 	private String transactionType = TransactionTypes.SDD_INIT_RECURRING_SALE;
-	private String transactionId;
-	private String usage;
-	private String remoteIP;
-	private String customerEmail;
-	private String customerPhone;
 	private BigDecimal amount;
-	private BigDecimal convertedAmount;
 	private String currency;
-	private String iban;
-	private String bic;
 
 	public SDDInitRecurringSaleRequest() {
 		super();
 	}
 
-	public SDDInitRecurringSaleRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
-	}
-
-	public SDDInitRecurringSaleRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
-
-	public SDDInitRecurringSaleRequest setUsage(String usage) {
-		this.usage = usage;
-		return this;
-	}
-
-	public SDDInitRecurringSaleRequest setAmount(BigDecimal amount) {
-
+	@Override
+	public PaymentAttributes setAmount(BigDecimal amount) {
 		this.amount = amount;
 		return this;
 	}
 
-	public SDDInitRecurringSaleRequest setCurrency(String currency) {
+	@Override
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	@Override
+	public PaymentAttributes setCurrency(String currency) {
 		this.currency = currency;
 		return this;
 	}
 
-	public SDDInitRecurringSaleRequest setRemoteIp(String remoteIP) {
-		this.remoteIP = remoteIP;
-		return this;
+	@Override
+	public String getCurrency() {
+		return currency;
 	}
 
-	public SDDInitRecurringSaleRequest setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
-		return this;
-	}
-
-	public SDDInitRecurringSaleRequest setCustomerPhone(String customerPhone) {
-		this.customerPhone = customerPhone;
-		return this;
-	}
-
-	public SDDInitRecurringSaleRequest setIBAN(String iban) {
-		this.iban = iban;
-		return this;
-	}
-
-	public SDDInitRecurringSaleRequest setBIC(String bic) {
-		this.bic = bic;
-		return this;
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -124,34 +84,11 @@ public class SDDInitRecurringSaleRequest extends Request implements BillingAddre
 
 	protected RequestBuilder buildRequest(String root) {
 
-		if (amount != null && currency != null) {
-
-			Currency curr = new Currency();
-
-			curr.setAmountToExponent(amount, currency);
-			convertedAmount = curr.getAmount();
-		}
-
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement("transaction_id", transactionId).addElement("usage", usage).addElement("remote_ip", remoteIP)
-				.addElement("amount", convertedAmount).addElement("currency", currency)
-				.addElement("customer_email", customerEmail).addElement("customer_phone", customerPhone)
-				.addElement("iban", iban).addElement("bic", bic)
+				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+				.addElement(buildCustomerInfoParams().toXML()).addElement(buildSDDParams().toXML())
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML());
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setAction("process");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

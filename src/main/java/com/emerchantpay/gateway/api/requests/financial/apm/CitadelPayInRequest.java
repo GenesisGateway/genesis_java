@@ -3,12 +3,9 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -38,24 +35,12 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CitadelPayInRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
+public class CitadelPayInRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
 
     private String transactionType = TransactionTypes.CITADEL_PAYIN;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
     private URL notificationUrl;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
     private String merchantCustomerId;
 
@@ -64,24 +49,30 @@ public class CitadelPayInRequest extends Request implements BillingAddressAttrib
         super();
     }
 
-    public CitadelPayInRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public CitadelPayInRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
+        this.amount = amount;
         return this;
     }
 
-    public CitadelPayInRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
+        this.currency = currency;
         return this;
     }
 
-    public CitadelPayInRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
+
+    public CitadelPayInRequest setMerchantCustomerId(String merchantCustomerId) {
+        this.merchantCustomerId = merchantCustomerId;
         return this;
     }
 
@@ -90,39 +81,9 @@ public class CitadelPayInRequest extends Request implements BillingAddressAttrib
         return this;
     }
 
-    public CitadelPayInRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public CitadelPayInRequest setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    public CitadelPayInRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public CitadelPayInRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
-        return this;
-    }
-
-    public CitadelPayInRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public CitadelPayInRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
-        return this;
-    }
-
-    public CitadelPayInRequest setMerchantCustomerId(String merchantCustomerId) {
-        this.merchantCustomerId = merchantCustomerId;
-        return this;
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     @Override
@@ -137,35 +98,14 @@ public class CitadelPayInRequest extends Request implements BillingAddressAttrib
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_success_url", returnSuccessUrl)
-                .addElement("return_failure_url", returnFailureUrl).addElement("notification_url", notificationUrl)
-                .addElement("remote_ip", remoteIP).addElement("customer_email", customerEmail)
-                .addElement("customer_phone", customerPhone).addElement("amount", convertedAmount).addElement("currency", currency)
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildAsyncParams().toXML())
+                .addElement("notification_url", notificationUrl)
                 .addElement("merchant_customer_id", merchantCustomerId)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

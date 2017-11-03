@@ -1,6 +1,5 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
+package com.emerchantpay.gateway.api.interfaces.financial;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 /*
@@ -26,49 +25,27 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Sale3DMpiParamsRequest extends Request {
+public interface MpiAttributes {
 
-	private Sale3DRequest parent;
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-	private String cavv;
-	private String eci;
-	private String xid;
+    // Mpi Params
+    default MpiAttributes setCavv(String cavv) {
+        requestBuilder.addElement("cavv", cavv);
+        return this;
+    }
 
-	Sale3DMpiParamsRequest(Sale3DRequest parent) {
-		this.parent = parent;
-	}
+    default MpiAttributes setEci(String eci) {
+        requestBuilder.addElement("eci", eci);
+        return this;
+    }
 
-	public Sale3DMpiParamsRequest setCavv(String cavv) {
-		this.cavv = cavv;
-		return this;
-	}
+    default MpiAttributes setXid(String xid) {
+        requestBuilder.addElement("xid", xid);
+        return this;
+    }
 
-	public Sale3DMpiParamsRequest setEci(String eci) {
-		this.eci = eci;
-		return this;
-	}
-
-	public Sale3DMpiParamsRequest setXid(String xid) {
-		this.xid = xid;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("mpi_params").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("cavv", cavv).addElement("eci", eci).addElement("xid", xid);
-	}
-
-	public Sale3DRequest done() {
-		return parent;
-	}
+    default RequestBuilder buildMpiParams() {
+        return requestBuilder;
+    }
 }

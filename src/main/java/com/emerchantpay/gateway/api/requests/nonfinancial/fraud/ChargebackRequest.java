@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,22 +31,11 @@ import java.util.Map;
 
 public class ChargebackRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String arn;
 	private String originalTransactionUniqueId;
 
 	public ChargebackRequest() {
 		super();
-	}
-
-	public ChargebackRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public ChargebackRequest setArn(String arn) {
@@ -60,6 +46,11 @@ public class ChargebackRequest extends Request {
 	public ChargebackRequest setOriginalTransactionId(String originalTransactionUniqueId) {
 		this.originalTransactionUniqueId = originalTransactionUniqueId;
 		return this;
+	}
+
+	@Override
+	public String getTransactionType() {
+		return "chargeback";
 	}
 
 	@Override
@@ -76,20 +67,6 @@ public class ChargebackRequest extends Request {
 
 		return new RequestBuilder(root).addElement("arn", arn).addElement("original_transaction_unique_id",
 				originalTransactionUniqueId);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setTokenEnabled(false);
-		configuration.setAction("chargebacks");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

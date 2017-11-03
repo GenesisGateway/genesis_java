@@ -28,22 +28,24 @@ public class CashUTest {
     @Before
     public void createCashU() throws MalformedURLException {
 
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // CashU
-        cashU.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS")
-                .setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("15.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        cashU.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
+        cashU.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("15.00"));
+        cashU.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        cashU.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        cashU.setBillingPrimaryAddress("Fifth avenue 1");
-        cashU.setBillingSecondaryAddress("Fifth avenue 2");
-        cashU.setBillingFirstname("Plamen");
-        cashU.setBillingLastname("Petrov");
-        cashU.setBillingCity("New York");
-        cashU.setBillingCountry("US");
-        cashU.setBillingZipCode("M4B1B3");
-        cashU.setBillingState("WA");
+        cashU.setBillingPrimaryAddress("Fifth avenue 1").setBillingSecondaryAddress("Fifth avenue 2")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("New York")
+                .setBillingCountry("US").setBillingZipCode("M4B1B3").setBillingState("WA");
+
+        mappedParams.put("base_attributes", cashU.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", cashU.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", cashU.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes",  cashU.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -53,7 +55,6 @@ public class CashUTest {
     @Test
     public void testCashU() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
         elements = cashU.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -66,15 +67,10 @@ public class CashUTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "82.137.112.202");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.EUR.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("1500"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
+        assertEquals(mappedParams.get("base_attributes"), cashU.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), cashU.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), cashU.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), cashU.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("billing_address"), cashU.getBillingAddress().getElements());
     }
 
@@ -83,7 +79,6 @@ public class CashUTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = cashU.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {

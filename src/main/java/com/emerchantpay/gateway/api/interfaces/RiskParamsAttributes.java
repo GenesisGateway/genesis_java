@@ -1,115 +1,136 @@
 package com.emerchantpay.gateway.api.interfaces;
 
+/*
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to permit
+ * persons to whom the Software is furnished to do so, subject to the
+ * following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+ * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @license http://opensource.org/licenses/MIT The MIT License
+ */
+
 import com.emerchantpay.gateway.api.RequestBuilder;
-
-import java.util.HashMap;
-
 
 public interface RiskParamsAttributes {
 
-    HashMap<String, String> paramMap = new HashMap<String, String>();
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
     // Risk Params
-    default void setRiskSSN(String ssn) {
-        paramMap.put("ssn", ssn);
+    default RiskParamsAttributes setRiskSSN(String ssn) {
+        requestBuilder.addElement("ssn", ssn);
+        return this;
     }
 
-    default void setRiskMacAddress(String macAddress) {
-        paramMap.put("mac_address", macAddress);
+    default RiskParamsAttributes setRiskMacAddress(String macAddress) {
+        requestBuilder.addElement("mac_address", macAddress);
+        return this;
     }
 
-    default void setRiskSessionId(String sessionId) {
-        paramMap.put("session_id", sessionId);
+    default RiskParamsAttributes setRiskSessionId(String sessionId) {
+        requestBuilder.addElement("session_id", sessionId);
+        return this;
     }
 
-    default void setRiskUserId(String userId) {
-        paramMap.put("user_id", userId);
+    default RiskParamsAttributes setRiskUserId(String userId) {
+        requestBuilder.addElement("user_id", userId);
+        return this;
     }
 
-    default void setRiskUserLevel(String userLevel) {
-        paramMap.put("user_level", userLevel);
+    default RiskParamsAttributes setRiskUserLevel(String userLevel) {
+        requestBuilder.addElement("user_level", userLevel);
+        return this;
     }
 
-    default void setRiskEmail(String email) {
-        paramMap.put("email", email);
+    default RiskParamsAttributes setRiskEmail(String email) {
+        requestBuilder.addElement("email", email);
+        return this;
     }
 
-    default void setRiskPhone(String phone) {
-        paramMap.put("phone", phone);
+    default RiskParamsAttributes setRiskPhone(String phone) {
+        requestBuilder.addElement("phone", phone);
+        return this;
     }
 
-    default void setRiskRemoteIp(String remoteIp) {
-        paramMap.put("remote_ip", remoteIp);
+    default RiskParamsAttributes setRiskRemoteIp(String remoteIp) {
+        requestBuilder.addElement("remote_ip", remoteIp);
+        return this;
     }
 
-    default void setRiskSerialNumber(String serialNumber) {
-        paramMap.put("serial_number", serialNumber);
+    default RiskParamsAttributes setRiskSerialNumber(String serialNumber) {
+        requestBuilder.addElement("serial_number", serialNumber);
+        return this;
     }
 
-    default void setRiskPanTail(String panTail) {
-        paramMap.put("pan_tail", panTail);
-    }
-    default void setRiskBin(String bin) {
-        paramMap.put("bin", bin);
+    default RiskParamsAttributes setRiskPanTail(String panTail) {
+        requestBuilder.addElement("pan_tail", panTail);
+        return this;
     }
 
-    default void setRiskFirstName(String firstname) {
-        paramMap.put("first_name", firstname);
+    default RiskParamsAttributes setRiskBin(String bin) {
+        requestBuilder.addElement("bin", bin);
+        return this;
     }
 
-    default void setRiskLastName(String lastname) {
-        paramMap.put("last_name", lastname);
+    default RiskParamsAttributes setRiskFirstName(String firstname) {
+        requestBuilder.addElement("first_name", firstname);
+        return this;
     }
 
-    default void setRiskCountry(String country) {
-        paramMap.put("country", country);
+    default RiskParamsAttributes setRiskLastName(String lastname) {
+        requestBuilder.addElement("last_name", lastname);
+        return this;
     }
 
-    default void setRiskPan(String pan) {
-        paramMap.put("pan", pan);
+    default RiskParamsAttributes setRiskCountry(String country) {
+        requestBuilder.addElement("country", country);
+        return this;
     }
 
-    default void setRiskForwardedIp(String forwardedIp) {
-        paramMap.put("forwarded_ip", forwardedIp);
+    default RiskParamsAttributes setRiskPan(String pan) {
+        requestBuilder.addElement("pan", pan);
+        return this;
     }
 
-    default void setRiskUsername(String username) {
-        paramMap.put("username", username);
+    default RiskParamsAttributes setRiskForwardedIp(String forwardedIp) {
+        requestBuilder.addElement("forwarded_ip", forwardedIp);
+        return this;
     }
 
-    default void setRiskPassword(String password) {
-        paramMap.put("password", password);
+    default RiskParamsAttributes setRiskUsername(String username) {
+        requestBuilder.addElement("username", username);
+        return this;
     }
 
-    default void setRiskBinName(String binName) {
-        paramMap.put("bin_name", binName);
+    default RiskParamsAttributes setRiskPassword(String password) {
+        requestBuilder.addElement("password", password);
+        return this;
     }
 
-    default void setRiskBinPhone(String binPhone) {
-        paramMap.put("bin_phone", binPhone);
+    default RiskParamsAttributes setRiskBinName(String binName) {
+        requestBuilder.addElement("bin_name", binName);
+        return this;
+    }
+
+    default RiskParamsAttributes setRiskBinPhone(String binPhone) {
+        requestBuilder.addElement("bin_phone", binPhone);
+        return this;
     }
 
     default RequestBuilder buildRiskParams() {
-
-        return new RequestBuilder("").addElement("ssn", paramMap.get("ssn"))
-                .addElement("mac_address", paramMap.get("mac_address"))
-                .addElement("session_id", paramMap.get("session_id"))
-                .addElement("user_id", paramMap.get("user_id"))
-                .addElement("user_level", paramMap.get("user_level"))
-                .addElement("email", paramMap.get("email"))
-                .addElement("phone", paramMap.get("phone"))
-                .addElement("remote_ip", paramMap.get("remote_ip"))
-                .addElement("serial_number", paramMap.get("serial_number"))
-                .addElement("pan_tail", paramMap.get("pan_tail"))
-                .addElement("bin", paramMap.get("bin"))
-                .addElement("first_name", paramMap.get("first_name"))
-                .addElement("last_name", paramMap.get("last_name"))
-                .addElement("country", paramMap.get("country"))
-                .addElement("pan", paramMap.get("pan"))
-                .addElement("forwarded_ip", paramMap.get("forwarded_ip"))
-                .addElement("username", paramMap.get("username"))
-                .addElement("password", paramMap.get("password"))
-                .addElement("bin_name", paramMap.get("bin_name"))
-                .addElement("bin_phone", paramMap.get("bin_phone"));
+        return requestBuilder;
     }
 }

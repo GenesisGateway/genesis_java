@@ -29,25 +29,33 @@ public class InitRecurringSale3DTest {
 
     @Before
     public void createSale() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Sale3D
-        initrecsale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
-                .setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").setNotificationUrl(new URL("http://www.example.com/notification"))
-                .setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        initrecsale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        initrecsale3d.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
+        initrecsale3d.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123");
+        initrecsale3d.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
+        initrecsale3d.setNotificationUrl(new URL("http://www.example.com/notification"));
+        initrecsale3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        initrecsale3d.setBillingPrimaryAddress("Address1");
-        initrecsale3d.setBillingSecondaryAddress("Address2");
-        initrecsale3d.setBillingFirstname("John");
-        initrecsale3d.setBillingLastname("Doe");
-        initrecsale3d.setBillingCity("New York");
-        initrecsale3d.setBillingCountry("US");
-        initrecsale3d.setBillingZipCode("1000");
-        initrecsale3d.setBillingState("NY");
+        initrecsale3d.setBillingPrimaryAddress("Address1")
+                .setBillingSecondaryAddress("Address2")
+                .setBillingFirstname("John")
+                .setBillingLastname("Doe")
+                .setBillingCity("New York")
+                .setBillingCountry("US")
+                .setBillingZipCode("1000")
+                .setBillingState("NY");
+
+        mappedParams.put("base_attributes", initrecsale3d.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", initrecsale3d.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", initrecsale3d.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", initrecsale3d.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", initrecsale3d.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -57,9 +65,7 @@ public class InitRecurringSale3DTest {
 
     @Test
     public void testSale3D() throws MalformedURLException, NoSuchAlgorithmException, UnsupportedEncodingException {
-
-        mappedParams = new HashMap<String, Object>();
-
+        
         elements = initrecsale3d.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -72,16 +78,12 @@ public class InitRecurringSale3DTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+5555555555");
+        assertEquals(mappedParams.get("base_attributes"), initrecsale3d.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), initrecsale3d.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), initrecsale3d.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), initrecsale3d.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), initrecsale3d.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("billing_address"), initrecsale3d.getBillingAddress().getElements());
     }
 

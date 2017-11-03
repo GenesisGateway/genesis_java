@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.util;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,8 @@ public class Configuration implements Serializable {
 	private String action;
 	private Boolean tokenEnabled = true;
 	private Boolean wpf = false;
+	private Boolean enabledDebugMode = false;
+	private Locale language;
 
 	private static Logger logger;
 
@@ -47,6 +50,7 @@ public class Configuration implements Serializable {
 		logger = Logger.getLogger("Genesis");
 		logger.addHandler(new ConsoleHandler());
 		logger.setLevel(Level.INFO);
+		logger.setUseParentHandlers(false);
 	}
 
 	public Configuration(Environments environment, Endpoints endpoint) {
@@ -61,6 +65,14 @@ public class Configuration implements Serializable {
 
 	public Logger getLogger() {
 		return logger;
+	}
+
+	public void setDebugMode(Boolean enabled) {
+		this.enabledDebugMode = enabled;
+	}
+
+	public Boolean isDebugModeEnabled() {
+		return this.enabledDebugMode;
 	}
 
 	public void setUsername(String username) {
@@ -98,20 +110,28 @@ public class Configuration implements Serializable {
 		return action;
 	}
 
+	public void setWpfEnabled(Boolean wpf) {
+		this.wpf = wpf;
+	}
+
 	public Boolean getWpfEnabled() {
 		return wpf;
 	}
 
-	public void setWpfEnabled(Boolean wpf) {
-		this.wpf = wpf;
+	public void setTokenEnabled(Boolean tokenEnabled) {
+		this.tokenEnabled = tokenEnabled;
 	}
 
 	public Boolean getTokenEnabled() {
 		return tokenEnabled;
 	}
 
-	public void setTokenEnabled(Boolean tokenEnabled) {
-		this.tokenEnabled = tokenEnabled;
+	public void setLanguage(Locale language) {
+		this.language = language;
+	}
+
+	public Locale getLanguage() {
+		return language;
 	}
 
 	public String getBaseUrl() {
@@ -133,5 +153,9 @@ public class Configuration implements Serializable {
 
 	public Environments getEnvironment() {
 		return environment;
+	}
+
+	public Endpoints getEndpoint() {
+		return endpoint;
 	}
 }

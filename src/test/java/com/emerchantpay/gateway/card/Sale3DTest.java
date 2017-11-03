@@ -29,25 +29,33 @@ public class Sale3DTest {
 
     @Before
     public void createSale() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
         // Sale3D
-        sale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency())
-                .setCardholder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123").setCustomerEmail("john@example.com")
-                .setCustomerPhone("+5555555555").setNotificationUrl(new URL("http://www.example.com/notification"))
-                .setReturnSuccessUrl(new URL("http://www.example.com/success"))
+        sale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        sale3d.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
+        sale3d.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123");
+        sale3d.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
+        sale3d.setNotificationUrl(new URL("http://www.example.com/notification"));
+        sale3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure"));
 
-        sale3d.setBillingPrimaryAddress("Address1");
-        sale3d.setBillingSecondaryAddress("Address2");
-        sale3d.setBillingFirstname("John");
-        sale3d.setBillingLastname("Doe");
-        sale3d.setBillingCity("New York");
-        sale3d.setBillingCountry("US");
-        sale3d.setBillingZipCode("1000");
-        sale3d.setBillingState("NY");
+        sale3d.setBillingPrimaryAddress("Address1")
+                .setBillingSecondaryAddress("Address2")
+                .setBillingFirstname("John")
+                .setBillingLastname("Doe")
+                .setBillingCity("New York")
+                .setBillingCountry("US")
+                .setBillingZipCode("1000")
+                .setBillingState("NY");
+
+        mappedParams.put("base_attributes", sale3d.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", sale3d.buildPaymentParams().getElements());
+        mappedParams.put("credit_card_attributes", sale3d.buildCreditCardParams().getElements());
+        mappedParams.put("customer_info_attributes", sale3d.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", sale3d.buildAsyncParams().getElements());
     }
 
     public void setMissingParams() {
@@ -57,8 +65,6 @@ public class Sale3DTest {
 
     @Test
     public void testSale3D() throws MalformedURLException, NoSuchAlgorithmException, UnsupportedEncodingException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = sale3d.getElements();
 
@@ -72,16 +78,12 @@ public class Sale3DTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uniqueId);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("2200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+5555555555");
+        assertEquals(mappedParams.get("base_attributes"), sale3d.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), sale3d.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("credit_card_attributes"), sale3d.buildCreditCardParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), sale3d.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), sale3d.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("http://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("http://www.example.com/failure"));
         assertEquals(mappedParams.get("billing_address"), sale3d.getBillingAddress().getElements());
     }
 

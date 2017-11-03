@@ -2,9 +2,6 @@ package com.emerchantpay.gateway.api.requests.nonfinancial;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -34,22 +31,11 @@ import java.util.Map;
 
 public class BlacklistRequest extends Request {
 
-	protected Configuration configuration;
-	private Http http;
-
-	private NodeWrapper response;
-
 	private String cardnumber;
 	private String terminalToken;
 
 	public BlacklistRequest() {
 		super();
-	}
-
-	public BlacklistRequest(Configuration configuration) {
-
-		super();
-		this.configuration = configuration;
 	}
 
 	public BlacklistRequest setCardNumber(String cardnumber) {
@@ -60,6 +46,11 @@ public class BlacklistRequest extends Request {
 	public BlacklistRequest setTerminalToken(String terminalToken) {
 		this.terminalToken = terminalToken;
 		return this;
+	}
+
+	@Override
+	public String getTransactionType() {
+		return "blacklist";
 	}
 
 	@Override
@@ -76,20 +67,6 @@ public class BlacklistRequest extends Request {
 
 		return new RequestBuilder(root).addElement("card_number", cardnumber).addElement("terminal_token",
 				terminalToken);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		configuration.setTokenEnabled(false);
-		configuration.setAction("blacklists");
-		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), this);
-
-		return this;
-	}
-
-	public NodeWrapper getResponse() {
-		return response;
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

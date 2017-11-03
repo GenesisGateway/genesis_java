@@ -31,24 +31,33 @@ public class WPFRequestsTest {
 
     @Before
     public void createWPF() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidWpf = new StringUtils().generateUID();
 
         // Create WPF
-        wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS").setDescription("TEST Description")
-                .setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setReturnSuccessUrl(new URL("https://www.example.com/success"))
-                .setReturnFailureUrl(new URL("https://www.example.com/failure"))
-                .setReturnCancelUrl(new URL("https://example.com/return_cancel"))
+        wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS");
+        wpfCreate.setDescription("TEST Description");
+        wpfCreate.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
+        wpfCreate.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
+        wpfCreate.setReturnSuccessUrl(new URL("https://www.example.com/success"))
+                .setReturnFailureUrl(new URL("https://www.example.com/failure"));
+        wpfCreate.setReturnCancelUrl(new URL("https://example.com/return_cancel"))
                 .setNotificationUrl(new URL("https://example.com/notification"));
 
-        wpfCreate.setBillingPrimaryAddress("Berlin");
-        wpfCreate.setBillingSecondaryAddress("Berlin");
-        wpfCreate.setBillingFirstname("Plamen");
-        wpfCreate.setBillingLastname("Petrov");
-        wpfCreate.setBillingCity("Berlin");
-        wpfCreate.setBillingCountry(Country.Germany.getCode());
-        wpfCreate.setBillingZipCode("M4B1B3");
-        wpfCreate.setBillingState("BE");
+        wpfCreate.setBillingPrimaryAddress("Berlin")
+                .setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen")
+                .setBillingLastname("Petrov").setBillingCity("Berlin")
+                .setBillingCountry(Country.Germany.getCode())
+                .setBillingZipCode("M4B1B3")
+                .setBillingState("BE");
+
+        wpfCreate.setLifetime(60);
+
+        mappedParams.put("base_attributes", wpfCreate.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", wpfCreate.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", wpfCreate.buildCustomerInfoParams().getElements());
+        mappedParams.put("async_attributes", wpfCreate.buildAsyncParams().getElements());
     }
 
     @Before
@@ -65,8 +74,6 @@ public class WPFRequestsTest {
     @Test
     public void testWPF() throws MalformedURLException {
 
-        mappedParams = new HashMap<String, Object>();
-
         elements = wpfCreate.getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -79,17 +86,14 @@ public class WPFRequestsTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidWpf);
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.USD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("200"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), wpfCreate.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), wpfCreate.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), wpfCreate.buildCustomerInfoParams().getElements());
+        assertEquals(mappedParams.get("async_attributes"), wpfCreate.buildAsyncParams().getElements());
         assertEquals(mappedParams.get("description"), "TEST Description");
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("return_success_url"), new URL("https://www.example.com/success"));
-        assertEquals(mappedParams.get("return_failure_url"), new URL("https://www.example.com/failure"));
         assertEquals(mappedParams.get("return_cancel_url"), new URL("https://example.com/return_cancel"));
+        assertEquals(mappedParams.get("lifetime"), 60);
         assertEquals(mappedParams.get("billing_address"), wpfCreate.getBillingAddress().getElements());
     }
 

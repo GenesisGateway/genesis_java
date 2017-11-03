@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.emerchantpay.gateway.util.NodeWrapper;
 import com.emerchantpay.gateway.util.QueryString;
 import com.emerchantpay.gateway.util.StringUtils;
 
@@ -52,8 +51,19 @@ public class RequestBuilder {
 		return this;
 	}
 
+	public RequestBuilder addElement(Object value) {
+		elements.add(new AbstractMap.SimpleEntry<String, Object>("", value));
+
+		return this;
+	}
+
 	public RequestBuilder addElement(String name, Object value) {
+		if (name != null) {
+			elements.removeIf(elements -> elements.getKey().equals(name));
+		}
+
 		elements.add(new AbstractMap.SimpleEntry<String, Object>(name, value));
+
 		return this;
 	}
 
@@ -77,8 +87,11 @@ public class RequestBuilder {
 			builder.append(buildXMLElement(entry.getKey(), entry.getValue()));
 		}
 		builder.append(String.format("</%s>", parent));
-		return builder.toString().replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
-				.replaceAll("&apos;", "'").replaceAll("&quot;", "\"").replaceAll("<>", "").replaceAll("</>", "");
+
+		String[] findArray = new String[]{"&amp;", "&lt;", "&gt;", "&apos;", "&quot;", "<>", "</>"};
+		String[] replaceArray = new String[]{"&", "<", ">", "'", "\"", "", ""};
+
+		return replaceAllStrings(findArray, replaceArray, builder.toString());
 	}
 
 	protected static String buildXMLElement(Object element) {
@@ -147,9 +160,19 @@ public class RequestBuilder {
 		return String.format("<%s type=\"%s\">%s</%s>", tagName, type, xml, tagName);
 	}
 
+	protected static String replaceAllStrings(String[] findArr, String[] replaceArr, String input) {
+		for (Integer i = 0; i < findArr.length; i++) {
+			input = input.replace(findArr[i], replaceArr[i]);
+		}
+
+		return input;
+	}
+
 	protected static String xmlEscape(String input) {
-		return input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("'", "&apos;")
-				.replaceAll("\"", "&quot;");
+		String[] findArray = new String[]{"&", "<", ">", "'", "\""};
+		String[] replaceArray = new String[]{"&amp;", "&lt;", "&gt;", "&apos;", "&quot;"};
+
+		return replaceAllStrings(findArray, replaceArray, input);
 	}
 
     public List<Map.Entry<String,Object>> getElements() {

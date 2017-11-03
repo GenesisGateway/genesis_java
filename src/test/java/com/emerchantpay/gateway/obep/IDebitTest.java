@@ -1,9 +1,7 @@
 package com.emerchantpay.gateway.obep;
 
-import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayInRequest;
 import com.emerchantpay.gateway.api.requests.financial.oBeP.IDebitPayOutRequest;
-import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Country;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -32,34 +30,40 @@ public class IDebitTest {
     private String uidPayOut;
 
     @Before
-    public void createIDeitPayIn() throws MalformedURLException {
+    public void createIDebitPayIn() throws MalformedURLException {
+        mappedParams = new HashMap<String, Object>();
         uidPayIn = new StringUtils().generateUID();
 
         // PayIn
-        idebitPayIn.setTransactionId(uidPayIn).setRemoteIp("192.168.0.1").setUsage("TICKETS")
-                .setCurrency(Currency.CAD.getCurrency())
-                .setAmount(new BigDecimal("100.00")).setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555").setCustomerAccountId("1534537")
+        idebitPayIn.setTransactionId(uidPayIn).setRemoteIp("192.168.0.1").setUsage("TICKETS");
+        idebitPayIn.setCurrency(Currency.CAD.getCurrency())
+                .setAmount(new BigDecimal("100.00"));
+        idebitPayIn.setCustomerEmail("john@example.com")
+                .setCustomerPhone("+55555555");
+        idebitPayIn.setCustomerAccountId("1534537")
                 .setReturnUrl(new URL("https://example.com/return_success"))
                 .setNotificationUrl(new URL("https://example.com/return_notification"));
 
-        idebitPayIn.setBillingPrimaryAddress("Toronto");
-        idebitPayIn.setBillingSecondaryAddress("Toronto");
-        idebitPayIn.setBillingFirstname("Plamen");
-        idebitPayIn.setBillingLastname("Petrov");
-        idebitPayIn.setBillingCity("Toronto");
-        idebitPayIn.setBillingCountry(Country.Canada.getCode());
-        idebitPayIn.setBillingZipCode("M4B1B3");
-        idebitPayIn.setBillingState("ON");
+        idebitPayIn.setBillingPrimaryAddress("Toronto").setBillingSecondaryAddress("Toronto")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Toronto").setBillingCountry(Country.Canada.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("ON");
+
+        mappedParams.put("base_attributes", idebitPayIn.buildBaseParams().getElements());
+        mappedParams.put("payment_attributes", idebitPayIn.buildPaymentParams().getElements());
+        mappedParams.put("customer_info_attributes", idebitPayIn.buildCustomerInfoParams().getElements());
     }
 
     @Before
     public void createIDebitPayOut() {
+        mappedParams = new HashMap<String, Object>();
         uidPayOut = new StringUtils().generateUID();
 
-        // PayIn
+        // PayOut
         idebitPayOut.setTransactionId(uidPayOut).setReferenceId("2bf62f87d232590a115530b0a0154505")
                 .setCurrency(Currency.CAD.getCurrency()).setAmount(new BigDecimal("1.00"));
+
+        mappedParams.put("payment_attributes", idebitPayIn.buildPaymentParams().getElements());
     }
 
     public void setMissingParams() {
@@ -68,8 +72,6 @@ public class IDebitTest {
 
     @Test
     public void testIDebitPayIn() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
 
         elements = idebitPayIn.getElements();
 
@@ -83,13 +85,9 @@ public class IDebitTest {
             }
         }
 
-        assertEquals(mappedParams.get("transaction_id"), uidPayIn);
-        assertEquals(mappedParams.get("remote_ip"), "192.168.0.1");
-        assertEquals(mappedParams.get("usage"), "TICKETS");
-        assertEquals(mappedParams.get("currency"), Currency.CAD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("10000"));
-        assertEquals(mappedParams.get("customer_email"), "john@example.com");
-        assertEquals(mappedParams.get("customer_phone"), "+55555555");
+        assertEquals(mappedParams.get("base_attributes"), idebitPayIn.buildBaseParams().getElements());
+        assertEquals(mappedParams.get("payment_attributes"), idebitPayIn.buildPaymentParams().getElements());
+        assertEquals(mappedParams.get("customer_info_attributes"), idebitPayIn.buildCustomerInfoParams().getElements());
         assertEquals(mappedParams.get("return_url"), new URL("https://example.com/return_success"));
         assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/return_notification"));
         assertEquals(mappedParams.get("billing_address"), idebitPayIn.getBillingAddress().getElements());
@@ -100,7 +98,6 @@ public class IDebitTest {
 
         setMissingParams();
 
-        mappedParams = new HashMap<String, Object>();
         elements = idebitPayIn.buildBillingAddress().getElements();
 
         for (int i = 0; i < elements.size(); i++) {
@@ -112,7 +109,6 @@ public class IDebitTest {
 
     @Test
     public void testIDebitPayOut() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
 
         elements = idebitPayOut.getElements();
 
@@ -121,8 +117,7 @@ public class IDebitTest {
         }
 
         assertEquals(mappedParams.get("transaction_id"), uidPayOut);
-        assertEquals(mappedParams.get("currency"), Currency.CAD.getCurrency());
-        assertEquals(mappedParams.get("amount"), new BigDecimal("100"));
+        assertEquals(mappedParams.get("payment_attributes"), idebitPayOut.buildPaymentParams().getElements());
         assertEquals(mappedParams.get("reference_id"), "2bf62f87d232590a115530b0a0154505");
     }
 }

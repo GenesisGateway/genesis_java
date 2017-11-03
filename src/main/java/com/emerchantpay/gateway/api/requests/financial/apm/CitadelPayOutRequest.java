@@ -5,6 +5,9 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.Http;
@@ -38,24 +41,11 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CitadelPayOutRequest extends Request implements BillingAddressAttributes, ShippingAddressAttributes {
-
-    protected Configuration configuration;
-    private Http http;
-
-    private NodeWrapper response;
+public class CitadelPayOutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.CITADEL_PAYOUT;
-    private String transactionId;
-    private String usage;
-    private String remoteIP;
-    private String customerEmail;
-    private String customerPhone;
-    private URL returnSuccessUrl;
-    private URL returnFailureUrl;
     private URL notificationUrl;
     private BigDecimal amount;
-    private BigDecimal convertedAmount;
     private String currency;
     private String holderName;
     private String iban;
@@ -71,59 +61,30 @@ public class CitadelPayOutRequest extends Request implements BillingAddressAttri
         super();
     }
 
-    public CitadelPayOutRequest(Configuration configuration) {
-
-        super();
-        this.configuration = configuration;
-    }
-
-    public CitadelPayOutRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-        return this;
-    }
-
-    public CitadelPayOutRequest setReturnSuccessUrl(URL returnSuccessUrl) {
-        this.returnSuccessUrl = returnSuccessUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setReturnFailureUrl(URL returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
-    public CitadelPayOutRequest setAmount(BigDecimal amount) {
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
     }
 
-    public CitadelPayOutRequest setCurrency(String currency) {
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
         this.currency = currency;
         return this;
     }
 
-    public CitadelPayOutRequest setUsage(String usage) {
-        this.usage = usage;
-        return this;
+    @Override
+    public String getCurrency() {
+        return currency;
     }
 
-    public CitadelPayOutRequest setRemoteIp(String remoteIp) {
-        this.remoteIP = remoteIp;
-        return this;
-    }
-
-    public CitadelPayOutRequest setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-        return this;
-    }
-
-    public CitadelPayOutRequest setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
+    public CitadelPayOutRequest setNotificationUrl(URL notificationUrl) {
+        this.notificationUrl = notificationUrl;
         return this;
     }
 
@@ -174,6 +135,11 @@ public class CitadelPayOutRequest extends Request implements BillingAddressAttri
     }
 
     @Override
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    @Override
     public String toXML() {
         return buildRequest("payment_transaction").toXML();
     }
@@ -185,38 +151,17 @@ public class CitadelPayOutRequest extends Request implements BillingAddressAttri
 
     protected RequestBuilder buildRequest(String root) {
 
-        if (amount != null && currency != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(amount, currency);
-            convertedAmount = curr.getAmount();
-        }
-
-        return new RequestBuilder(root).addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-                .addElement("usage", usage).addElement("return_success_url", returnSuccessUrl)
-                .addElement("return_failure_url", returnFailureUrl).addElement("notification_url", notificationUrl)
-                .addElement("remote_ip", remoteIP).addElement("customer_email", customerEmail)
-                .addElement("customer_phone", customerPhone).addElement("amount", convertedAmount)
-                .addElement("currency", currency).addElement("holder_name", holderName)
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML())
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildAsyncParams().toXML())
+                .addElement("notification_url", notificationUrl)
+                .addElement("holder_name", holderName)
                 .addElement("iban", iban).addElement("swift_code", swiftCode).addElement("bank_name", bankName)
                 .addElement("bank_code", bankCode).addElement("bank_city", bankCity).addElement("branch_code", branchCode)
                 .addElement("branch_check_digit", branchCheckDigit).addElement("account_number", accountNumber)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
-    }
-
-    public Request execute(Configuration configuration) {
-
-        configuration.setAction("process");
-        http = new Http(configuration);
-        response = http.post(configuration.getBaseUrl(), this);
-
-        return this;
-    }
-
-    public NodeWrapper getResponse() {
-        return response;
     }
 
     public List<Map.Entry<String, Object>> getElements() {

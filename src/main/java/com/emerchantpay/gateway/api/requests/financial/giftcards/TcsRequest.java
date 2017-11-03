@@ -1,8 +1,8 @@
-package com.emerchantpay.gateway.api.requests.financial.card;
+package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -26,30 +26,22 @@ import com.emerchantpay.gateway.api.RequestBuilder;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Authorize3DDynamicDescriptorParamsRequest extends Request {
+public class TcsRequest extends GiftCardRequest {
 
-	private Authorize3DRequest parent;
+	private String transactionType = TransactionTypes.TCS;
 
-	private String merchantname;
-	private String merchantcity;
-
-	Authorize3DDynamicDescriptorParamsRequest(Authorize3DRequest parent) {
-		this.parent = parent;
-	}
-
-	public Authorize3DDynamicDescriptorParamsRequest setMerchantName(String merchantname) {
-		this.merchantname = merchantname;
-		return this;
-	}
-
-	public Authorize3DDynamicDescriptorParamsRequest setMerchantCity(String merchantcity) {
-		this.merchantcity = merchantcity;
-		return this;
+	public TcsRequest() {
+		super();
 	}
 
 	@Override
 	public String toXML() {
-		return buildRequest("dynamic_descriptor_params").toXML();
+		return buildRequest("payment_transaction").toXML();
+	}
+
+	@Override
+	public String getTransactionType() {
+		return transactionType;
 	}
 
 	@Override
@@ -59,11 +51,7 @@ public class Authorize3DDynamicDescriptorParamsRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 
-		return new RequestBuilder(root).addElement("merchant_name", merchantname).addElement("merchant_city",
-				merchantcity);
-	}
-
-	public Authorize3DRequest done() {
-		return parent;
+		return new RequestBuilder(root).addElement("transaction_type", transactionType)
+				.addElement(buildGiftcardParams().toXML());
 	}
 }
