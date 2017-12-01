@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.apm;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.apm.P24Request;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -9,82 +12,109 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class P24Test {
 
-	private List<Map.Entry<String, Object>> elements;
-	private HashMap<String, Object> mappedParams;
-
 	private String uniqueId;
 
-	private P24Request request = new P24Request();
+	private GenesisClient client;
+	private P24Request p24Request;
 
 	@Before
 	public void createP24() throws MalformedURLException {
-		mappedParams = new HashMap<String, Object>();
 		uniqueId = new StringUtils().generateUID();
 
-		request.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-		request.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
-		request.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
-		request.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
-				.setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
-
-		request.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
-				.setBillingFirstname("Plamen").setBillingLastname("Petrov")
-				.setBillingCity("Berlin").setBillingCountry("DE")
-				.setBillingZipCode("M4B1B3").setBillingState("BE");
-
-		mappedParams.put("base_attributes", request.buildBaseParams().getElements());
-		mappedParams.put("payment_attributes", request.buildPaymentParams().getElements());
-		mappedParams.put("customer_info_attributes", request.buildCustomerInfoParams().getElements());
-		mappedParams.put("async_attributes",  request.buildAsyncParams().getElements());
+		client = mock(GenesisClient.class);
+		p24Request = mock(P24Request.class);
 	}
 
-	public void setMissingParams() {
-		request.setBillingCountry(null);
+	public void clearRequiredParams() {
+		Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+		ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+				new Throwable());
+
+		when(p24Request.setBillingCountry(null)).thenThrow(exception);
+	}
+
+	public void verifyExecute() {
+		when(client.execute()).thenReturn(p24Request);
+		assertEquals(client.execute(), p24Request);
+		verify(client).execute();
+		verifyNoMoreInteractions(client);
 	}
 
 	@Test
 	public void testP24() throws MalformedURLException {
+		// P24
+		when(p24Request.setTransactionId(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setRemoteIp((isA(String.class)))).thenReturn(p24Request);
+		when(p24Request.setUsage(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setCurrency(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setAmount(isA(BigDecimal.class))).thenReturn(p24Request);
+		when(p24Request.setCustomerEmail(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setCustomerPhone(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setReturnSuccessUrl(isA(URL.class))).thenReturn(p24Request);
+		when(p24Request.setReturnFailureUrl(isA(URL.class))).thenReturn(p24Request);
+		when(p24Request.setBillingPrimaryAddress(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingSecondaryAddress(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingFirstname(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingLastname(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingCity(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingCountry(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingZipCode(isA(String.class))).thenReturn(p24Request);
+		when(p24Request.setBillingState(isA(String.class))).thenReturn(p24Request);
 
-		elements = request.getElements();
+		assertEquals(p24Request.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"),
+				p24Request);
+		assertEquals(p24Request.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")),
+				p24Request);
+		assertEquals(p24Request.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), p24Request);
+		assertEquals(p24Request.setReturnSuccessUrl(new URL("https://example.com/return_success_url"))
+				.setReturnFailureUrl(new URL("https://example.com/return_failure_url")), p24Request);
+		assertEquals(p24Request.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+				.setBillingFirstname("Plamen").setBillingLastname("Petrov")
+				.setBillingCity("Berlin").setBillingCountry("DE")
+				.setBillingZipCode("M4B1B3").setBillingState("BE"), p24Request);
 
-		for (int i = 0; i < elements.size(); i++) {
-			if (elements.get(i).getKey() == "billing_address")
-			{
-				mappedParams.put("billing_address", request.getBillingAddress().getElements());
-			}
-			else {
-				mappedParams.put(elements.get(i).getKey(), request.getElements().get(i).getValue());
-			}
-		}
+		verify(p24Request).setTransactionId(uniqueId);
+		verify(p24Request).setRemoteIp("82.137.112.202");
+		verify(p24Request).setUsage("TICKETS");
+		verify(p24Request).setCurrency(Currency.EUR.getCurrency());
+		verify(p24Request).setAmount(new BigDecimal("2.00"));
+		verify(p24Request).setCustomerEmail("john@example.com");
+		verify(p24Request).setCustomerPhone("+55555555");
+		verify(p24Request).setReturnSuccessUrl(new URL("https://example.com/return_success_url"));
+		verify(p24Request).setReturnFailureUrl(new URL("https://example.com/return_failure_url"));
+		verify(p24Request).setBillingPrimaryAddress("Berlin");
+		verify(p24Request).setBillingSecondaryAddress("Berlin");
+		verify(p24Request).setBillingFirstname("Plamen");
+		verify(p24Request).setBillingLastname("Petrov");
+		verify(p24Request).setBillingCity("Berlin");
+		verify(p24Request).setBillingCountry("DE");
+		verify(p24Request).setBillingZipCode("M4B1B3");
+		verify(p24Request).setBillingState("BE");
+		verifyNoMoreInteractions(p24Request);
 
-		assertEquals(mappedParams.get("base_attributes"), request.buildBaseParams().getElements());
-		assertEquals(mappedParams.get("payment_attributes"), request.buildPaymentParams().getElements());
-		assertEquals(mappedParams.get("customer_info_attributes"), request.buildCustomerInfoParams().getElements());
-		assertEquals(mappedParams.get("async_attributes"), request.buildAsyncParams().getElements());
-		assertEquals(mappedParams.get("is_payout"), null);
-		assertEquals(mappedParams.get("billing_address"), request.getBillingAddress().getElements());
+		verifyExecute();
 	}
 
-	@Test
+	@Test(expected = ApiException.class)
 	public void testP24WithMissingParams() {
 
-		setMissingParams();
+		clearRequiredParams();
 
-		elements = request.buildBillingAddress().getElements();
+		assertNull(p24Request.setBillingCountry(null));
+		verify(p24Request).setBillingCountry(null);
+		verifyNoMoreInteractions(p24Request);
 
-		for (int i = 0; i < elements.size(); i++) {
-			mappedParams.put(elements.get(i).getKey(), request.getBillingAddress().getElements().get(i).getValue());
-		}
-
-		assertNull(mappedParams.get("country"));
+		verifyExecute();
 	}
 }

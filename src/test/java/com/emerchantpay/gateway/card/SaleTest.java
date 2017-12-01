@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.card;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -7,88 +10,117 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
 public class SaleTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private SaleRequest sale = new SaleRequest();
+    private GenesisClient client;
+    private SaleRequest sale;
 
     @Before
     public void createSale() {
-        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
-        // Sale
-        sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
-        sale.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
-        sale.setCardHolder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123");
-        sale.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
+        client = mock(GenesisClient.class);
+        sale = mock(SaleRequest.class);
+    }
 
-        sale.setBillingPrimaryAddress("Address1")
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(sale.setBillingCountry(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(sale);
+        assertEquals(client.execute(), sale);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    @Test
+    public void testSale() {
+
+        // Sale
+        when(sale.setTransactionId(isA(String.class))).thenReturn(sale);
+        when(sale.setRemoteIp(isA(String.class))).thenReturn(sale);
+        when(sale.setUsage(isA(String.class))).thenReturn(sale);
+        when(sale.setAmount(isA(BigDecimal.class))).thenReturn(sale);
+        when(sale.setCurrency(isA(String.class))).thenReturn(sale);
+        when(sale.setCardHolder(isA(String.class))).thenReturn(sale);
+        when(sale.setCardNumber(isA(String.class))).thenReturn(sale);
+        when(sale.setExpirationMonth(isA(String.class))).thenReturn(sale);
+        when(sale.setExpirationYear(isA(String.class))).thenReturn(sale);
+        when(sale.setCvv(isA(String.class))).thenReturn(sale);
+        when(sale.setCustomerEmail(isA(String.class))).thenReturn(sale);
+        when(sale.setCustomerPhone(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingPrimaryAddress(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingSecondaryAddress(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingFirstname(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingLastname(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingCity(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingCountry(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingZipCode(isA(String.class))).thenReturn(sale);
+        when(sale.setBillingState(isA(String.class))).thenReturn(sale);
+
+        assertEquals(sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"), sale);
+        assertEquals(sale.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency()), sale);
+        assertEquals(sale.setCardHolder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
+                .setExpirationYear("2020").setCvv("123"), sale);
+        assertEquals(sale.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555"), sale);
+        assertEquals( sale.setBillingPrimaryAddress("Address1")
                 .setBillingSecondaryAddress("Address2")
                 .setBillingFirstname("John")
                 .setBillingLastname("Doe").setBillingCity("New York")
                 .setBillingCountry("US")
                 .setBillingZipCode("1000")
-                .setBillingState("NY");
+                .setBillingState("NY"), sale);
 
-        mappedParams.put("base_attributes", sale.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", sale.buildPaymentParams().getElements());
-        mappedParams.put("credit_card_attributes", sale.buildCreditCardParams().getElements());
-        mappedParams.put("customer_info_attributes", sale.buildCustomerInfoParams().getElements());
+        verify(sale).setTransactionId(uniqueId);
+        verify(sale).setRemoteIp("192.168.0.1");
+        verify(sale).setUsage("TICKETS");
+        verify(sale).setAmount(new BigDecimal("22.00"));
+        verify(sale).setCurrency(Currency.USD.getCurrency());
+        verify(sale).setCardHolder("PLAMEN PETROV");
+        verify(sale).setCardNumber("4200000000000000");
+        verify(sale).setExpirationMonth("02");
+        verify(sale).setExpirationYear("2020");
+        verify(sale).setCvv("123");
+        verify(sale).setCustomerEmail("john@example.com");
+        verify(sale).setCustomerPhone("+5555555555");
+        verify(sale).setBillingPrimaryAddress("Address1");
+        verify(sale).setBillingSecondaryAddress("Address2");
+        verify(sale).setBillingFirstname("John");
+        verify(sale).setBillingLastname("Doe");
+        verify(sale).setBillingCity("New York");
+        verify(sale).setBillingCountry("US");
+        verify(sale).setBillingZipCode("1000");
+        verify(sale).setBillingState("NY");
+        verifyNoMoreInteractions(sale);
+
+        verifyExecute();
     }
 
-    public void setMissingParams() {
-        sale.setBillingCountry(null);
-    }
-
-    @Test
-    public void testSale() throws MalformedURLException {
-
-        elements = sale.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", sale.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), sale.getElements().get(i).getValue());
-            }
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), sale.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), sale.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("credit_card_attributes"), sale.buildCreditCardParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), sale.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("billing_address"), sale.getBillingAddress().getElements());
-    }
-
-    @Test
+    @Test(expected = ApiException.class)
     public void testSaleWithMissingParams() {
 
-        setMissingParams();
+        clearRequiredParams();
+        assertNull(sale.setBillingCountry(null));
+        verify(sale).setBillingCountry(null);
+        verifyNoMoreInteractions(sale);
 
-        mappedParams = new HashMap<String, Object>();
-        elements = sale.buildBillingAddress().getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), sale.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyExecute();
     }
 }

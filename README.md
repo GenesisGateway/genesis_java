@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
 </dependency>
 ```
 
@@ -91,6 +91,71 @@ public class GenesisExample {
 }
 ```
 
+Notifications
+-------------
+
+```
+import com.emerchantpay.gateway.NotificationGateway;
+import com.emerchantpay.gateway.api.constants.Endpoints;
+import com.emerchantpay.gateway.api.constants.Environments;
+import com.emerchantpay.gateway.util.Configuration;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class NotificationExample {
+    public static void main() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        // Create configuration
+        Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
+
+        configuration.setUsername("SET_YOUR_USERNAME");
+        configuration.setPassword("SET_YOUR_PASSWORD");
+        configuration.setToken("SET_YOUR_TOKEN");
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        map.put("transaction_id", "82803B4C-70CC-43BD-8B21-FD0395285B40");
+        map.put("unique_id", "fc6c3c8c0219730c7a099eaa540f70dc");
+        map.put("signature", "3070d7030806a3763fcae73923d9c2da0898dd19");
+        map.put("transaction_type", "sale3d");
+        map.put("terminal_token", configuration.getToken());
+        map.put("status", "approved");
+        map.put("amount", "500");
+        map.put("eci", "05");
+        map.put("avs_response_code", "5I");
+        map.put("avs_response_text", "Response+provided+by+issuer+processor%3B+ Address+information+not+verified");
+
+        NotificationGateway notification = new NotificationGateway(configuration, map);
+
+        // Execute Reconcile request
+        notification.initReconciliation();
+
+        // Get status of Reconcile response
+        // String status = notification.getReconcilation().getStatus();
+
+        // Generate the Gateway response
+        notification.generateResponse();
+
+        // Get Gateway response
+        String response = notification.getResponse().toXML();
+        System.out.println(response);
+
+        // Get List with Response params
+        List<Map.Entry<String,Object>> responseParamsList = notification.getResponseParams();
+
+        for (Map.Entry<String,Object> param: responseParamsList) {
+           System.out.print(param.getKey() + "=" + param.getValue());
+        }
+
+        // Get unique id param from Response
+        String uniqueId = notification.getResponseUniqueId();
+        System.out.println(uniqueId);
+    }
+}
+```
 
 Endpoints
 ---------

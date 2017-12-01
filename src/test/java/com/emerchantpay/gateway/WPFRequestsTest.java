@@ -1,5 +1,7 @@
 package com.emerchantpay.gateway;
 
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.wpf.WPFCreateRequest;
 import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
 import com.emerchantpay.gateway.util.Country;
@@ -11,117 +13,157 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class WPFRequestsTest {
 
-    private WPFCreateRequest wpfCreate = new WPFCreateRequest();
-    private WPFReconcileRequest wpfReconcile  = new WPFReconcileRequest();
-
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
+    private GenesisClient client;
+    private WPFCreateRequest wpfCreate;
+    private WPFReconcileRequest wpfReconcile;
 
     private String uidWpf;
     private String uidReconcile;
 
     @Before
     public void createWPF() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
         uidWpf = new StringUtils().generateUID();
 
-        // Create WPF
-        wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS");
-        wpfCreate.setDescription("TEST Description");
-        wpfCreate.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
-        wpfCreate.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
-        wpfCreate.setReturnSuccessUrl(new URL("https://www.example.com/success"))
-                .setReturnFailureUrl(new URL("https://www.example.com/failure"));
-        wpfCreate.setReturnCancelUrl(new URL("https://example.com/return_cancel"))
-                .setNotificationUrl(new URL("https://example.com/notification"));
-
-        wpfCreate.setBillingPrimaryAddress("Berlin")
-                .setBillingSecondaryAddress("Berlin")
-                .setBillingFirstname("Plamen")
-                .setBillingLastname("Petrov").setBillingCity("Berlin")
-                .setBillingCountry(Country.Germany.getCode())
-                .setBillingZipCode("M4B1B3")
-                .setBillingState("BE");
-
-        wpfCreate.setLifetime(60);
-
-        mappedParams.put("base_attributes", wpfCreate.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", wpfCreate.buildPaymentParams().getElements());
-        mappedParams.put("customer_info_attributes", wpfCreate.buildCustomerInfoParams().getElements());
-        mappedParams.put("async_attributes", wpfCreate.buildAsyncParams().getElements());
+        client = mock(GenesisClient.class);
+        wpfCreate = mock(WPFCreateRequest.class);
     }
 
     @Before
     public void createReconcile() {
-
         uidReconcile = new StringUtils().generateUID();
-        wpfReconcile.setUniqueId(uidReconcile);
+
+        client = mock(GenesisClient.class);
+        wpfReconcile = mock(WPFReconcileRequest.class);
     }
 
-    public void setMissingParams() {
-        wpfCreate.setBillingCountry(null);
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(wpfCreate.setBillingCountry(null)).thenThrow(exception);
+        when(wpfReconcile.setUniqueId(null)).thenThrow(exception);
+    }
+
+    public void verifyWPFExecute() {
+        when(client.execute()).thenReturn(wpfCreate);
+        assertEquals(client.execute(), wpfCreate);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    public void verifyReconcileExecute() {
+        when(client.execute()).thenReturn(wpfReconcile);
+        assertEquals(client.execute(), wpfReconcile);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void testWPF() throws MalformedURLException {
 
-        elements = wpfCreate.getElements();
+        // Create WPF
+        when(wpfCreate.setTransactionId(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setUsage(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setDescription(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setAmount(isA(BigDecimal.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setCurrency(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setCustomerEmail(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setCustomerPhone(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setNotificationUrl(isA(URL.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setReturnSuccessUrl(isA(URL.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setReturnFailureUrl(isA(URL.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setReturnCancelUrl(isA(URL.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingPrimaryAddress(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingSecondaryAddress(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingFirstname(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingLastname(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingCity(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingCountry(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingZipCode(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setBillingState(isA(String.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setLifetime(isA(Integer.class))).thenReturn(wpfCreate);
 
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", wpfCreate.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), wpfCreate.getElements().get(i).getValue());
-            }
-        }
+        assertEquals(wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS"), wpfCreate);
+        assertEquals(wpfCreate.setDescription("TEST Description"), wpfCreate);
+        assertEquals(wpfCreate.setCurrency(Currency.USD.getCurrency())
+                .setAmount(new BigDecimal("2.00")), wpfCreate);
+        assertEquals(wpfCreate.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), wpfCreate);
+        assertEquals(wpfCreate.setReturnSuccessUrl(new URL("https://www.example.com/success"))
+                .setReturnFailureUrl(new URL("https://www.example.com/failure")), wpfCreate);
+        assertEquals(wpfCreate.setReturnCancelUrl(new URL("https://example.com/return_cancel"))
+                .setNotificationUrl(new URL("https://example.com/notification")), wpfCreate);
+        assertEquals(wpfCreate.setBillingPrimaryAddress("Berlin")
+                .setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen")
+                .setBillingLastname("Petrov").setBillingCity("Berlin")
+                .setBillingCountry(Country.Germany.getCode())
+                .setBillingZipCode("M4B1B3")
+                .setBillingState("BE"), wpfCreate);
+        assertEquals(wpfCreate.setLifetime(60), wpfCreate);
 
-        assertEquals(mappedParams.get("base_attributes"), wpfCreate.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), wpfCreate.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), wpfCreate.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), wpfCreate.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("description"), "TEST Description");
-        assertEquals(mappedParams.get("notification_url"), new URL("https://example.com/notification"));
-        assertEquals(mappedParams.get("return_cancel_url"), new URL("https://example.com/return_cancel"));
-        assertEquals(mappedParams.get("lifetime"), 60);
-        assertEquals(mappedParams.get("billing_address"), wpfCreate.getBillingAddress().getElements());
+        verify(wpfCreate).setTransactionId(uidWpf);
+        verify(wpfCreate).setUsage("TICKETS");
+        verify(wpfCreate).setDescription("TEST Description");
+        verify(wpfCreate).setCurrency(Currency.USD.getCurrency());
+        verify(wpfCreate).setAmount(new BigDecimal("2.00"));
+        verify(wpfCreate).setCustomerEmail("john@example.com");
+        verify(wpfCreate).setCustomerPhone("+55555555");
+        verify(wpfCreate).setReturnSuccessUrl(new URL("https://www.example.com/success"));
+        verify(wpfCreate).setReturnFailureUrl(new URL("https://www.example.com/failure"));
+        verify(wpfCreate).setReturnCancelUrl(new URL("https://example.com/return_cancel"));
+        verify(wpfCreate).setNotificationUrl(new URL("https://example.com/notification"));
+        verify(wpfCreate).setBillingPrimaryAddress("Berlin");
+        verify(wpfCreate).setBillingSecondaryAddress("Berlin");
+        verify(wpfCreate).setBillingFirstname("Plamen");
+        verify(wpfCreate).setBillingLastname("Petrov");
+        verify(wpfCreate).setBillingCity("Berlin");
+        verify(wpfCreate).setBillingCountry(Country.Germany.getCode());
+        verify(wpfCreate).setBillingZipCode("M4B1B3");
+        verify(wpfCreate).setBillingState("BE");
+        verify(wpfCreate).setLifetime(60);
+        verifyNoMoreInteractions(wpfCreate);
+
+        verifyWPFExecute();
     }
 
     @Test
     public  void testReconcile() {
-        mappedParams = new HashMap<String, Object>();
+        when(wpfReconcile.setUniqueId(isA(String.class))).thenReturn(wpfReconcile);
 
-        elements = wpfReconcile.getElements();
+        assertEquals(wpfReconcile.setUniqueId(uidReconcile), wpfReconcile);
 
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), wpfReconcile.getElements().get(i).getValue());
-        }
-
-        assertEquals(mappedParams.get("unique_id"), uidReconcile);
+        verify(wpfReconcile).setUniqueId(uidReconcile);
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testWPFWithMissingParams() {
+        clearRequiredParams();
+        assertNull(wpfCreate.setBillingCountry(null));
+        verify(wpfCreate).setBillingCountry(null);
+        verifyNoMoreInteractions(wpfCreate);
 
-        setMissingParams();
+        verifyWPFExecute();
+    }
 
-        mappedParams = new HashMap<String, Object>();
-        elements = wpfCreate.buildBillingAddress().getElements();
+    @Test(expected = ApiException.class)
+    public void testWPFReconcileWithMissingParams() {
+        clearRequiredParams();
+        assertNull(wpfReconcile.setUniqueId(null));
+        verify(wpfReconcile).setUniqueId(null);
+        verifyNoMoreInteractions(wpfReconcile);
 
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), wpfCreate.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyReconcileExecute();
     }
 }

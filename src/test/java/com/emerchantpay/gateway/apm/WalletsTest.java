@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.apm;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.wallets.EzeewalletRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.NetellerRequest;
 import com.emerchantpay.gateway.api.requests.financial.wallets.WebMoneyRequest;
@@ -12,191 +15,285 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class WalletsTest {
+
+    private GenesisClient client;
 
     private EzeewalletRequest ezee = new EzeewalletRequest();
     private WebMoneyRequest webmoney  = new WebMoneyRequest();
     private NetellerRequest neteller = new NetellerRequest();
-
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
 
     private String uidEzee;
     private String uidWebmoney;
     private String uidNeteller;
 
     @Before
-    public void createEzeewallet() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
+    public void createEzeewallet() {
         uidEzee = new StringUtils().generateUID();
 
-        // Ezeewallet
-        ezee.setTransactionId(uidEzee).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        ezee.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
-        ezee.setSourceWalletId("john@example.com");
-        ezee.setSourceWalletPwd("UDBydsDBrYWxAQA==\\n");
-        ezee.setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
-        ezee.setNotificationURL(new URL("http://www.example.com/notification"));
-
-        mappedParams.put("base_attributes", ezee.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", ezee.buildPaymentParams().getElements());
-        mappedParams.put("async_atrributes", ezee.buildAsyncParams().getElements());
+        client = mock(GenesisClient.class);
+        ezee = mock(EzeewalletRequest.class);
     }
 
     @Before
-    public void createWebmoney() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
+    public void createWebmoney() {
         uidWebmoney = new StringUtils().generateUID();
 
-        // WebMoney
-        webmoney.setTransactionId(uidWebmoney).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        webmoney.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
-        webmoney.setCustomerEmail("john@example.com")
-                .setCustomerPhone("+55555555");
-        webmoney.setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
-        webmoney.setIsPayout(true).setCustomerAccount("118221674199");
-
-        webmoney.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
-                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
-                .setBillingCity("Berlin").setBillingCountry(Country.Germany.getCode())
-                .setBillingZipCode("M4B1B3").setBillingState("BE");
-
-
-        mappedParams.put("base_attributes", webmoney.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", webmoney.buildPaymentParams().getElements());
-        mappedParams.put("customer_info_attributes", webmoney.buildCustomerInfoParams().getElements());
-        mappedParams.put("async_attributes", webmoney.buildAsyncParams().getElements());
+        client = mock(GenesisClient.class);
+        webmoney = mock(WebMoneyRequest.class);
     }
 
     @Before
     public void createNeteller() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
         uidNeteller = new StringUtils().generateUID();
 
+        client = mock(GenesisClient.class);
+        neteller = mock(NetellerRequest.class);
+    }
+
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(ezee.setBillingCountry(null)).thenThrow(exception);
+        when(webmoney.setBillingCountry(null)).thenThrow(exception);
+        when(neteller.setBillingCountry(null)).thenThrow(exception);
+    }
+
+    public void verifyEzeeExecute() {
+        when(client.execute()).thenReturn(ezee);
+        assertEquals(client.execute(), ezee);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    public void verifyWebmoneyExecute() {
+        when(client.execute()).thenReturn(webmoney);
+        assertEquals(client.execute(), webmoney);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    public void verifyNetellerExecute() {
+        when(client.execute()).thenReturn(neteller);
+        assertEquals(client.execute(), neteller);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    @Test
+    public void testEzee() throws MalformedURLException {
+
+        // Ezeewallet
+        when(ezee.setTransactionId(isA(String.class))).thenReturn(ezee);
+        when(ezee.setRemoteIp(isA(String.class))).thenReturn(ezee);
+        when(ezee.setUsage(isA(String.class))).thenReturn(ezee);
+        when(ezee.setCurrency(isA(String.class))).thenReturn(ezee);
+        when(ezee.setAmount(isA(BigDecimal.class))).thenReturn(ezee);
+        when(ezee.setSourceWalletId(isA(String.class))).thenReturn(ezee);
+        when(ezee.setSourceWalletPwd(isA(String.class))).thenReturn(ezee);
+        when(ezee.setReturnSuccessUrl(isA(URL.class))).thenReturn(ezee);
+        when(ezee.setReturnFailureUrl(isA(URL.class))).thenReturn(ezee);
+        when(ezee.setNotificationURL(isA(URL.class))).thenReturn(ezee);
+
+        assertEquals(ezee.setTransactionId(uidEzee).setRemoteIp("82.137.112.202").setUsage("TICKETS"), ezee);
+        assertEquals(ezee.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")), ezee);
+        assertEquals(ezee.setSourceWalletId("john@example.com").setSourceWalletPwd("UDBydsDBrYWxAQA==\\n"), ezee);
+        assertEquals(ezee.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")), ezee);
+        assertEquals(ezee.setNotificationURL(new URL("http://www.example.com/notification")), ezee);
+
+
+        verify(ezee).setTransactionId(uidEzee);
+        verify(ezee).setRemoteIp("82.137.112.202");
+        verify(ezee).setUsage("TICKETS");
+        verify(ezee).setCurrency(Currency.USD.getCurrency());
+        verify(ezee).setAmount(new BigDecimal("2.00"));
+        verify(ezee).setSourceWalletId("john@example.com");
+        verify(ezee).setSourceWalletPwd("UDBydsDBrYWxAQA==\\n");
+        verify(ezee).setReturnSuccessUrl(new URL("http://www.example.com/success"));
+        verify(ezee).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        verify(ezee).setNotificationURL(new URL("http://www.example.com/notification"));
+        verifyNoMoreInteractions(ezee);
+
+        verifyEzeeExecute();
+    }
+
+    @Test(expected = ApiException.class)
+    public void testEzeewalletWithMissingParams() {
+        clearRequiredParams();
+
+        assertNull(ezee.setBillingCountry(null));
+        verify(ezee).setBillingCountry(null);
+        verifyNoMoreInteractions(ezee);
+
+        verifyEzeeExecute();
+    }
+
+    @Test
+    public void testWebmoney() throws MalformedURLException {
+
+        // WebMoney
+        when(webmoney.setTransactionId(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setRemoteIp(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setUsage(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setCurrency(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setAmount(isA(BigDecimal.class))).thenReturn(webmoney);
+        when(webmoney.setCustomerEmail(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setCustomerPhone(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setIsPayout(isA(Boolean.class))).thenReturn(webmoney);
+        when(webmoney.setCustomerAccount(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setReturnSuccessUrl(isA(URL.class))).thenReturn(webmoney);
+        when(webmoney.setReturnFailureUrl(isA(URL.class))).thenReturn(webmoney);
+        when(webmoney.setBillingPrimaryAddress(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingSecondaryAddress(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingZipCode(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingFirstname(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingLastname(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingCity(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingCountry(isA(String.class))).thenReturn(webmoney);
+        when(webmoney.setBillingState(isA(String.class))).thenReturn(webmoney);
+
+        assertEquals(webmoney.setTransactionId(uidWebmoney).setRemoteIp("82.137.112.202").setUsage("TICKETS"),
+                webmoney);
+        assertEquals(webmoney.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")), webmoney);
+        assertEquals(webmoney.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), webmoney);
+        assertEquals(webmoney.setIsPayout(true), webmoney);
+        assertEquals(webmoney.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")), webmoney);
+        assertEquals(webmoney.setCustomerAccount("118221674199"), webmoney);
+        assertEquals(webmoney.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry(Country.Germany.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("BE"), webmoney);
+
+        verify(webmoney).setTransactionId(uidWebmoney);
+        verify(webmoney).setRemoteIp("82.137.112.202");
+        verify(webmoney).setUsage("TICKETS");
+        verify(webmoney).setCurrency(Currency.USD.getCurrency());
+        verify(webmoney).setAmount(new BigDecimal("2.00"));
+        verify(webmoney).setCustomerEmail("john@example.com");
+        verify(webmoney).setCustomerPhone("+55555555");
+        verify(webmoney).setReturnSuccessUrl(new URL("http://www.example.com/success"));
+        verify(webmoney).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        verify(webmoney).setIsPayout(true);
+        verify(webmoney).setCustomerAccount("118221674199");
+        verify(webmoney).setBillingPrimaryAddress("Berlin");
+        verify(webmoney).setBillingSecondaryAddress("Berlin");
+        verify(webmoney).setBillingFirstname("Plamen");
+        verify(webmoney).setBillingLastname("Petrov");
+        verify(webmoney).setBillingCity("Berlin");
+        verify(webmoney).setBillingCountry(Country.Germany.getCode());
+        verify(webmoney).setBillingZipCode("M4B1B3");
+        verify(webmoney).setBillingState("BE");
+        verifyNoMoreInteractions(webmoney);
+
+        verifyWebmoneyExecute();
+    }
+
+    @Test(expected = ApiException.class)
+    public void testWebMoneyWithMissingParams() {
+
+        clearRequiredParams();
+
+        assertNull(webmoney.setBillingCountry(null));
+        verify(webmoney).setBillingCountry(null);
+        verifyNoMoreInteractions(webmoney);
+
+        verifyWebmoneyExecute();
+    }
+
+    @Test
+    public void testNeteller() throws MalformedURLException {
+
         // Neteller
+        when(neteller.setTransactionId(isA(String.class))).thenReturn(neteller);
+        when(neteller.setRemoteIp(isA(String.class))).thenReturn(neteller);
+        when(neteller.setUsage(isA(String.class))).thenReturn(neteller);
+        when(neteller.setCurrency(isA(String.class))).thenReturn(neteller);
+        when(neteller.setAmount(isA(BigDecimal.class))).thenReturn(neteller);
+        when(neteller.setCustomerEmail(isA(String.class))).thenReturn(neteller);
+        when(neteller.setCustomerPhone(isA(String.class))).thenReturn(neteller);
+        when(neteller.setReturnSuccessUrl(isA(URL.class))).thenReturn(neteller);
+        when(neteller.setReturnFailureUrl(isA(URL.class))).thenReturn(neteller);
+        when(neteller.setCustomerAccount(isA(String.class))).thenReturn(neteller);
+        when(neteller.setAccountPassword(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingPrimaryAddress(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingSecondaryAddress(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingZipCode(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingFirstname(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingLastname(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingCity(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingCountry(isA(String.class))).thenReturn(neteller);
+        when(neteller.setBillingState(isA(String.class))).thenReturn(neteller);
+
+        assertEquals(neteller.setTransactionId(uidNeteller).setRemoteIp("82.137.112.202").setUsage("TICKETS"),
+                neteller);
+        assertEquals(neteller.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")), neteller);
+        assertEquals(neteller.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), neteller);
+        assertEquals(neteller.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")), neteller);
+        assertEquals(neteller.setCustomerAccount("453501020503").setAccountPassword("908379"), neteller);
+        assertEquals(neteller.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("Berlin").setBillingCountry(Country.Germany.getCode())
+                .setBillingZipCode("M4B1B3").setBillingState("BE"), neteller);
+
+        verify(neteller).setTransactionId(uidNeteller);
+        verify(neteller).setRemoteIp("82.137.112.202");
+        verify(neteller).setUsage("TICKETS");
+        verify(neteller).setCurrency(Currency.EUR.getCurrency());
+        verify(neteller).setAmount(new BigDecimal("2.00"));
+        verify(neteller).setCustomerEmail("john@example.com");
+        verify(neteller).setCustomerPhone("+55555555");
+        verify(neteller).setReturnSuccessUrl(new URL("http://www.example.com/success"));
+        verify(neteller).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        verify(neteller).setCustomerAccount("453501020503");
+        verify(neteller).setAccountPassword("908379");
+        verify(neteller).setBillingPrimaryAddress("Berlin");
+        verify(neteller).setBillingSecondaryAddress("Berlin");
+        verify(neteller).setBillingFirstname("Plamen");
+        verify(neteller).setBillingLastname("Petrov");
+        verify(neteller).setBillingCity("Berlin");
+        verify(neteller).setBillingCountry(Country.Germany.getCode());
+        verify(neteller).setBillingZipCode("M4B1B3");
+        verify(neteller).setBillingState("BE");
+        verifyNoMoreInteractions(neteller);
+
+        verifyNetellerExecute();
+
         neteller.setTransactionId(uidNeteller).setRemoteIp("82.137.112.202").setUsage("TICKETS");
         neteller.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
         neteller.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
         neteller.setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure"));;
+                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
         neteller.setCustomerAccount("453501020503").setAccountPassword("908379");
 
         neteller.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen").setBillingLastname("Petrov")
                 .setBillingCity("Berlin").setBillingCountry(Country.Germany.getCode())
                 .setBillingZipCode("M4B1B3").setBillingState("BE");
-
-        mappedParams.put("base_attributes", neteller.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", neteller.buildPaymentParams().getElements());
-        mappedParams.put("customer_info_attributes", neteller.buildCustomerInfoParams().getElements());
-        mappedParams.put("async_attributes", neteller.buildAsyncParams().getElements());
     }
 
-    public void setMissingParams() {
-        webmoney.setBillingCountry(null);
-        neteller.setBillingCountry(null);
-    }
-
-    @Test
-    public void testEzee() throws MalformedURLException {
-
-        elements = ezee.getElements();
-
-        for (int i = 0; i < elements.size() ; i++) {
-            mappedParams.put(elements.get(i).getKey(), ezee.getElements().get(i).getValue());
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), ezee.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), ezee.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), ezee.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
-        assertEquals(mappedParams.get("source_wallet_id"), "john@example.com");
-        assertEquals(mappedParams.get("source_wallet_pwd"), "UDBydsDBrYWxAQA==\\n");
-    }
-
-    @Test
-    public void testWebmoney() throws MalformedURLException {
-
-        elements = webmoney.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", webmoney.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), webmoney.getElements().get(i).getValue());
-            }
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), webmoney.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), webmoney.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), webmoney.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), webmoney.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("is_payout"), true);
-        assertEquals(mappedParams.get("customer_account_id"), "118221674199");
-        assertEquals(mappedParams.get("billing_address"), webmoney.getBillingAddress().getElements());
-    }
-
-    @Test
-    public void testWebMoneyWithMissingParams() {
-
-        setMissingParams();
-
-        mappedParams = new HashMap<String, Object>();
-        elements = webmoney.buildBillingAddress().getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), webmoney.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
-    }
-
-    @Test
-    public void testNeteller() throws MalformedURLException {
-
-        elements = neteller.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", neteller.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), neteller.getElements().get(i).getValue());
-            }
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), neteller.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), neteller.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), neteller.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), neteller.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("customer_account"), "453501020503");
-        assertEquals(mappedParams.get("billing_address"), neteller.getBillingAddress().getElements());
-    }
-
-    @Test
+    @Test(expected = ApiException.class)
     public void testNetellerWithMissingParams() {
 
-        setMissingParams();
+        clearRequiredParams();
 
-        mappedParams = new HashMap<String, Object>();
-        elements = neteller.buildBillingAddress().getElements();
+        assertNull(neteller.setBillingCountry(null));
+        verify(neteller).setBillingCountry(null);
+        verifyNoMoreInteractions(neteller);
 
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), neteller.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyNetellerExecute();
     }
 }

@@ -1,50 +1,81 @@
 package com.emerchantpay.gateway;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
 import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
+
+import com.emerchantpay.gateway.util.NodeWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.emerchantpay.gateway.api.constants.Endpoints;
-import com.emerchantpay.gateway.api.constants.Environments;
-
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Country;
-import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class GenesisClientTest {
 
-	private Configuration configuration;
+	private SaleRequest sale;
+	private GenesisClient client;
+	private TransactionGateway transaction;
+	private NodeWrapper response;
 
 	@Before
-	public void createConfiguration() {
+	public void createMocks() {
+		sale = mock(SaleRequest.class);
+		client = mock(GenesisClient.class);
+		transaction = mock(TransactionGateway.class);
+		response = mock(NodeWrapper.class);
+	}
 
-		this.configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
+	@Test
+	public void executeRequest() {
+
+		when(client.debugMode(isA(Boolean.class))).thenReturn(client);
+		when(client.changeRequest(isA(Request.class))).thenReturn(client);
+		when(client.getRequest()).thenReturn(sale);
+		when(client.getTransactionType()).thenCallRealMethod();
+		when(client.getResponse()).thenReturn(response);
+		when(client.getTransaction()).thenReturn(transaction);
+		when(client.execute()).thenReturn(sale);
+
+		assertEquals(client.debugMode(true), client);
+		assertEquals(client.changeRequest(sale), client);
+		assertEquals(client.getRequest(), sale);
+		assertEquals(client.getTransactionType(), sale.getTransactionType());
+		assertEquals(client.getResponse(), response);
+		assertEquals(client.getTransaction(), transaction);
+		assertEquals(client.execute(), sale);
+
+		verify(client).debugMode(true);
+		verify(client).changeRequest(sale);
+		verify(client).getRequest();
+		verify(client).getTransactionType();
+		verify(client).getResponse();
+		verify(client).getTransaction();
+		verify(client).execute();
+
+		verifyNoMoreInteractions(client);
 	}
 
 	@Test(expected = AuthenticationException.class)
-	public void executeRequest() {
+	public void executeRequestWithWrongCredentials() {
 
-		UUID uniqueId = UUID.randomUUID();
+		when(client.debugMode(isA(Boolean.class))).thenReturn(client);
+		when(client.changeRequest(isA(Request.class))).thenReturn(client);
+		when(client.execute()).thenThrow(AuthenticationException.class);
+
+		assertEquals(client.debugMode(true), client);
+		assertEquals(client.changeRequest(sale), client);
+		assertEquals(client.execute(), sale);
 
 
-		SaleRequest sale = new SaleRequest();
+		verify(client).debugMode(true);
+		verify(client).changeRequest(sale);
+		verify(client).execute();
 
-		sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
-		sale.setGaming(true).setMoto(true);
-		sale.setAmount(new BigDecimal("20.00")).setCurrency("USD");
-		sale.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-				.setExpirationYear("2020").setCvv("123");
-		sale.setCustomerEmail("john@example.com").setCustomerPhone("555555");
-
-		sale.setBillingPrimaryAddress("New York").setBillingSecondaryAddress("Dallas")
-				.setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Sofia")
-				.setBillingCountry(Country.Bulgaria.getCode()).setBillingZipCode("1000")
-				.setBillingState("NY");
-
-		GenesisClient client = new GenesisClient(configuration, sale);
-		client.execute();
+		verifyNoMoreInteractions(client);
 	}
 }

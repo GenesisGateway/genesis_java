@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.card;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -9,91 +12,123 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
 public class Authorize3DTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private Authorize3DRequest authorize3d = new Authorize3DRequest();
+    private GenesisClient client;
+    private Authorize3DRequest authorize3d;
 
     @Before
-    public void createAuthorize3D() throws MalformedURLException {
-
-        mappedParams = new HashMap<String, Object>();
+    public void createAuthorize3D() {
         uniqueId = new StringUtils().generateUID();
 
-        // Authorize
-        authorize3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
-        authorize3d.setGaming(true).setMoto(true);
-        authorize3d.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency());
-        authorize3d.setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123");
-        authorize3d.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
-        authorize3d.setNotificationUrl(new URL("http://www.example.com/notification"));
-        authorize3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
-
-
-        authorize3d.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
-                .setBillingFirstname("John").setBillingLastname("Doe").setBillingCity("New York")
-                .setBillingCountry("US").setBillingZipCode("1000").setBillingState("CA");
-
-        mappedParams.put("base_attributes", authorize3d.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", authorize3d.buildPaymentParams().getElements());
-        mappedParams.put("credit_card_attributes", authorize3d.buildCreditCardParams().getElements());
-        mappedParams.put("customer_info_attributes", authorize3d.buildCustomerInfoParams().getElements());
-        mappedParams.put("async_attributes", authorize3d.buildAsyncParams().getElements());
+        client = mock(GenesisClient.class);
+        authorize3d = mock(Authorize3DRequest.class);
     }
 
-    public void setMissingParams() {
-        authorize3d.setBillingCountry(null);
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(authorize3d.setBillingCountry(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(authorize3d);
+        assertEquals(client.execute(), authorize3d);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void testAuthorize3D() throws MalformedURLException {
 
-        elements = authorize3d.getElements();
+        // Authorize 3D
+        when(authorize3d.setTransactionId(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setRemoteIp(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setUsage(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setGaming(isA(Boolean.class))).thenReturn(authorize3d);
+        when(authorize3d.setMoto(isA(Boolean.class))).thenReturn(authorize3d);
+        when(authorize3d.setAmount(isA(BigDecimal.class))).thenReturn(authorize3d);
+        when(authorize3d.setCurrency(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCardNumber(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCardHolder(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCvv(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setExpirationMonth(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setExpirationYear(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingPrimaryAddress(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingSecondaryAddress(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingFirstname(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingLastname(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingCity(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingCountry(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingZipCode(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setBillingState(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCustomerEmail(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCustomerPhone(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setNotificationUrl(isA(URL.class))).thenReturn(authorize3d);
+        when(authorize3d.setReturnSuccessUrl(isA(URL.class))).thenReturn(authorize3d);
+        when(authorize3d.setReturnFailureUrl(isA(URL.class))).thenReturn(authorize3d);
 
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", authorize3d.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), authorize3d.getElements().get(i).getValue());
-            }
-        }
+        assertEquals(authorize3d.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize3d);
+        assertEquals(authorize3d.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize3d);
+        assertEquals(authorize3d.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
+                .setExpirationMonth("02").setExpirationYear("2020"), authorize3d);
+        assertEquals(authorize3d.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("New York").setBillingCountry("US")
+                .setBillingZipCode("M4B1B3").setBillingState("CA"), authorize3d);
+        assertEquals(authorize3d.setNotificationUrl(new URL("http://www.example.com/notification")), authorize3d);
+        assertEquals( authorize3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")), authorize3d);
 
-        assertEquals(mappedParams.get("base_attributes"), authorize3d.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), authorize3d.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("credit_card_attributes"), authorize3d.buildCreditCardParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), authorize3d.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), authorize3d.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("notification_url"), new URL("http://www.example.com/notification"));
-        assertEquals(mappedParams.get("billing_address"), authorize3d.getBillingAddress().getElements());
+        verify(authorize3d).setTransactionId(uniqueId);
+        verify(authorize3d).setRemoteIp("82.137.112.202");
+        verify(authorize3d).setUsage("TICKETS");
+        verify(authorize3d).setCurrency(Currency.USD.getCurrency());
+        verify(authorize3d).setAmount(new BigDecimal("10.00"));
+        verify(authorize3d).setCardNumber("4200000000000000");
+        verify(authorize3d).setCardHolder("PLAMEN PETROV");
+        verify(authorize3d).setCvv("123");
+        verify(authorize3d).setExpirationMonth("02");
+        verify(authorize3d).setExpirationYear("2020");
+        verify(authorize3d).setBillingPrimaryAddress("Berlin");
+        verify(authorize3d).setBillingSecondaryAddress("Berlin");
+        verify(authorize3d).setBillingFirstname("Plamen");
+        verify(authorize3d).setBillingLastname("Petrov");
+        verify(authorize3d).setBillingCity("New York");
+        verify(authorize3d).setBillingCountry("US");
+        verify(authorize3d).setBillingZipCode("M4B1B3");
+        verify(authorize3d).setBillingState("CA");
+        verify(authorize3d).setNotificationUrl(new URL("http://www.example.com/notification"));
+        verify(authorize3d).setReturnSuccessUrl(new URL("http://www.example.com/success"));
+        verify(authorize3d).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+
+        verifyNoMoreInteractions(authorize3d);
+
+        verifyExecute();
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testAuthorize3DWithMissingParams() {
 
-        setMissingParams();
+        clearRequiredParams();
+        assertNull(authorize3d.setBillingCountry(null));
+        verify(authorize3d).setBillingCountry(null);
+        verifyNoMoreInteractions(authorize3d);
 
-        elements = authorize3d.buildBillingAddress().getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), authorize3d.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyExecute();
     }
 }

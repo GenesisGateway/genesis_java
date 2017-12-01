@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.card;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.card.CreditRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -7,66 +10,79 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class CreditTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private CreditRequest credit = new CreditRequest();
+    private GenesisClient client;
+    private CreditRequest credit;
 
     @Before
     public void createCredit() {
-        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
-        // Credit
-        credit.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        credit.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00"));
-        credit.setReferencialId("57b3a7b166ffe873d0a11863560b410c");
-
-        mappedParams.put("base_attributes", credit.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", credit.buildPaymentParams().getElements());
+        client = mock(GenesisClient.class);
+        credit = mock(CreditRequest.class);
     }
 
-    public void setMissingParams() {
-        credit.setReferencialId(null);
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(credit.setReferencialId(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(credit);
+        assertEquals(client.execute(), credit);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void testCredit()  {
 
-        elements = credit.getElements();
+        // Credit
+        when(credit.setTransactionId(isA(String.class))).thenReturn(credit);
+        when(credit.setRemoteIp(isA(String.class))).thenReturn(credit);
+        when(credit.setUsage(isA(String.class))).thenReturn(credit);
+        when(credit.setCurrency(isA(String.class))).thenReturn(credit);
+        when(credit.setAmount(isA(BigDecimal.class))).thenReturn(credit);
+        when(credit.setReferencialId(isA(String.class))).thenReturn(credit);
 
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), credit.getElements().get(i).getValue());
-        }
+        assertEquals(credit.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), credit);
+        assertEquals(credit.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")), credit);
+        assertEquals(credit.setReferencialId("57b3a7b166ffe873d0a11863560b410c"), credit);
 
-        assertEquals(mappedParams.get("base_attributes"), credit.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), credit.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("reference_id"), "57b3a7b166ffe873d0a11863560b410c");
+        verify(credit).setTransactionId(uniqueId);
+        verify(credit).setRemoteIp("82.137.112.202");
+        verify(credit).setUsage("TICKETS");
+        verify(credit).setCurrency(Currency.USD.getCurrency());
+        verify(credit).setAmount(new BigDecimal("2.00"));
+        verify(credit).setReferencialId("57b3a7b166ffe873d0a11863560b410c");
+        verifyNoMoreInteractions(credit);
+
+        verifyExecute();
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testCreditWithMissingParams() {
-        setMissingParams();
+        clearRequiredParams();
 
-        mappedParams = new HashMap<String, Object>();
+        assertNull(credit.setReferencialId(null));
+        verify(credit).setReferencialId(null);
+        verifyNoMoreInteractions(credit);
 
-        elements = credit.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), credit.getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("reference_id"));
+        verifyExecute();
     }
 }

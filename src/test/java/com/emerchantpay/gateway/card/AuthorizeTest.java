@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.card;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -8,77 +11,113 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class AuthorizeTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private AuthorizeRequest authorize = new AuthorizeRequest();
+    private GenesisClient client;
+    private AuthorizeRequest authorize;
 
     @Before
     public void createAuthorize() {
-
-        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
-        // Authorize
-        authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"));
-        authorize.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
-                .setExpirationMonth("02").setExpirationYear("2020");
-        authorize.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
-        authorize.setBirthDate("24-04-1988");
-
-        authorize.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
-                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
-                .setBillingCity("New York").setBillingCountry("US")
-                .setBillingZipCode("M4B1B3").setBillingState("CA");
-
-        mappedParams.put("base_attributes", authorize.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", authorize.buildPaymentParams().getElements());
-        mappedParams.put("credit_card_attributes", authorize.buildCreditCardParams().getElements());
-        mappedParams.put("customer_info_attributes", authorize.buildCustomerInfoParams().getElements());
+        client = mock(GenesisClient.class);
+        authorize = mock(AuthorizeRequest.class);
     }
 
-    public void setMissingParams() {
-        authorize.setCardNumber(null);
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(authorize.setCardNumber(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(authorize);
+        assertEquals(client.execute(), authorize);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void testAuthorize() throws MalformedURLException {
 
-        elements = authorize.getElements();
+        // Authorize
+        when(authorize.setTransactionId(isA(String.class))).thenReturn(authorize);
+        when(authorize.setRemoteIp((isA(String.class)))).thenReturn(authorize);
+        when(authorize.setUsage(isA(String.class))).thenReturn(authorize);
+        when(authorize.setCurrency(isA(String.class))).thenReturn(authorize);
+        when(authorize.setAmount(isA(BigDecimal.class))).thenReturn(authorize);
+        when(authorize.setCardNumber(isA(String.class))).thenReturn(authorize);
+        when(authorize.setCardHolder(isA(String.class))).thenReturn(authorize);
+        when(authorize.setCvv(isA(String.class))).thenReturn(authorize);
+        when(authorize.setExpirationMonth(isA(String.class))).thenReturn(authorize);
+        when(authorize.setExpirationYear(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingPrimaryAddress(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingSecondaryAddress(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingFirstname(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingLastname(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingCity(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingCountry(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingZipCode(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBillingState(isA(String.class))).thenReturn(authorize);
+        when(authorize.setCustomerEmail(isA(String.class))).thenReturn(authorize);
+        when(authorize.setCustomerPhone(isA(String.class))).thenReturn(authorize);
+        when(authorize.setBirthDate(isA(String.class))).thenReturn(authorize);
 
-        mappedParams.put("billing_address", authorize.getBillingAddress().getElements());
+        assertEquals(authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize);
+        assertEquals(authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize);
+        assertEquals(authorize.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
+                .setExpirationMonth("02").setExpirationYear("2020"), authorize);
+        assertEquals(authorize.setBirthDate("24-04-1988"), authorize);
+        assertEquals(authorize.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+                .setBillingFirstname("Plamen").setBillingLastname("Petrov")
+                .setBillingCity("New York").setBillingCountry("US")
+                .setBillingZipCode("M4B1B3").setBillingState("CA"), authorize);
 
-        assertEquals(mappedParams.get("base_attributes"), authorize.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), authorize.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("credit_card_attributes"), authorize.buildCreditCardParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), authorize.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("billing_address"), authorize.getBillingAddress().getElements());
+        verify(authorize).setTransactionId(uniqueId);
+        verify(authorize).setRemoteIp("82.137.112.202");
+        verify(authorize).setUsage("TICKETS");
+        verify(authorize).setCurrency(Currency.USD.getCurrency());
+        verify(authorize).setAmount(new BigDecimal("10.00"));
+        verify(authorize).setCardNumber("4200000000000000");
+        verify(authorize).setCardHolder("PLAMEN PETROV");
+        verify(authorize).setCvv("123");
+        verify(authorize).setExpirationMonth("02");
+        verify(authorize).setExpirationYear("2020");
+        verify(authorize).setBirthDate("24-04-1988");
+        verify(authorize).setBillingPrimaryAddress("Berlin");
+        verify(authorize).setBillingSecondaryAddress("Berlin");
+        verify(authorize).setBillingFirstname("Plamen");
+        verify(authorize).setBillingLastname("Petrov");
+        verify(authorize).setBillingCity("New York");
+        verify(authorize).setBillingCountry("US");
+        verify(authorize).setBillingZipCode("M4B1B3");
+        verify(authorize).setBillingState("CA");
+        verifyNoMoreInteractions(authorize);
+
+        verifyExecute();
     }
 
-    @Test
+    @Test(expected = ApiException.class)
     public void testAuthorizeWithMissingParams() {
-        setMissingParams();
+        clearRequiredParams();
 
-        mappedParams = new HashMap<String, Object>();
+        assertNull(authorize.setCardNumber(null));
+        verify(authorize).setCardNumber(null);
+        verifyNoMoreInteractions(authorize);
 
-        elements = authorize.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), authorize.getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("card_number"));
+        verifyExecute();
     }
 }

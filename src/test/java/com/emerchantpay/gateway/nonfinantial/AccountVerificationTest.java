@@ -1,87 +1,119 @@
 package com.emerchantpay.gateway.nonfinantial;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.nonfinancial.AccountVerificationRequest;
 import com.emerchantpay.gateway.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
 public class AccountVerificationTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private AccountVerificationRequest accountVerification = new AccountVerificationRequest();
+    private GenesisClient client;
+    private AccountVerificationRequest accountVerification;
 
     @Before
-    public void createAuthorize3D() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
+    public void createAuthorize3D()  {
         uniqueId = new StringUtils().generateUID();
 
-        // Account Verification
-        accountVerification.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS");
-        accountVerification.setMoto(true).setCardHolder("JOHN DOE").setCardNumber("4200000000000000").setExpirationMonth("02")
-                .setExpirationYear("2020").setCvv("123");
-        accountVerification.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555");
+        client = mock(GenesisClient.class);
+        accountVerification = mock(AccountVerificationRequest.class);
+    }
 
-        accountVerification.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(accountVerification.setCardNumber(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(accountVerification);
+        assertEquals(client.execute(), accountVerification);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    @Test
+    public void testAccountVerification() {
+
+        // Account Verification
+        when(accountVerification.setTransactionId(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setRemoteIp(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setUsage(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setMoto(isA(Boolean.class))).thenReturn(accountVerification);
+        when(accountVerification.setCardNumber(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setCardHolder(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setCvv(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setExpirationMonth(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setExpirationYear(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setCustomerEmail(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setCustomerPhone(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingPrimaryAddress(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingSecondaryAddress(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingFirstname(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingLastname(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingCity(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingCountry(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingZipCode(isA(String.class))).thenReturn(accountVerification);
+        when(accountVerification.setBillingState(isA(String.class))).thenReturn(accountVerification);
+
+        assertEquals(accountVerification.setTransactionId(uniqueId.toString())
+                .setRemoteIp("192.168.0.1").setUsage("TICKETS"), accountVerification);
+        assertEquals(accountVerification.setMoto(true).setCardHolder("JOHN DOE").setCardNumber("4200000000000000")
+                .setExpirationMonth("02").setExpirationYear("2020").setCvv("123"), accountVerification);
+        assertEquals(accountVerification.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555"),
+                accountVerification);
+        assertEquals(accountVerification.setBillingPrimaryAddress("Address1").setBillingSecondaryAddress("Address2")
                 .setBillingFirstname("John").setBillingLastname("Doe")
                 .setBillingCity("New York").setBillingCountry("US")
-                .setBillingZipCode("1000").setBillingState("NY");
+                .setBillingZipCode("1000").setBillingState("NY"), accountVerification);
 
-        mappedParams.put("base_attributes", accountVerification.buildBaseParams().getElements());
-        mappedParams.put("credit_card_attributes", accountVerification.buildCreditCardParams().getElements());
-        mappedParams.put("customer_info_attributes", accountVerification.buildCustomerInfoParams().getElements());
+        verify(accountVerification).setTransactionId(uniqueId.toString());
+        verify(accountVerification).setRemoteIp("192.168.0.1");
+        verify(accountVerification).setUsage("TICKETS");
+        verify(accountVerification).setMoto(true);
+        verify(accountVerification).setCardHolder("JOHN DOE");
+        verify(accountVerification).setCardNumber("4200000000000000");
+        verify(accountVerification).setExpirationMonth("02");
+        verify(accountVerification).setExpirationYear("2020");
+        verify(accountVerification).setCvv("123");
+        verify(accountVerification).setCustomerEmail("john@example.com");
+        verify(accountVerification).setCustomerPhone("+5555555555");
+        verify(accountVerification).setBillingPrimaryAddress("Address1");
+        verify(accountVerification).setBillingSecondaryAddress("Address2");
+        verify(accountVerification).setBillingFirstname("John");
+        verify(accountVerification).setBillingLastname("Doe");
+        verify(accountVerification).setBillingCity("New York");
+        verify(accountVerification).setBillingCountry("US");
+        verify(accountVerification).setBillingZipCode("1000");
+        verify(accountVerification).setBillingState("NY");
+        verifyNoMoreInteractions(accountVerification);
+
+        verifyExecute();
     }
 
-    public void setMissingParams() {
-        accountVerification.setBillingCountry(null);
-    }
-
-    @Test
-    public void testAccountVerification() throws MalformedURLException {
-
-        elements = accountVerification.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", accountVerification.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), accountVerification.getElements().get(i).getValue());
-            }
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), accountVerification.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("credit_card_attributes"), accountVerification.buildCreditCardParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), accountVerification.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("moto"), true);
-        assertEquals(mappedParams.get("billing_address"), accountVerification.getBillingAddress().getElements());
-    }
-
-    @Test
+    @Test(expected = ApiException.class)
     public void testAccountVerificationWithMissingParams() {
 
-        setMissingParams();
+        clearRequiredParams();
+        assertNull(accountVerification.setCardNumber(null));
+        verify(accountVerification).setCardNumber(null);
+        verifyNoMoreInteractions(accountVerification);
 
-        mappedParams = new HashMap<String, Object>();
-        elements = accountVerification.buildBillingAddress().getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), accountVerification.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyExecute();
     }
 }

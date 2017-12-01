@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.card.recurring;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -7,81 +10,124 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class InitRecurringSaleTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private InitRecurringSaleRequest initRecurring = new InitRecurringSaleRequest();
+    private GenesisClient client;
+    private InitRecurringSaleRequest initRecurring;
 
     @Before
     public void createInitRecurring() {
-        mappedParams = new HashMap<String, Object>();
         uniqueId = new StringUtils().generateUID();
 
-        // Init Recurring
-        initRecurring.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        initRecurring.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00"));
-        initRecurring.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
-                .setExpirationMonth("02").setExpirationYear("2020");
-        initRecurring.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
-        initRecurring.setBirthDate("24-04-1988");
+        client = mock(GenesisClient.class);
+        initRecurring = mock(InitRecurringSaleRequest.class);
+    }
 
-        initRecurring.setBillingPrimaryAddress("Berlin")
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(initRecurring.setBillingCountry(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(initRecurring);
+        assertEquals(client.execute(), initRecurring);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    @Test
+    public void testInitRecurring() {
+        // Init Recurring
+        when(initRecurring.setTransactionId(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setRemoteIp(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setUsage(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setMoto(isA(Boolean.class))).thenReturn(initRecurring);
+        when(initRecurring.setCurrency(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setAmount(isA(BigDecimal.class))).thenReturn(initRecurring);
+        when(initRecurring.setCardNumber(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setCardHolder(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setCvv(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setExpirationMonth(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setExpirationYear(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingPrimaryAddress(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingSecondaryAddress(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingFirstname(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingLastname(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingCity(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingCountry(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingZipCode(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingState(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBillingState(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setCustomerEmail(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setCustomerPhone(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setBirthDate(isA(String.class))).thenReturn(initRecurring);
+
+        assertEquals(initRecurring.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"),
+                initRecurring);
+        assertEquals(initRecurring.setMoto(true), initRecurring);
+        assertEquals(initRecurring.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")),
+                initRecurring);
+        assertEquals(initRecurring.setCardNumber("4200000000000000").setCardHolder("PLAMEN PETROV").setCvv("123")
+                .setExpirationMonth("02").setExpirationYear("2020"), initRecurring);
+        assertEquals(initRecurring.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), initRecurring);
+        assertEquals(initRecurring.setBirthDate("24-04-1988"), initRecurring);
+        assertEquals(initRecurring.setBillingPrimaryAddress("Berlin")
                 .setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen")
                 .setBillingLastname("Petrov")
                 .setBillingCity("Berlin")
                 .setBillingCountry("US")
                 .setBillingZipCode("M4B1B3")
-                .setBillingState("CA");
+                .setBillingState("CA"), initRecurring);
 
-        mappedParams.put("base_attributes", initRecurring.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", initRecurring.buildPaymentParams().getElements());
-        mappedParams.put("credit_card_attributes", initRecurring.buildCreditCardParams().getElements());
-        mappedParams.put("customer_info_attributes", initRecurring.buildCustomerInfoParams().getElements());
+        verify(initRecurring).setTransactionId(uniqueId);
+        verify(initRecurring).setRemoteIp("82.137.112.202");
+        verify(initRecurring).setUsage("TICKETS");
+        verify(initRecurring).setMoto(true);
+        verify(initRecurring).setCurrency(Currency.USD.getCurrency());
+        verify(initRecurring).setAmount(new BigDecimal("10.00"));
+        verify(initRecurring).setCardNumber("4200000000000000");
+        verify(initRecurring).setCardHolder("PLAMEN PETROV");
+        verify(initRecurring).setCvv("123");
+        verify(initRecurring).setExpirationMonth("02");
+        verify(initRecurring).setExpirationYear("2020");
+        verify(initRecurring).setCustomerEmail("john@example.com");
+        verify(initRecurring).setCustomerPhone("+55555555");
+        verify(initRecurring).setBirthDate("24-04-1988");
+        verify(initRecurring).setBillingPrimaryAddress("Berlin");
+        verify(initRecurring).setBillingSecondaryAddress("Berlin");
+        verify(initRecurring).setBillingFirstname("Plamen");
+        verify(initRecurring).setBillingLastname("Petrov");
+        verify(initRecurring).setBillingCity("Berlin");
+        verify(initRecurring).setBillingCountry("US");
+        verify(initRecurring).setBillingZipCode("M4B1B3");
+        verify(initRecurring).setBillingState("CA");
+        verifyNoMoreInteractions(initRecurring);
+
+        verifyExecute();
     }
 
-    public void setMissingParams() {
-        initRecurring.setCardNumber(null);
-    }
-
-    @Test
-    public void testInitRecurring() throws MalformedURLException {
-
-        elements = initRecurring.getElements();
-
-        mappedParams.put("billing_address", initRecurring.getBillingAddress().getElements());
-
-        assertEquals(mappedParams.get("base_attributes"), initRecurring.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), initRecurring.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("credit_card_attributes"), initRecurring.buildCreditCardParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), initRecurring.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("billing_address"), initRecurring.getBillingAddress().getElements());
-    }
-
-    @Test
+    @Test(expected = ApiException.class)
     public void testInitRecurringWithMissingParams() {
-        setMissingParams();
+        clearRequiredParams();
+        assertNull(initRecurring.setBillingCountry(null));
+        verify(initRecurring).setBillingCountry(null);
+        verifyNoMoreInteractions(initRecurring);
 
-        mappedParams = new HashMap<String, Object>();
-
-        elements = initRecurring.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), initRecurring.getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("card_number"));
+        verifyExecute();
     }
 }

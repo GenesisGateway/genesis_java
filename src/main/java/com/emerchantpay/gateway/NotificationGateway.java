@@ -1,18 +1,22 @@
 package com.emerchantpay.gateway;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.TransactionResult;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileRequest;
+import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
+import com.emerchantpay.gateway.model.Notification;
+import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 import com.emerchantpay.gateway.util.SHA1Hasher;
+import com.emerchantpay.gateway.util.SHA512Hasher;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,129 +41,147 @@ import com.emerchantpay.gateway.util.SHA1Hasher;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class NotificationGateway extends Request {
+public class NotificationGateway implements Serializable {
 	protected Configuration configuration;
-	private Http http;
 
-	private NodeWrapper response;
+	private ReconcileRequest reconcilationRequest;
+	private WPFReconcileRequest wpfReconcileRequest;
+	private GenesisClient client;
+	private RequestBuilder response;
 
-	private URL notificationUrl;
 	private String uniqueId;
 	private String signature;
-	private String transactionId;
-	private String transactionType;
-	private String terminalToken;
-	private String status;
-	private BigDecimal amount;
-	private String partialApproval;
-	private String eci;
-	private String event;
+	private Map<String, String> notificationParams;
 
-	public NotificationGateway(Configuration configuration) {
+	private Notification notification;
+
+	public NotificationGateway(Configuration configuration, Map<String, String> notificationParams)
+			throws UnsupportedEncodingException, NoSuchAlgorithmException {
 		super();
 		this.configuration = configuration;
+		this.notificationParams = notificationParams;
+
+		parseNotification(notificationParams);
 	}
 
-	public NotificationGateway setNotificationURL(URL notificationUrl) {
-		this.notificationUrl = notificationUrl;
-		return this;
-	}
+	public void parseNotification(Map<String, String> notificationParams) throws UnsupportedEncodingException,
+			NoSuchAlgorithmException {
 
-	public NotificationGateway setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-		return this;
-	}
+		notification = new Notification(notificationParams);
 
-	public NotificationGateway setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-		return this;
-	}
+		signature = notification.getSignature();
 
-	public NotificationGateway setSignature(String signature) {
-
-		this.signature = signature;
-		return this;
-	}
-
-	public NotificationGateway setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
-		return this;
-	}
-
-	public NotificationGateway setTerminalToken(String terminalToken) {
-		this.terminalToken = terminalToken;
-		return this;
-	}
-
-	public NotificationGateway setStatus(String status) {
-		this.status = status;
-		return this;
-	}
-
-	public NotificationGateway setAmount(BigDecimal amount) {
-
-		this.amount = amount;
-		return this;
-	}
-
-	public NotificationGateway setPartialApproval(String partialApproval) {
-		this.partialApproval = partialApproval;
-		return this;
-	}
-
-	public NotificationGateway setEci(String eci) {
-		this.eci = eci;
-		return this;
-	}
-
-	public NotificationGateway setEvent(String event) {
-		this.event = event;
-		return this;
-	}
-
-	@Override
-	public String toXML() {
-		return buildRequest("").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("unique_id", uniqueId).addElement("signature", signature)
-				.addElement("transaction_id", transactionId).addElement("transaction_type", transactionType)
-				.addElement("terminal_token", terminalToken).addElement("status", status).addElement("amount", amount)
-				.addElement("partial_approval", partialApproval).addElement("eci", eci).addElement("event", event);
-	}
-
-	public Request execute(Configuration configuration) {
-
-		http = new Http(configuration);
-
-		try {
-
-			if (signature.equals(SHA1Hasher.SHA1(uniqueId + configuration.getPassword()))) {
-				response = http.postQuery(notificationUrl.toString(), this);
-			}
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (isApiNotification() == true) {
+			uniqueId = notification.getUniqueId();
 		}
 
-		return this;
+		if (isWPFNotification() == true) {
+			uniqueId = notification.getWpfUniqueId();
+		}
+
+		if (isAuthentic() == false) {
+			Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+			throw new GenesisException(errorCode, "Invalid Genesis Notification!", new Throwable());
+		}
 	}
 
-	public NodeWrapper getResponse() {
+	public void initReconciliation() {
+		// Init Reconciliation request
+		if (isApiNotification() == true) {
+			reconcilationRequest = new ReconcileRequest();
+			reconcilationRequest.setUniqueId(notificationParams.get("unique_id"));
+
+			client = new GenesisClient(configuration, reconcilationRequest);
+			client.execute();
+		}
+
+		if (isWPFNotification() == true) {
+			wpfReconcileRequest = new WPFReconcileRequest();
+			reconcilationRequest = new ReconcileRequest();
+			reconcilationRequest.setUniqueId(uniqueId);
+
+			client = new GenesisClient(configuration, wpfReconcileRequest);
+			client.execute();
+		}
+	}
+
+	public Boolean isAuthentic() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+		if (uniqueId == null || signature == null) {
+			Integer errorCode = ErrorCodes.INPUT_DATA_MISSING_ERROR.getCode();
+			throw new GenesisException(errorCode, ErrorCodes.getErrorDescription(errorCode), new Throwable());
+		}
+
+		String password = configuration.getPassword();
+		String hash;
+
+		switch (signature.length()) {
+			case 40:
+				hash = SHA1Hasher.SHA1(uniqueId + password);
+				break;
+			case 128:
+				hash = SHA512Hasher.SHA512(uniqueId + password);
+				break;
+			default:
+				hash = "Empty SHA";
+				break;
+		}
+
+		if (signature.equals(hash)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Boolean isApiNotification() {
+
+		if (notification.getUniqueId() != null && !notification.getUniqueId().isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Boolean isWPFNotification() {
+		if (notification.getWpfUniqueId() != null && !notification.getWpfUniqueId().isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Notification getNotification() {
+		return notification;
+	}
+
+	public Transaction getReconcilation() {
+		TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
+
+		return result.getTransaction();
+	}
+
+	public void generateResponse() {
+		response = new RequestBuilder("notification_echo");
+
+		if (isApiNotification() == true) {
+			response.addElement("unique_id", uniqueId);
+		}
+
+		if (isWPFNotification() == true) {
+			response.addElement("wpf_unique_id", uniqueId);
+		}
+	}
+
+	public RequestBuilder getResponse() {
 		return response;
 	}
 
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildRequest("echo_notification").getElements();
+	public List<Map.Entry<String,Object>> getResponseParams() {
+		return response.getElements();
+	}
+
+	public String getResponseUniqueId() {
+		return response.getElements().get(0).toString();
 	}
 }

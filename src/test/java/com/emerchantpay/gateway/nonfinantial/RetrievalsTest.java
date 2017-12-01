@@ -1,67 +1,79 @@
 package com.emerchantpay.gateway.nonfinantial;
 
+import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.RetrievalByDateRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.RetrievalRequest;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.Assert.assertEquals;
-
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class RetrievalsTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
-    private RetrievalRequest retrieval = new RetrievalRequest();
-    private RetrievalByDateRequest retrievalByDate = new RetrievalByDateRequest();
+    private GenesisClient client;
+    private RetrievalRequest retrieval;
+    private RetrievalByDateRequest retrievalByDate;
 
     @Before
     public void createSingle() {
-
-        // Single
-        retrieval.setArn("74537604221431003881865");
+        client = mock(GenesisClient.class);
+        retrieval = mock(RetrievalRequest.class);
     }
 
     @Before
     public void createChargebackByDate() {
+        client = mock(GenesisClient.class);
+        retrievalByDate = mock(RetrievalByDateRequest.class);
+    }
 
-        // By Date
-        retrievalByDate.setStartDate("20-04-2016").setEndDate("20-04-2017").setPage(2);
+    public void verifySingleExecute() {
+        when(client.execute()).thenReturn(retrieval);
+        assertEquals(client.execute(), retrieval);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    public void verifyByDateExecute() {
+        when(client.execute()).thenReturn(retrievalByDate);
+        assertEquals(client.execute(), retrievalByDate);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
     }
 
     @Test
     public void testSingle() {
+        // Single
+        when(retrieval.setArn(isA(String.class))).thenReturn(retrieval);
 
-        mappedParams = new HashMap<String, Object>();
+        assertEquals(retrieval.setArn("74537604221431003881865"), retrieval);
 
-        elements = retrieval.getElements();
+        verify(retrieval).setArn("74537604221431003881865");
+        verifyNoMoreInteractions(retrieval);
 
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), retrieval.getElements().get(i).getValue());
-        }
-
-        assertEquals(mappedParams.get("arn"), "74537604221431003881865");
+        verifySingleExecute();
     }
 
     @Test
-    public void testByDate() throws MalformedURLException {
+    public void testByDate() {
+        // By Date
+        when(retrievalByDate.setStartDate(isA(String.class))).thenReturn(retrievalByDate);
+        when(retrievalByDate.setEndDate(isA(String.class))).thenReturn(retrievalByDate);
+        when(retrievalByDate.setPage(isA(Integer.class))).thenReturn(retrievalByDate);
 
-        mappedParams = new HashMap<String, Object>();
+        assertEquals(retrievalByDate.setStartDate("20-04-2016"), retrievalByDate);
+        assertEquals(retrievalByDate.setEndDate("20-04-2017"), retrievalByDate);
+        assertEquals(retrievalByDate.setPage(2), retrievalByDate);
 
-        elements = retrievalByDate.getElements();
+        verify(retrievalByDate).setStartDate("20-04-2016");
+        verify(retrievalByDate).setEndDate("20-04-2017");
+        verify(retrievalByDate).setPage(2);
+        verifyNoMoreInteractions(retrievalByDate);
 
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), retrievalByDate.getElements().get(i).getValue());
-        }
-
-        assertEquals(mappedParams.get("start_date"), "20-04-2016");
-        assertEquals(mappedParams.get("end_date"), "20-04-2017");
-        assertEquals(mappedParams.get("page"), 2);
+        verifyByDateExecute();
     }
 }

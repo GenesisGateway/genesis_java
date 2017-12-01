@@ -1,5 +1,8 @@
 package com.emerchantpay.gateway.apm;
 
+import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.apm.PProRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -9,87 +12,116 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class PProPayTest {
 
-    private List<Map.Entry<String, Object>> elements;
-    private HashMap<String, Object> mappedParams;
-
     private String uniqueId;
 
-    private PProRequest ppro = new PProRequest();
+    private GenesisClient client;
+    private PProRequest ppro;
 
     @Before
-    public void createPPro() throws MalformedURLException {
-        mappedParams = new HashMap<String, Object>();
+    public void createPPro() {
+
         uniqueId = new StringUtils().generateUID();
 
-        // PPro
-        ppro.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS");
-        ppro.setPaymentType("giropay");
-        ppro.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00"));
-        ppro.setCustomerEmail("john@example.com").setCustomerPhone("+55555555");
-        ppro.setReturnSuccessUrl(new URL("http://www.example.com/success"))
-                .setReturnFailureUrl(new URL("http://www.example.com/failure"));
-        ppro.setBIC("GENODETT488").setIBAN("DE07444488880123456789");
+        client = mock(GenesisClient.class);
+        ppro = mock(PProRequest.class);
+    }
 
-        ppro.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
+    public void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(ppro.setBillingCountry(null)).thenThrow(exception);
+    }
+
+    public void verifyExecute() {
+        when(client.execute()).thenReturn(ppro);
+        assertEquals(client.execute(), ppro);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    @Test
+    public void testPPro() throws MalformedURLException {
+
+        // PPro
+        when(ppro.setTransactionId(isA(String.class))).thenReturn(ppro);
+        when(ppro.setRemoteIp(isA(String.class))).thenReturn(ppro);
+        when(ppro.setUsage(isA(String.class))).thenReturn(ppro);
+        when(ppro.setCurrency(isA(String.class))).thenReturn(ppro);
+        when(ppro.setAmount(isA(BigDecimal.class))).thenReturn(ppro);
+        when(ppro.setCustomerEmail(isA(String.class))).thenReturn(ppro);
+        when(ppro.setCustomerPhone(isA(String.class))).thenReturn(ppro);
+        when(ppro.setReturnSuccessUrl(isA(URL.class))).thenReturn(ppro);
+        when(ppro.setReturnFailureUrl(isA(URL.class))).thenReturn(ppro);
+        when(ppro.setBIC(isA(String.class))).thenReturn(ppro);
+        when(ppro.setIBAN(isA(String.class))).thenReturn(ppro);
+        when(ppro.setPaymentType(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingPrimaryAddress(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingSecondaryAddress(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingZipCode(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingFirstname(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingLastname(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingCity(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingCountry(isA(String.class))).thenReturn(ppro);
+        when(ppro.setBillingState(isA(String.class))).thenReturn(ppro);
+
+        assertEquals(ppro.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), ppro);
+        assertEquals(ppro.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("2.00")), ppro);
+        assertEquals(ppro.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), ppro);
+        assertEquals(ppro.setReturnSuccessUrl(new URL("http://www.example.com/success"))
+                .setReturnFailureUrl(new URL("http://www.example.com/failure")), ppro);
+        assertEquals(ppro.setBIC("GENODETT488").setIBAN("DE07444488880123456789"), ppro);
+        assertEquals(ppro.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen").setBillingLastname("Petrov")
                 .setBillingCity("Berlin").setBillingCountry("DE")
-                .setBillingZipCode("M4B1B3").setBillingState("BE");
+                .setBillingZipCode("M4B1B3").setBillingState("BE"), ppro);
+        assertEquals(ppro.setPaymentType("giropay"), ppro);
 
-        mappedParams.put("base_attributes", ppro.buildBaseParams().getElements());
-        mappedParams.put("payment_attributes", ppro.buildPaymentParams().getElements());
-        mappedParams.put("customer_info_attributes", ppro.buildCustomerInfoParams().getElements());
-        mappedParams.put("async_attributes",  ppro.buildAsyncParams().getElements());
+        verify(ppro).setTransactionId(uniqueId);
+        verify(ppro).setRemoteIp("82.137.112.202");
+        verify(ppro).setUsage("TICKETS");
+        verify(ppro).setPaymentType("giropay");
+        verify(ppro).setCurrency(Currency.EUR.getCurrency());
+        verify(ppro).setAmount(new BigDecimal("2.00"));
+        verify(ppro).setCustomerEmail("john@example.com");
+        verify(ppro).setCustomerPhone("+55555555");
+        verify(ppro).setReturnSuccessUrl(new URL("http://www.example.com/success"));
+        verify(ppro).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        verify(ppro).setBIC("GENODETT488");
+        verify(ppro).setIBAN("DE07444488880123456789");
+        verify(ppro).setBillingPrimaryAddress("Berlin");
+        verify(ppro).setBillingSecondaryAddress("Berlin");
+        verify(ppro).setBillingFirstname("Plamen");
+        verify(ppro).setBillingLastname("Petrov");
+        verify(ppro).setBillingCity("Berlin");
+        verify(ppro).setBillingCountry("DE");
+        verify(ppro).setBillingZipCode("M4B1B3");
+        verify(ppro).setBillingState("BE");
+        verifyNoMoreInteractions(ppro);
+
+        verifyExecute();
     }
 
-    public void setMissingParams() {
-        ppro.setBillingCountry(null);
-    }
-
-    @Test
-    public void testPPro() {
-
-        elements = ppro.getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            if (elements.get(i).getKey() == "billing_address")
-            {
-                mappedParams.put("billing_address", ppro.getBillingAddress().getElements());
-            }
-            else {
-                mappedParams.put(elements.get(i).getKey(), ppro.getElements().get(i).getValue());
-            }
-        }
-
-        assertEquals(mappedParams.get("base_attributes"), ppro.buildBaseParams().getElements());
-        assertEquals(mappedParams.get("payment_attributes"), ppro.buildPaymentParams().getElements());
-        assertEquals(mappedParams.get("customer_info_attributes"), ppro.buildCustomerInfoParams().getElements());
-        assertEquals(mappedParams.get("async_attributes"), ppro.buildAsyncParams().getElements());
-        assertEquals(mappedParams.get("payment_type"), "giropay");
-        assertEquals(mappedParams.get("bic"), "GENODETT488");
-        assertEquals(mappedParams.get("iban"), "DE07444488880123456789");
-        assertEquals(mappedParams.get("billing_address"), ppro.getBillingAddress().getElements());
-    }
-
-    @Test
+    @Test(expected = ApiException.class)
     public void testPProWithMissingParams() {
+        clearRequiredParams();
 
-        setMissingParams();
+        assertNull(ppro.setBillingCountry(null));
+        verify(ppro).setBillingCountry(null);
+        verifyNoMoreInteractions(ppro);
 
-        elements = ppro.buildBillingAddress().getElements();
-
-        for (int i = 0; i < elements.size(); i++) {
-            mappedParams.put(elements.get(i).getKey(), ppro.getBillingAddress().getElements().get(i).getValue());
-        }
-
-        assertNull(mappedParams.get("country"));
+        verifyExecute();
     }
 }
