@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.apm;
 
 import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.constants.PaymentMethods;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.apm.PProRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -87,12 +88,12 @@ public class PProPayTest {
                 .setBillingFirstname("Plamen").setBillingLastname("Petrov")
                 .setBillingCity("Berlin").setBillingCountry("DE")
                 .setBillingZipCode("M4B1B3").setBillingState("BE"), ppro);
-        assertEquals(ppro.setPaymentType("giropay"), ppro);
+        assertEquals(ppro.setPaymentType(PaymentMethods.GIRO_PAY), ppro);
 
         verify(ppro).setTransactionId(uniqueId);
         verify(ppro).setRemoteIp("82.137.112.202");
         verify(ppro).setUsage("TICKETS");
-        verify(ppro).setPaymentType("giropay");
+        verify(ppro).setPaymentType(PaymentMethods.GIRO_PAY);
         verify(ppro).setCurrency(Currency.EUR.getCurrency());
         verify(ppro).setAmount(new BigDecimal("2.00"));
         verify(ppro).setCustomerEmail("john@example.com");

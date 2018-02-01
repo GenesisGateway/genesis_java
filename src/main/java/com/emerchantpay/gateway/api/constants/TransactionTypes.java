@@ -147,6 +147,9 @@ public class TransactionTypes {
 	// RPN
 	public static String RPN = "rpn_payment";
 
+	// RPN Payout
+	public static String RPN_PAYOUT = "rpn_payout";
+
 	// Gift Cards
 	public static String FASHIONCHEQUE = "fashioncheque";
 	public static String INTERSOLVE = "intersolve";

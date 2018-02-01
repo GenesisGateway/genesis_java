@@ -47,10 +47,6 @@ public class PaymentMethods {
 	// PPRO transaction
 	public static String SAFETY_PAY = "safetypay";
 
-	// Teleingreso
-	// PPRO transaction
-	public static String TELEINGRESO = "teleingreso";
-
 	// TrustPay
 	// PPRO transaction
 	public static String TRUST_PAY = "trustpay";

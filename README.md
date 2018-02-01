@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.3.1</version>
+        <version>1.4.0</version>
 </dependency>
 ```
 
@@ -221,6 +221,7 @@ api.requests.financial.oBeP.WechatRequest
 api.requests.financial.oBeP.PaySecRequest
 api.requests.financial.oBeP.PaySecPayoutRequest
 api.requests.financial.oBeP.RPNRequest
+api.requests.financial.oBeP.RPNPayoutRequest
 
 // Electronic Wallets transactions
 api.requests.financial.wallets.eZeeWalletRequest
