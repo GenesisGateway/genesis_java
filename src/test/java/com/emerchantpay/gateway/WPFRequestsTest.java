@@ -56,6 +56,15 @@ public class WPFRequestsTest {
         when(wpfReconcile.setUniqueId(null)).thenThrow(exception);
     }
 
+    public void clearCustomerInfoParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(wpfCreate.setCustomerEmail(null)).thenThrow(exception);
+        when(wpfCreate.setCustomerPhone(null)).thenThrow(exception);
+    }
+
     public void verifyWPFExecute() {
         when(client.execute()).thenReturn(wpfCreate);
         assertEquals(client.execute(), wpfCreate);
@@ -148,10 +157,22 @@ public class WPFRequestsTest {
     }
 
     @Test(expected = ApiException.class)
-    public void testWPFWithMissingParams() {
+    public void testWPFWithMissingRequiredParams() {
         clearRequiredParams();
         assertNull(wpfCreate.setBillingCountry(null));
         verify(wpfCreate).setBillingCountry(null);
+        verifyNoMoreInteractions(wpfCreate);
+
+        verifyWPFExecute();
+    }
+
+    @Test(expected = ApiException.class)
+    public void testWPFWithMissingCustomerInfoParams() {
+        clearCustomerInfoParams();
+        assertNull(wpfCreate.setCustomerEmail(null));
+        verify(wpfCreate).setCustomerEmail(null);
+        assertNull(wpfCreate.setCustomerPhone(null));
+        verify(wpfCreate).setCustomerPhone(null);
         verifyNoMoreInteractions(wpfCreate);
 
         verifyWPFExecute();

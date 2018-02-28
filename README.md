@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
 </dependency>
 ```
 
@@ -65,7 +65,7 @@ public class GenesisExample {
                 .setRemoteIp("245.253.2.12");
         authorize.setGaming(true);
 
-        authorize.setCurrency("USD").setAmount(new BigDecimal(50.00));
+        authorize.setCurrency("USD").setAmount(new BigDecimal("50.00"));
 
         authorize.setCardHolder("Emil Example")
                 .setCardNumber("4200000000000000")

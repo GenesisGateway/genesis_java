@@ -123,6 +123,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return new RequestBuilder(root)
             .addElement(buildBaseParams().toXML())
             .addElement(buildPaymentParams().toXML())
+            .addElement(buildCustomerInfoParams().toXML())
             .addElement("description", description)
             .addElement("notification_url", notificationUrl)
             .addElement(buildAsyncParams().toXML())
