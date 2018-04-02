@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.exceptions.DeprecatedMethodException;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
@@ -121,6 +122,12 @@ public class GenesisClient extends Request {
 				configuration.setTokenEnabled(false);
 				configuration.setAction("retrieval_requests/by_date");
 				break;
+			case "avs":
+				throw new DeprecatedMethodException("AVS");
+			case "abn_ideal":
+				throw  new DeprecatedMethodException("ABNiDEAL");
+			case "inpay":
+				throw new DeprecatedMethodException("InPay");
 			default:
 				configuration.setWpfEnabled(false);
 				configuration.setTokenEnabled(true);

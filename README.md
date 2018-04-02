@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.2</version>
 </dependency>
 ```
 
@@ -174,9 +174,7 @@ api.requests.financial.RefundRequest
 api.requests.financial.VoidRequest
 
 // Alternative Payment Methods transactions
-api.requests.financial.apm.AbnIDealRequest
 api.requests.financial.apm.CashURequest
-api.requests.financial.apm.InPayRequest
 api.requests.financial.apm.P24Request
 api.requests.financial.apm.PaySafeCardRequest
 api.requests.financial.apm.POLiRequest

@@ -2,6 +2,8 @@ package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
+import com.emerchantpay.gateway.api.exceptions.DeprecatedMethodException;
+import com.emerchantpay.gateway.api.requests.financial.apm.AbnIDealRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 
 import com.emerchantpay.gateway.util.NodeWrapper;
@@ -18,6 +20,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class GenesisClientTest {
 
 	private SaleRequest sale;
+	private AbnIDealRequest abnIDealRequest;
 	private GenesisClient client;
 	private TransactionGateway transaction;
 	private NodeWrapper response;
@@ -25,6 +28,7 @@ public class GenesisClientTest {
 	@Before
 	public void createMocks() {
 		sale = mock(SaleRequest.class);
+		abnIDealRequest = mock(AbnIDealRequest.class);
 		client = mock(GenesisClient.class);
 		transaction = mock(TransactionGateway.class);
 		response = mock(NodeWrapper.class);
@@ -74,6 +78,36 @@ public class GenesisClientTest {
 
 		verify(client).debugMode(true);
 		verify(client).changeRequest(sale);
+		verify(client).execute();
+
+		verifyNoMoreInteractions(client);
+	}
+
+	@Test(expected = DeprecatedMethodException.class)
+	public void executeDepricatedMethod() {
+
+		when(client.debugMode(isA(Boolean.class))).thenReturn(client);
+		when(client.changeRequest(isA(Request.class))).thenReturn(client);
+		when(client.getRequest()).thenReturn(abnIDealRequest);
+		when(client.getTransactionType()).thenCallRealMethod();
+		when(client.getResponse()).thenReturn(response);
+		when(client.getTransaction()).thenReturn(transaction);
+		when(client.execute()).thenThrow(DeprecatedMethodException.class);
+
+		assertEquals(client.debugMode(true), client);
+		assertEquals(client.changeRequest(abnIDealRequest), client);
+		assertEquals(client.getRequest(), abnIDealRequest);
+		assertEquals(client.getTransactionType(), abnIDealRequest.getTransactionType());
+		assertEquals(client.getResponse(), response);
+		assertEquals(client.getTransaction(), transaction);
+		assertEquals(client.execute(), new DeprecatedMethodException());
+
+		verify(client).debugMode(true);
+		verify(client).changeRequest(abnIDealRequest);
+		verify(client).getRequest();
+		verify(client).getTransactionType();
+		verify(client).getResponse();
+		verify(client).getTransaction();
 		verify(client).execute();
 
 		verifyNoMoreInteractions(client);
