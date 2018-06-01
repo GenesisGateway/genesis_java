@@ -154,4 +154,9 @@ public class TransactionTypes {
 	public static String FASHIONCHEQUE = "fashioncheque";
 	public static String INTERSOLVE = "intersolve";
 	public static String TCS = "container_store";
+
+	// Klarna
+	public static String KLARNA_AUTHORIZE = "klarna_authorize";
+	public static String KLARNA_CAPTURE = "klarna_capture";
+	public static String KLARNA_REFUND = "klarna refund";
 }
