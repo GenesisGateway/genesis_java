@@ -1,7 +1,6 @@
 package com.emerchantpay.gateway.api.requests.financial.wallets;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -9,16 +8,16 @@ import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
-public class EzeewalletRequest extends Request implements PaymentAttributes, AsyncAttributes {
+public class EzeewalletRequest extends Request implements PaymentAttributes, NotificationAttributes, AsyncAttributes {
 
 	private String transactionType = TransactionTypes.EZEEWALLET;
 	private BigDecimal amount;
 	private String currency;
 	private String sourceWalletId;
 	private String sourceWalletPwd;
-	private URL notificationUrl;
 
 	public EzeewalletRequest() {
 		super();
@@ -56,11 +55,6 @@ public class EzeewalletRequest extends Request implements PaymentAttributes, Asy
 		return this;
 	}
 
-	public EzeewalletRequest setNotificationURL(URL notificationUrl) {
-		this.notificationUrl = notificationUrl;
-		return this;
-	}
-
 	@Override
 	public String getTransactionType() {
 		return transactionType;
@@ -81,10 +75,10 @@ public class EzeewalletRequest extends Request implements PaymentAttributes, Asy
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML())
 				.addElement(buildPaymentParams().toXML())
+				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
 				.addElement("source_wallet_id", sourceWalletId)
-				.addElement("source_wallet_pwd", sourceWalletPwd)
-				.addElement("notification_url", notificationUrl);
+				.addElement("source_wallet_pwd", sourceWalletPwd);
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

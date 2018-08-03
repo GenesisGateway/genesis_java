@@ -104,8 +104,8 @@ public class CitadelTest {
                 citadelPayIn);
         assertEquals(citadelPayIn.setReturnSuccessUrl(new URL("https://www.gmail.com"))
                 .setReturnFailureUrl(new URL("https://www.google.com")), citadelPayIn);
-        assertEquals(citadelPayIn.setNotificationUrl(new URL("http://www.example.com/notification"))
-                .setMerchantCustomerId("1534537"), citadelPayIn);
+        assertEquals(citadelPayIn.setNotificationUrl(new URL("http://www.example.com/notification")), citadelPayIn);
+        assertEquals(citadelPayIn.setMerchantCustomerId("1534537"), citadelPayIn);
         assertEquals(citadelPayIn.setBillingPrimaryAddress("Berlin").setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen").setBillingLastname("Petrov").setBillingCity("Berlin")
                 .setBillingCountry("DE").setBillingZipCode("M4B1B3").setBillingState("BE"), citadelPayIn);

@@ -3,18 +3,12 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
-import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.Http;
-import com.emerchantpay.gateway.util.NodeWrapper;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -41,10 +35,10 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CitadelPayOutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class CitadelPayOutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.CITADEL_PAYOUT;
-    private URL notificationUrl;
     private BigDecimal amount;
     private String currency;
     private String holderName;
@@ -81,11 +75,6 @@ public class CitadelPayOutRequest extends Request implements PaymentAttributes, 
     @Override
     public String getCurrency() {
         return currency;
-    }
-
-    public CitadelPayOutRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
     }
 
     public CitadelPayOutRequest setHolderName(String holderName) {
@@ -154,8 +143,8 @@ public class CitadelPayOutRequest extends Request implements PaymentAttributes, 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
+                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
-                .addElement("notification_url", notificationUrl)
                 .addElement("holder_name", holderName)
                 .addElement("iban", iban).addElement("swift_code", swiftCode).addElement("bank_name", bankName)
                 .addElement("bank_code", bankCode).addElement("bank_city", bankCity).addElement("branch_code", branchCode)

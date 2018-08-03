@@ -1,12 +1,12 @@
 package com.emerchantpay.gateway.apm;
 
-import com.emerchantpay.gateway.api.GenesisValidator;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.constants.KlarnaItemTypes;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
 import com.emerchantpay.gateway.api.requests.financial.apm.klarna.KlarnaAuthorizeRequest;
 import com.emerchantpay.gateway.api.requests.financial.apm.klarna.KlarnaCaptureRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 import com.emerchantpay.gateway.util.Country;
 import com.emerchantpay.gateway.util.Currency;
@@ -17,8 +17,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class KlarnaTest {
 
@@ -82,8 +82,8 @@ public class KlarnaTest {
         KlarnaItem klarnaItem = new KlarnaItem("TICKETS", KlarnaItemTypes.PHYSICAL, 2,
                 new BigDecimal("2.00"), new BigDecimal("4.00"));
 
-        assertTrue(validator.isValidRequest(TransactionTypes.KLARNA_AUTHORIZE,
-                (Request) klarnaAuthorize.addKlarnaItem(klarnaItem), amount, klarnaAuthorize.getOrderTaxAmount()));
+        assertTrue(validator.isValidKlarnaAuthorizeRequest(TransactionTypes.KLARNA_AUTHORIZE,
+                klarnaAuthorize.addKlarnaItem(klarnaItem), amount, klarnaAuthorize.getOrderTaxAmount()));
     }
 
     @Test
@@ -106,17 +106,18 @@ public class KlarnaTest {
         klarnaItemsList.add(item1);
         klarnaItemsList.add(item2);
 
-        assertTrue(validator.isValidRequest(TransactionTypes.KLARNA_AUTHORIZE,
-                (Request) klarnaAuthorize.addKlarnaItems(klarnaItemsList), amount, klarnaAuthorize.getOrderTaxAmount()));
-        assertTrue(validator.isValidRequest(TransactionTypes.KLARNA_CAPTURE,
-                (Request) klarnaCapture.addKlarnaItems(klarnaItemsList), amount));
+
+        assertTrue(validator.isValidKlarnaAuthorizeRequest(TransactionTypes.KLARNA_AUTHORIZE,
+                klarnaAuthorize.addKlarnaItems(klarnaItemsList), amount, klarnaAuthorize.getOrderTaxAmount()));
+        assertTrue(validator.isValidKlarnaCaptureRequest(TransactionTypes.KLARNA_CAPTURE,
+                klarnaCapture.addKlarnaItems(klarnaItemsList), amount));
     }
 
     @Test(expected = GenesisException.class)
     public void testWithoutItems() {
-        assertFalse(validator.isValidRequest(TransactionTypes.KLARNA_AUTHORIZE,
+        assertFalse(validator.isValidKlarnaAuthorizeRequest(TransactionTypes.KLARNA_AUTHORIZE,
                 null, amount, klarnaAuthorize.getOrderTaxAmount()));
-        assertFalse(validator.isValidRequest(TransactionTypes.KLARNA_CAPTURE,
+        assertFalse(validator.isValidKlarnaCaptureRequest(TransactionTypes.KLARNA_CAPTURE,
                 null, amount));
     }
 }

@@ -5,10 +5,10 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,8 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PaySecPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class PaySecPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.PAYSEC_PAYOUT;
     private BigDecimal amount;
@@ -45,7 +46,6 @@ public class PaySecPayoutRequest extends Request implements PaymentAttributes, C
     private String bankBranch;
     private String bankAccountName;
     private String bankAccountNumber;
-    private URL notificationUrl;
 
     public PaySecPayoutRequest() {
         super();
@@ -98,11 +98,6 @@ public class PaySecPayoutRequest extends Request implements PaymentAttributes, C
         return this;
     }
 
-    public PaySecPayoutRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -122,12 +117,13 @@ public class PaySecPayoutRequest extends Request implements PaymentAttributes, C
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
-                .addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildNotificationParams().toXML())
+                .addElement(buildAsyncParams().toXML())
                 .addElement("bank_code", bankCode).addElement("bank_name", bankName)
                 .addElement("bank_branch", bankBranch)
                 .addElement("bank_account_name", bankAccountName)
                 .addElement("bank_account_number", bankAccountNumber)
-                .addElement("notification_url", notificationUrl)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
     }

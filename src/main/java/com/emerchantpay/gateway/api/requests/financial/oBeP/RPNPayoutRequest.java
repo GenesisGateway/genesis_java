@@ -5,10 +5,10 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +35,12 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RPNPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class RPNPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.RPN_PAYOUT;
     private BigDecimal amount;
     private String currency;
-    private URL notificationUrl;
     private String bankName;
     private String subBranch;
     private String bankAccountName;
@@ -72,11 +72,6 @@ public class RPNPayoutRequest extends Request implements PaymentAttributes, Cust
     @Override
     public String getCurrency() {
         return currency;
-    }
-
-    public RPNPayoutRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
     }
 
     public RPNPayoutRequest setBankName(String bankName) {
@@ -130,8 +125,8 @@ public class RPNPayoutRequest extends Request implements PaymentAttributes, Cust
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
-                .addElement("notification_url", notificationUrl)
                 .addElement("bank_name", bankName)
                 .addElement("sub_branch", subBranch)
                 .addElement("bank_account_name", bankAccountName)

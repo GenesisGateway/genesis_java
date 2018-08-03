@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.apm.klarna;
 
-import com.emerchantpay.gateway.api.GenesisValidator;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.PaymentCategories;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -11,6 +10,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -103,7 +103,7 @@ public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements Paymen
     }
 
     protected RequestBuilder buildRequest(String root) {
-        if (isValidData(transactionType, amount, orderTaxAmount)) {
+        if (validator.isValidKlarnaAuthorizeRequest(transactionType, this, amount, orderTaxAmount)) {
             requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                     .addElement(buildBaseParams().toXML())
                     .addElement(buildPaymentParams().toXML())
@@ -119,17 +119,6 @@ public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements Paymen
         }
 
         return requestBuilder;
-    }
-
-    protected Boolean isValidData(String transactionType, BigDecimal amount, BigDecimal orderTaxAmount) {
-        // Validate
-        validator.isValidRequest(transactionType, this, amount, orderTaxAmount);
-
-        if (validator.isValidData()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public List<Map.Entry<String, Object>> getElements() {

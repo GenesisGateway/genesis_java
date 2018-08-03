@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.apm.klarna;
 
-import com.emerchantpay.gateway.api.GenesisValidator;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
@@ -18,9 +17,6 @@ public class KlarnaRefundRequest extends KlarnaItemsRequest implements PaymentAt
     private String transactionType = TransactionTypes.KLARNA_REFUND;
     private BigDecimal amount;
     private String currency;
-
-    // Genesis validator
-    private GenesisValidator validator = new GenesisValidator();
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();

@@ -5,6 +5,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,75 +34,80 @@ import java.util.Map;
  */
 
 public abstract class GiftCardRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
-		DescriptorAttributes {
+        DescriptorAttributes {
 
-	private BigDecimal amount;
-	private String currency;
-	private String cardnumber;
-	private String cvv;
-	private String referenceId;
+    private BigDecimal amount;
+    private String currency;
+    private String cardnumber;
+    private String cvv;
+    private String referenceId;
 
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
+    private GenesisValidator validator = new GenesisValidator();
 
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
+        this.amount = amount;
+        return this;
+    }
 
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	@Override
-	public String getCurrency() {
-		return currency;
-	}
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
+        this.currency = currency;
+        return this;
+    }
 
-	public GiftCardRequest setCardNumber(String cardnumber) {
-		this.cardnumber = cardnumber;
-		return this;
-	}
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
 
-	public GiftCardRequest setCvv(String cvv) {
-		this.cvv = cvv;
-		return this;
-	}
+    public GiftCardRequest setCardNumber(String cardnumber) {
+        if (validator.isValidGiftCard(cardnumber)) {
+            this.cardnumber = cardnumber;
+        }
 
-	public GiftCardRequest setReferenceId(String referenceId) {
-		this.referenceId = referenceId;
-		return this;
-	}
+        return this;
+    }
 
-	@Override
-	public String toXML() {
-		return buildGiftcardParams().toXML();
-	}
+    public GiftCardRequest setCvv(String cvv) {
+        this.cvv = cvv;
+        return this;
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildGiftcardParams().toQueryString();
-	}
+    public GiftCardRequest setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+        return this;
+    }
 
-	protected RequestBuilder buildGiftcardParams() {
+    @Override
+    public String toXML() {
+        return buildGiftcardParams().toXML();
+    }
 
-		return new RequestBuilder("").addElement(buildBaseParams().toXML())
-				.addElement("reference_id", referenceId)
-				.addElement(buildPaymentParams().toXML())
-				.addElement("card_number", cardnumber)
-				.addElement("cvv", cvv)
-				.addElement(buildCustomerInfoParams().toXML())
-				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-				.addElement("billing_address", buildBillingAddress().toXML())
-				.addElement("shipping_address", buildShippingAddress().toXML());
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildGiftcardParams().toQueryString();
+    }
 
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildGiftcardParams().getElements();
-	}
+    protected RequestBuilder buildGiftcardParams() {
+
+        return new RequestBuilder("").addElement(buildBaseParams().toXML())
+                .addElement("reference_id", referenceId)
+                .addElement(buildPaymentParams().toXML())
+                .addElement("card_number", cardnumber)
+                .addElement("cvv", cvv)
+                .addElement(buildCustomerInfoParams().toXML())
+                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML());
+    }
+
+    public List<Map.Entry<String, Object>> getElements() {
+        return buildGiftcardParams().getElements();
+    }
 }

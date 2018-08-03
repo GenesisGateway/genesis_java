@@ -1,7 +1,6 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,22 +40,17 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  */
 
 public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        DescriptorAttributes, CustomerInfoAttributes, AsyncAttributes, MpiAttributes, RiskParamsAttributes {
+        DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
+		MpiAttributes, RiskParamsAttributes {
 
 	private String transactionType = TransactionTypes.AUTHORIZE_3D;
 	private BigDecimal amount;
 	private String currency;
 	private Boolean moto;
 	private Boolean gaming;
-	private URL notificationUrl;
 
 	public Authorize3DRequest() {
 		super();
-	}
-
-	public Authorize3DRequest setNotificationUrl(URL notificationUrl) {
-		this.notificationUrl = notificationUrl;
-		return this;
 	}
 
 	public Authorize3DRequest setMoto(Boolean moto) {
@@ -113,8 +108,8 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 				.addElement(buildCreditCardParams().toXML())
 				.addElement("gaming", gaming)
 				.addElement("moto", moto)
+				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
-				.addElement("notification_url", notificationUrl)
 				.addElement(buildCustomerInfoParams().toXML())
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())

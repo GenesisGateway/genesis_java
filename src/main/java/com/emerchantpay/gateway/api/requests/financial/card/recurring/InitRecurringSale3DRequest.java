@@ -11,10 +11,7 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.*;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,14 +37,13 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  */
 
 public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-		CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, MpiAttributes, RiskParamsAttributes {
+		CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
+		RiskParamsAttributes {
 
 	private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
 	private Boolean moto;
 	private BigDecimal amount;
 	private String currency;
-
-	private URL notificationUrl;
 
 	public InitRecurringSale3DRequest() {
 		super();
@@ -79,11 +75,6 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 		return this;
 	}
 
-	public InitRecurringSale3DRequest setNotificationUrl(URL notificationUrl) {
-		this.notificationUrl = notificationUrl;
-		return this;
-	}
-
 	@Override
 	public String getTransactionType() {
 		return transactionType;
@@ -107,8 +98,8 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 				.addElement(buildCreditCardParams().toXML())
 				.addElement("moto", moto)
 				.addElement(buildCustomerInfoParams().toXML())
+				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
-				.addElement("notification_url", notificationUrl)
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

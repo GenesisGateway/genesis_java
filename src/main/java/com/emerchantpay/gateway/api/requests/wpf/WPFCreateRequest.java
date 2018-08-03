@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import com.emerchantpay.gateway.api.GenesisValidator;
+
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -15,18 +15,19 @@ import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
-        DescriptorAttributes, AsyncAttributes, RiskParamsAttributes {
+        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
 
     private String description;
-    private URL notificationUrl;
     private URL cancelUrl;
     private BigDecimal amount;
     private String currency;
@@ -35,13 +36,12 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     private BigDecimal orderTaxAmount;
 
     private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
-    private ArrayList<String> transactionTypesList;
-
-    // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest;
+
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
     public WPFCreateRequest() {
         super();
@@ -74,13 +74,11 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return this;
     }
 
-    public WPFCreateRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
     public WPFCreateRequest setReturnCancelUrl(URL cancelUrl) {
-        this.cancelUrl = cancelUrl;
+        if (validator.isValidUrl("return_cancel_url", String.valueOf(cancelUrl))) {
+            this.cancelUrl = cancelUrl;
+        }
+
         return this;
     }
 
@@ -141,10 +139,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return "wpf_payment";
     }
 
-    public ArrayList<String> getTransactionTypes() {
-        return transactionTypesList;
-    }
-
     @Override
     public String toXML() {
         return buildRequest("wpf_payment").toXML();
@@ -156,11 +150,12 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     }
 
     protected RequestBuilder buildRequest(String root) {
+
         requestBuilder = new RequestBuilder(root).addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement("description", description)
-                .addElement("notification_url", notificationUrl)
+                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement("return_cancel_url", cancelUrl)
                 .addElement("lifetime", lifetime)
@@ -171,24 +166,17 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML());
 
         // Klarna payment method
-        if (transactionTypesList.contains(TransactionTypes.KLARNA_AUTHORIZE)) {
+        if (klarnaItemsRequest != null
+                && transactionTypes.getTransactionTypes().contains(TransactionTypes.KLARNA_AUTHORIZE)) {
             requestBuilder.addElement("customer_gender", customerGender);
             requestBuilder.addElement("order_tax_amount", orderTaxAmount);
             requestBuilder.addElement(klarnaItemsRequest.toXML());
+
+            validator.isValidKlarnaAuthorizeRequest(TransactionTypes.KLARNA_AUTHORIZE, klarnaItemsRequest,
+                    amount, orderTaxAmount);
         }
 
         return requestBuilder;
-    }
-
-    protected Boolean isValidData(String transactionType, BigDecimal amount, BigDecimal orderTaxAmount) {
-        // Validate
-        validator.isValidRequest(transactionType, this, amount, orderTaxAmount);
-
-        if (validator.isValidData()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public List<Map.Entry<String, Object>> getElements() {

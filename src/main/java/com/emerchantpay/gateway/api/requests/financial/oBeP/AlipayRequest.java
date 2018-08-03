@@ -5,10 +5,10 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -35,13 +35,13 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class AlipayRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class AlipayRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.ALIPAY;
     private BigDecimal amount;
     private String currency;
     private String birthDate;
-    private URL notificationUrl;
 
     public AlipayRequest() {
         super();
@@ -75,11 +75,6 @@ public class AlipayRequest extends Request implements PaymentAttributes, Custome
         return this;
     }
 
-    public AlipayRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -102,8 +97,8 @@ public class AlipayRequest extends Request implements PaymentAttributes, Custome
                 .addElement(buildPaymentParams().toXML())
                 .addElement("birth_date", birthDate)
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
-                .addElement("notification_url", notificationUrl)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
     }

@@ -1,6 +1,8 @@
 package com.emerchantpay.gateway.api.interfaces.customerinfo;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,19 +30,30 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 public interface CustomerInfoAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
+    GenesisValidator validator = new GenesisValidator();
 
     // Customer Info Params
     default CustomerInfoAttributes setCustomerEmail(String customerEmail) {
+        if (validator.isValidEmail(customerEmail)) {
             requestBuilder.addElement("customer_email", customerEmail);
-            return this;
+        }
+
+        return this;
     }
 
     default CustomerInfoAttributes setCustomerPhone(String customerPhone) {
-        requestBuilder.addElement("customer_phone", customerPhone);
+        if (validator.isValidPhone(customerPhone)) {
+            requestBuilder.addElement("customer_phone", customerPhone);
+        }
+
         return this;
     }
 
     default RequestBuilder buildCustomerInfoParams() {
-        return requestBuilder;
+        if (validator.getInvalidParams().isEmpty()) {
+            return requestBuilder;
+        } else {
+            throw new RegexException(validator.getInvalidParams());
+        }
     }
 }

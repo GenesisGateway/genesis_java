@@ -104,14 +104,14 @@ public class WalletsTest {
         when(ezee.setSourceWalletPwd(isA(String.class))).thenReturn(ezee);
         when(ezee.setReturnSuccessUrl(isA(URL.class))).thenReturn(ezee);
         when(ezee.setReturnFailureUrl(isA(URL.class))).thenReturn(ezee);
-        when(ezee.setNotificationURL(isA(URL.class))).thenReturn(ezee);
+        when(ezee.setNotificationUrl(isA(URL.class))).thenReturn(ezee);
 
         assertEquals(ezee.setTransactionId(uidEzee).setRemoteIp("82.137.112.202").setUsage("TICKETS"), ezee);
         assertEquals(ezee.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")), ezee);
         assertEquals(ezee.setSourceWalletId("john@example.com").setSourceWalletPwd("UDBydsDBrYWxAQA==\\n"), ezee);
         assertEquals(ezee.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure")), ezee);
-        assertEquals(ezee.setNotificationURL(new URL("http://www.example.com/notification")), ezee);
+        assertEquals(ezee.setNotificationUrl(new URL("http://www.example.com/notification")), ezee);
 
 
         verify(ezee).setTransactionId(uidEzee);
@@ -123,7 +123,7 @@ public class WalletsTest {
         verify(ezee).setSourceWalletPwd("UDBydsDBrYWxAQA==\\n");
         verify(ezee).setReturnSuccessUrl(new URL("http://www.example.com/success"));
         verify(ezee).setReturnFailureUrl(new URL("http://www.example.com/failure"));
-        verify(ezee).setNotificationURL(new URL("http://www.example.com/notification"));
+        verify(ezee).setNotificationUrl(new URL("http://www.example.com/notification"));
         verifyNoMoreInteractions(ezee);
 
         verifyEzeeExecute();

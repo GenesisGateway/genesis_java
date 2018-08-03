@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.apm.klarna;
 
-import com.emerchantpay.gateway.api.GenesisValidator;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
@@ -9,6 +8,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,11 +24,11 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
     private BigDecimal amount;
     private String currency;
 
-    // Genesis validator
-    private GenesisValidator validator = new GenesisValidator();
-
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
+
+    // Genesis validator
+    private GenesisValidator validator = new GenesisValidator();
 
     public KlarnaCaptureRequest() {
         super();
@@ -72,7 +72,8 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
     }
 
     protected RequestBuilder buildRequest(String root) {
-        if (isValidData(transactionType, amount)) {
+
+        if (validator.isValidKlarnaCaptureRequest(transactionType, this, amount)) {
             requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                     .addElement(buildBaseParams().toXML())
                     .addElement(buildPaymentParams().toXML())
@@ -84,17 +85,6 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
         }
 
         return requestBuilder;
-    }
-
-    protected Boolean isValidData(String transactionType, BigDecimal amount) {
-        // Validate
-        validator.isValidRequest(transactionType, this, amount);
-
-        if (validator.isValidData()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public List<Map.Entry<String, Object>> getElements() {

@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,51 +31,55 @@ import java.util.ArrayList;
 
 public class TransactionTypesRequest extends Request {
 
-	private WPFCreateRequest parent;
-	private CustomAttributesRequest customAttributes;
-	private ArrayList<CustomAttributesRequest> customAttributesList = new ArrayList<CustomAttributesRequest>();
+    private WPFCreateRequest parent;
+    private CustomAttributesRequest customAttributes;
+    private ArrayList<CustomAttributesRequest> customAttributesList = new ArrayList<CustomAttributesRequest>();
 
-	public TransactionTypesRequest() {
-		super();
-	}
+    public TransactionTypesRequest() {
+        super();
+    }
 
-	TransactionTypesRequest(WPFCreateRequest parent) {
-		this.parent = parent;
-	}
+    TransactionTypesRequest(WPFCreateRequest parent) {
+        this.parent = parent;
+    }
 
-	protected TransactionTypesRequest addTransaction(String transactionType) {
-		customAttributes = new CustomAttributesRequest(this, transactionType);
-		customAttributesList.add(customAttributes);
-		return this;
-	}
+    protected TransactionTypesRequest addTransaction(String transactionType) {
+        customAttributes = new CustomAttributesRequest(this, transactionType);
+        customAttributesList.add(customAttributes);
+        return this;
+    }
 
-	public TransactionTypesRequest addParam(String key, String value) {
-		this.customAttributes.addAttributeKey(key).addAttributeValue(value);
-		return this;
-	}
+    public TransactionTypesRequest addParam(String key, String value) {
+        this.customAttributes.addAttribute(key, value);
+        return this;
+    }
 
-	@Override
-	public String toXML() {
-		return buildRequest("transaction_types").toXML();
-	}
+    @Override
+    public String toXML() {
+        return buildRequest("transaction_types").toXML();
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
 
-	protected RequestBuilder buildRequest(String root) {
+    protected RequestBuilder buildRequest(String root) {
 
-		RequestBuilder builder = new RequestBuilder(root);
+        RequestBuilder builder = new RequestBuilder(root);
 
-		for (CustomAttributesRequest attribute: customAttributesList) {
-			builder.addElement(null, attribute);
-		}
+        for (CustomAttributesRequest attribute : customAttributesList) {
+            builder.addElement(null, attribute);
+        }
 
-		return builder;
-	}
+        return builder;
+    }
 
-	public WPFCreateRequest done() {
-		return parent;
-	}
+    public ArrayList<String> getTransactionTypes() {
+        return customAttributes.getTransactionTypes();
+    }
+
+    public WPFCreateRequest done() {
+        return parent;
+    }
 }

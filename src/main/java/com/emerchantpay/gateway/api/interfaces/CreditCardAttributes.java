@@ -23,34 +23,51 @@ package com.emerchantpay.gateway.api.interfaces;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 public interface CreditCardAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
+    GenesisValidator validator = new GenesisValidator();
 
     // Credit Card params
     default CreditCardAttributes setCardHolder(String cardholder) {
-        requestBuilder.addElement("card_holder", cardholder);
+        if (validator.isValidCardHolder(cardholder)) {
+            requestBuilder.addElement("card_holder", cardholder);
+        }
+
         return this;
     }
 
     default CreditCardAttributes setCardNumber(String cardnumber) {
-        requestBuilder.addElement("card_number", cardnumber);
+        if (validator.isValidCardNumber(cardnumber)) {
+            requestBuilder.addElement("card_number", cardnumber);
+        }
+
         return this;
     }
 
     default CreditCardAttributes setCvv(String cvv) {
-        requestBuilder.addElement("cvv", cvv);
+        if (validator.isValidCvv(cvv)) {
+            requestBuilder.addElement("cvv", cvv);
+        }
+
         return this;
     }
 
     default CreditCardAttributes setExpirationMonth(String expirationMonth) {
-        requestBuilder.addElement("expiration_month", expirationMonth);
+        if (validator.isValidExpMonth(expirationMonth)) {
+            requestBuilder.addElement("expiration_month", expirationMonth);
+        }
+
         return this;
     }
 
     default CreditCardAttributes setExpirationYear(String expirationYear) {
-        requestBuilder.addElement("expiration_year", expirationYear);
+        if (validator.isValidExpYear(expirationYear)) {
+            requestBuilder.addElement("expiration_year", expirationYear);
+        }
+
         return this;
     }
 

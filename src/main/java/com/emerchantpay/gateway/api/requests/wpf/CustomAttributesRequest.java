@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.requests.wpf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilderWithAttribute;
@@ -30,56 +31,57 @@ import com.emerchantpay.gateway.api.RequestBuilderWithAttribute;
 
 public class CustomAttributesRequest extends Request {
 
-	private TransactionTypesRequest parent;
+    private TransactionTypesRequest parent;
 
-	private String transactionType;
+    private String transactionType;
 
-	private ArrayList<String> keyList = new ArrayList<String>();
-	private ArrayList<String> valueList = new ArrayList<String>();
+    private static ArrayList<String> transactionTypes = new ArrayList<String>();
+    private HashMap<String, String> attributesMap = new HashMap<String, String>();
 
-	public CustomAttributesRequest() {
-		super();
-	}
+    public CustomAttributesRequest() {
+        super();
+    }
 
-	CustomAttributesRequest(TransactionTypesRequest parent, String transactionType) {
-		this.parent = parent;
-		this.transactionType = transactionType;
-	}
+    CustomAttributesRequest(TransactionTypesRequest parent, String transactionType) {
+        this.parent = parent;
+        this.transactionType = transactionType;
+        transactionTypes.add(transactionType);
+    }
 
-	public CustomAttributesRequest addAttributeKey(String key) {
-		keyList.add(key);
-		return this;
-	}
+    public CustomAttributesRequest addAttribute(String key, String value) {
+        attributesMap.put(key, value);
+        return this;
+    }
 
-	public CustomAttributesRequest addAttributeValue(String value) {
-		valueList.add(value);
-		return this;
-	}
 
-	@Override
-	public String toXML() {
-		return buildRequest("transaction_type").toXML();
-	}
+    @Override
+    public String toXML() {
+        return buildRequest("transaction_type").toXML();
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
 
-	protected RequestBuilderWithAttribute buildRequest(String root) {
+    protected RequestBuilderWithAttribute buildRequest(String root) {
 
-		RequestBuilderWithAttribute builder;
+        RequestBuilderWithAttribute builder;
 
-		builder = new RequestBuilderWithAttribute(root, transactionType);
+        builder = new RequestBuilderWithAttribute(root, transactionType);
 
-		for (int i = 0; i < keyList.size(); i++) {
-			builder.addElement(keyList.get(i), valueList.get(i));
-		}
+        for (String key: attributesMap.keySet()) {
+            builder.addElement(key, attributesMap.get(key));
+        }
 
-		return builder;
-	}
+        return builder;
+    }
 
-	public TransactionTypesRequest done() {
-		return parent;
-	}
+    public ArrayList<String> getTransactionTypes() {
+        return transactionTypes;
+    }
+
+    public TransactionTypesRequest done() {
+        return parent;
+    }
 }

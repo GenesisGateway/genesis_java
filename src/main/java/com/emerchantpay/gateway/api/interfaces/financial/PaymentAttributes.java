@@ -24,6 +24,8 @@ package com.emerchantpay.gateway.api.interfaces.financial;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.util.Currency;
 
 import java.math.BigDecimal;
@@ -31,6 +33,7 @@ import java.math.BigDecimal;
 public interface PaymentAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
+    GenesisValidator validator = new GenesisValidator();
 
     // Payment Params
     PaymentAttributes setAmount(BigDecimal amount);
@@ -52,9 +55,13 @@ public interface PaymentAttributes {
             curr.setAmountToExponent(getAmount(), getCurrency());
             convertedAmount = curr.getAmount();
         }
-
-        requestBuilder.addElement("amount", convertedAmount)
-                .addElement("currency", getCurrency());
+        
+        if (validator.isValidAmount(convertedAmount)) {
+            requestBuilder.addElement("amount", convertedAmount)
+                    .addElement("currency", getCurrency());
+        } else {
+            throw new RegexException(validator.getInvalidParams());
+        }
 
         return requestBuilder;
     }

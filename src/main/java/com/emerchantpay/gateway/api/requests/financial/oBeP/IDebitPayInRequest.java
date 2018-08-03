@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
@@ -34,12 +35,12 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class IDebitPayInRequest extends Request implements PaymentAttributes, CustomerInfoAttributes {
+public class IDebitPayInRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes {
 
     private String transactionType = TransactionTypes.IDEBIT_PAYIN;
     private String customerAccountId;
     private URL returnUrl;
-    private URL notificationUrl;
     private BigDecimal amount;
     private String currency;
 
@@ -54,11 +55,6 @@ public class IDebitPayInRequest extends Request implements PaymentAttributes, Cu
 
     public IDebitPayInRequest setReturnUrl(URL returnUrl) {
         this.returnUrl = returnUrl;
-        return this;
-    }
-
-    public IDebitPayInRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
         return this;
     }
 
@@ -104,7 +100,7 @@ public class IDebitPayInRequest extends Request implements PaymentAttributes, Cu
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML()).addElement("return_url", returnUrl)
-                .addElement("notification_url", notificationUrl)
+                .addElement(buildNotificationParams().toXML())
                 .addElement("customer_account_id", customerAccountId)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());

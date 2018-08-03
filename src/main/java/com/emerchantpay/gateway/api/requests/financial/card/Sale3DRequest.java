@@ -1,7 +1,6 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +14,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,10 +40,9 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  */
 
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
-		MpiAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes {
+		MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes {
 
 	private String transactionType = TransactionTypes.SALE_3D;
-	private URL notificationUrl;
 	private Boolean moto;
 	private Boolean gaming;
 	private BigDecimal amount;
@@ -74,11 +73,6 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 	@Override
 	public String getCurrency() {
 		return currency;
-	}
-
-	public Sale3DRequest setNotificationUrl(URL notificationUrl) {
-		this.notificationUrl = notificationUrl;
-		return this;
 	}
 
 	public Sale3DRequest setMoto(Boolean moto) {
@@ -121,8 +115,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 				.addElement("gaming", gaming)
 				.addElement("moto", moto)
 				.addElement(buildCustomerInfoParams().toXML())
+				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
-				.addElement("notification_url", notificationUrl)
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

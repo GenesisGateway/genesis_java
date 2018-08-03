@@ -5,6 +5,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 import java.math.BigDecimal;
@@ -35,7 +36,8 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class WechatRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class WechatRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+        NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.WECHAT;
     private BigDecimal amount;
@@ -44,7 +46,6 @@ public class WechatRequest extends Request implements PaymentAttributes, Custome
     private Integer productNumber;
     private String productDescription;
     private URL returnUrl;
-    private URL notificationUrl;
 
     public WechatRequest() {
         super();
@@ -92,11 +93,6 @@ public class WechatRequest extends Request implements PaymentAttributes, Custome
         return this;
     }
 
-    public WechatRequest setNotificationUrl(URL notificationUrl) {
-        this.notificationUrl = notificationUrl;
-        return this;
-    }
-
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -118,12 +114,12 @@ public class WechatRequest extends Request implements PaymentAttributes, Custome
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement("product_code", productCode)
                 .addElement("product_num", productNumber)
                 .addElement("product_desc", productDescription)
                 .addElement("return_url", returnUrl)
-                .addElement("notification_url", notificationUrl)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildBillingAddress());
     }

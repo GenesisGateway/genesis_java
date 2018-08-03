@@ -24,6 +24,7 @@ package com.emerchantpay.gateway.api.interfaces.financial;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.net.URL;
 
@@ -31,14 +32,23 @@ public interface AsyncAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
 
+    // Genesis validator
+    GenesisValidator validator = new GenesisValidator();
+
     // Async Params
     default AsyncAttributes setReturnSuccessUrl(URL successUrl) {
-        requestBuilder.addElement("return_success_url", successUrl);
+        if (validator.isValidUrl("return_success_url", String.valueOf(successUrl))) {
+            requestBuilder.addElement("return_success_url", successUrl);
+        }
+
         return this;
     }
 
     default AsyncAttributes setReturnFailureUrl(URL failureUrl) {
-        requestBuilder.addElement("return_failure_url", failureUrl);
+        if (validator.isValidUrl("return_failure_url", String.valueOf(failureUrl))) {
+            requestBuilder.addElement("return_failure_url", failureUrl);
+        }
+
         return this;
     }
 
