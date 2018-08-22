@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway.apm;
 
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.apm.InPayRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -76,7 +77,7 @@ public class InPayTest {
         assertEquals(mappedParams.get("billing_address"), inPay.getBillingAddress().getElements());
     }
 
-    @Test
+    @Test(expected = RequiredParamsException.class)
     public void testInPayWithMissingParams() {
 
         setMissingParams();

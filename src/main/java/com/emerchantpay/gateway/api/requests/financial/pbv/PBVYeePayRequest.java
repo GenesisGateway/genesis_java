@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial.pbv;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,8 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PBVAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,6 +48,12 @@ public class PBVYeePayRequest extends Request implements PaymentAttributes, Cust
 	private String customerBankId;
 	private String customerName;
 	private String bankAccountNumber;
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	public PBVYeePayRequest() {
 		super();
@@ -118,6 +127,24 @@ public class PBVYeePayRequest extends Request implements PaymentAttributes, Cust
 	}
 
 	protected RequestBuilder buildRequest(String root) {
+
+		// Set required params
+		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+		requiredParams.put(RequiredParameters.redeemType, getRedeemType());
+		requiredParams.put(RequiredParameters.cardType, getCardType());
+		requiredParams.put(RequiredParameters.amount, getAmount().toString());
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		requiredParams.put(RequiredParameters.productName, productName);
+		requiredParams.put(RequiredParameters.productCategory, productCategory);
+		requiredParams.put(RequiredParameters.customerName, customerName);
+		requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
+		requiredParams.put(RequiredParameters.customerPhone, getCustomerPhone());
+		requiredParams.put(RequiredParameters.customerIdNumber, customerId);
+		requiredParams.put(RequiredParameters.customerBankId, customerBankId);
+		requiredParams.put(RequiredParameters.bankAccountNumber, bankAccountNumber);
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
 
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())

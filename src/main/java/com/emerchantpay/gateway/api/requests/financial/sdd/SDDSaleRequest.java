@@ -1,15 +1,22 @@
 package com.emerchantpay.gateway.api.requests.financial.sdd;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.SDDAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.util.Country;
+import com.emerchantpay.gateway.util.Currency;
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -42,6 +49,12 @@ public class SDDSaleRequest extends Request implements PaymentAttributes, Custom
 	public SDDSaleRequest() {
 		super();
 	}
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	@Override
 	public PaymentAttributes setAmount(BigDecimal amount) {
@@ -82,6 +95,21 @@ public class SDDSaleRequest extends Request implements PaymentAttributes, Custom
 
 	protected RequestBuilder buildRequest(String root) {
 
+		// Set required params
+		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+		requiredParams.put(RequiredParameters.amount, getAmount().toString());
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		requiredParams.put(RequiredParameters.usage, getUsage());
+		requiredParams.put(RequiredParameters.iban, getIban());
+		requiredParams.put(RequiredParameters.bic, getBic());
+		requiredParams.put(RequiredParameters.firstName, getBillingFirstName());
+		requiredParams.put(RequiredParameters.lastName, getBillingLastName());
+
+		setRequiredCountries();
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
+
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML()).addElement(buildSDDParams().toXML())
@@ -91,5 +119,37 @@ public class SDDSaleRequest extends Request implements PaymentAttributes, Custom
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
+	}
+
+	protected void setRequiredCountries() {
+		// Allowed Countries
+		ArrayList<String> requiredCountries = new ArrayList<String>();
+
+		requiredCountries.add(Country.Austria.getCode());
+		requiredCountries.add(Country.Belgium.getCode());
+		requiredCountries.add(Country.Cyprus.getCode());
+		requiredCountries.add(Country.Estonia.getCode());
+		requiredCountries.add(Country.Finland.getCode());
+		requiredCountries.add(Country.France.getCode());
+		requiredCountries.add(Country.Denmark.getCode());
+		requiredCountries.add(Country.Greece.getCode());
+		requiredCountries.add(Country.Ireland.getCode());
+		requiredCountries.add(Country.Italy.getCode());
+		requiredCountries.add(Country.Latvia.getCode());
+		requiredCountries.add(Country.Lithuania.getCode());
+		requiredCountries.add(Country.Luxembourg.getCode());
+		requiredCountries.add(Country.Malta.getCode());
+		requiredCountries.add(Country.Monaco.getCode());
+		requiredCountries.add(Country.Netherlands.getCode());
+		requiredCountries.add(Country.Portugal.getCode());
+		requiredCountries.add(Country.Slovakia.getCode());
+		requiredCountries.add(Country.SanMarino.getCode());
+		requiredCountries.add(Country.Slovenia.getCode());
+		requiredCountries.add(Country.Spain.getCode());
+
+		if (!requiredCountries.contains(getBillingCountryCode())) {
+			throw new RequiredParamsException("Invalid currency. Allowed countries are: "
+					+ requiredCountries.toString());
+		}
 	}
 }

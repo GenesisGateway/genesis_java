@@ -27,6 +27,8 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public interface AsyncAttributes {
 
@@ -35,9 +37,12 @@ public interface AsyncAttributes {
     // Genesis validator
     GenesisValidator validator = new GenesisValidator();
 
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
+
     // Async Params
     default AsyncAttributes setReturnSuccessUrl(URL successUrl) {
         if (validator.isValidUrl("return_success_url", String.valueOf(successUrl))) {
+            paramsMap.put("return_success_url", String.valueOf(successUrl));
             requestBuilder.addElement("return_success_url", successUrl);
         }
 
@@ -46,10 +51,19 @@ public interface AsyncAttributes {
 
     default AsyncAttributes setReturnFailureUrl(URL failureUrl) {
         if (validator.isValidUrl("return_failure_url", String.valueOf(failureUrl))) {
+            paramsMap.put("return_failure_url", String.valueOf(failureUrl));
             requestBuilder.addElement("return_failure_url", failureUrl);
         }
 
         return this;
+    }
+
+    default String getReturnSuccessUrl() {
+        return paramsMap.get("return_success_url");
+    }
+
+    default String getReturnFailureUrl() {
+        return paramsMap.get("return_failure_url");
     }
 
     default RequestBuilder buildAsyncParams() {

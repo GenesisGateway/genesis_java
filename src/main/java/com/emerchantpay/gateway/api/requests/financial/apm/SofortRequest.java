@@ -1,15 +1,21 @@
 package com.emerchantpay.gateway.api.requests.financial.apm;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.util.Country;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,6 +47,12 @@ public class SofortRequest extends Request implements PaymentAttributes, Custome
 	private String currency;
 	private String customerBankId;
 	private String bankAccountNumber;
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	public SofortRequest() {
 		super();
@@ -95,6 +107,19 @@ public class SofortRequest extends Request implements PaymentAttributes, Custome
 
 	protected RequestBuilder buildRequest(String root) {
 
+		// Set required params
+		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+		requiredParams.put(RequiredParameters.amount, getAmount().toString());
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		requiredParams.put(RequiredParameters.returnSuccessUrl, getReturnSuccessUrl());
+		requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
+		requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
+
+		setRequiredCountries();
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
+
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
@@ -106,5 +131,24 @@ public class SofortRequest extends Request implements PaymentAttributes, Custome
 
 	public List<Map.Entry<String, Object>> getElements() {
 		return buildRequest("payment_transaction").getElements();
+	}
+
+	protected void setRequiredCountries() {
+		// Allowed Countries
+		ArrayList<String> requiredCountries = new ArrayList<String>();
+
+		requiredCountries.add(Country.Austria.getCode());
+		requiredCountries.add(Country.Belgium.getCode());
+		requiredCountries.add(Country.Germany.getCode());
+		requiredCountries.add(Country.Denmark.getCode());
+		requiredCountries.add(Country.Spain.getCode());
+		requiredCountries.add(Country.France.getCode());
+		requiredCountries.add(Country.UnitedKingdom.getCode());
+		requiredCountries.add(Country.Netherlands.getCode());
+
+		if (!requiredCountries.contains(getBillingCountryCode())) {
+			throw new RequiredParamsException("Invalid country. Allowed countries are: "
+					+ requiredCountries.toString());
+		}
 	}
 }

@@ -8,7 +8,6 @@ import com.emerchantpay.gateway.util.NodeWrapper;
 public class TransactionResult<T> {
 
 	private Transaction transaction;
-	private ValidationErrors errors;
 	private T target;
 
 	public static <T> T newInstanceFromNode(Class<T> klass, NodeWrapper node) {
@@ -40,15 +39,8 @@ public class TransactionResult<T> {
 		return transaction;
 	}
 
-	public ValidationErrors getErrors() {
-		return errors;
-	}
 
 	public T getTarget() {
 		return target;
-	}
-
-	public boolean isSuccess() {
-		return errors == null;
 	}
 }

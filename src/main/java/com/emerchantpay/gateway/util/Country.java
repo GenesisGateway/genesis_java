@@ -118,6 +118,7 @@ public class Country {
 	public static Country Hungary = new Country("HU", "Hungary");
 	public static Country Iceland = new Country("IS", "Iceland");
 	public static Country India = new Country("IN", "India");
+    public static Country Indonesia = new Country("ID", "Indonesia");
 	public static Country Iran = new Country("IR", "Iran, Islamic Republic Of");
 	public static Country Iraq = new Country("IQ","Iraq");
 	public static Country Ireland = new Country("IE", "Ireland");
@@ -135,6 +136,7 @@ public class Country {
 	public static Country Kyrgyzstan = new Country("KG", "Kyrgyzstan");
 	public static Country LaoPeopleDemocraticRepublic = new Country("LA", "Lao People\'s Democratic Republic");
 	public static Country Latvia = new Country("LV", "Latvia");
+	public static Country Lithuania = new Country("LT", "Lithuania");
 	public static Country Lebanon = new Country("LB", "Lebanon");
 	public static Country Lesotho = new Country("LS", "Lesotho");
 	public static Country Liberia = new Country("LR", "Liberia");

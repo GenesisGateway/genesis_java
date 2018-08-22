@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,6 +51,12 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 	private String currency;
 	private Boolean moto;
 	private Boolean gaming;
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	public Authorize3DRequest() {
 		super();
@@ -101,6 +110,18 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 	}
 
 	protected RequestBuilder buildRequest(String root) {
+
+		// Set required params
+		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+		requiredParams.put(RequiredParameters.amount, getAmount().toString());
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
+		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
 
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML())

@@ -25,14 +25,19 @@ package com.emerchantpay.gateway.api.interfaces;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
+import java.util.HashMap;
+
 public interface CreditCardAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
     GenesisValidator validator = new GenesisValidator();
 
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
+
     // Credit Card params
     default CreditCardAttributes setCardHolder(String cardholder) {
         if (validator.isValidCardHolder(cardholder)) {
+            paramsMap.put("card_holder", cardholder);
             requestBuilder.addElement("card_holder", cardholder);
         }
 
@@ -41,6 +46,7 @@ public interface CreditCardAttributes {
 
     default CreditCardAttributes setCardNumber(String cardnumber) {
         if (validator.isValidCardNumber(cardnumber)) {
+            paramsMap.put("card_number", cardnumber);
             requestBuilder.addElement("card_number", cardnumber);
         }
 
@@ -49,6 +55,7 @@ public interface CreditCardAttributes {
 
     default CreditCardAttributes setCvv(String cvv) {
         if (validator.isValidCvv(cvv)) {
+            paramsMap.put("cvv", cvv);
             requestBuilder.addElement("cvv", cvv);
         }
 
@@ -57,6 +64,7 @@ public interface CreditCardAttributes {
 
     default CreditCardAttributes setExpirationMonth(String expirationMonth) {
         if (validator.isValidExpMonth(expirationMonth)) {
+            paramsMap.put("expiration_month", expirationMonth);
             requestBuilder.addElement("expiration_month", expirationMonth);
         }
 
@@ -65,6 +73,7 @@ public interface CreditCardAttributes {
 
     default CreditCardAttributes setExpirationYear(String expirationYear) {
         if (validator.isValidExpYear(expirationYear)) {
+            paramsMap.put("expiration_year", expirationYear);
             requestBuilder.addElement("expiration_year", expirationYear);
         }
 
@@ -72,9 +81,27 @@ public interface CreditCardAttributes {
     }
 
     default CreditCardAttributes setBirthDate(String birthDate) {
+        paramsMap.put("birth_date", birthDate);
         requestBuilder.addElement("birth_date", birthDate);
         return this;
     }
+
+    default String getCardHolder() {
+        return paramsMap.get("card_holder");
+    }
+
+    default String getCardNumber() {
+        return paramsMap.get("card_number");
+    }
+
+    default String getExpirationMonth() {
+        return paramsMap.get("expiration_month");
+    }
+
+    default String getExpirationYear() {
+        return paramsMap.get("expiration_year");
+    }
+
 
     default RequestBuilder buildCreditCardParams() {
         return requestBuilder;

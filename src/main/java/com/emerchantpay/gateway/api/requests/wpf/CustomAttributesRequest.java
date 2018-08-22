@@ -84,4 +84,8 @@ public class CustomAttributesRequest extends Request {
     public TransactionTypesRequest done() {
         return parent;
     }
+
+    public HashMap<String, String> getParamsMap() {
+        return attributesMap;
+    }
 }

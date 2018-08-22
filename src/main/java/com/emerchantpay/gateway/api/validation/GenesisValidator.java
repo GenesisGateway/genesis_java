@@ -1,7 +1,7 @@
 package com.emerchantpay.gateway.api.validation;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
@@ -11,43 +11,30 @@ import java.util.HashMap;
 
 public class GenesisValidator extends RegexValidator {
 
-    private ArrayList<String> emptyParamsList = new ArrayList<String>();
+    private ArrayList<String> notValidParamsList = new ArrayList<String>();
     private ArrayList<String> missingParamsList = new ArrayList<String>();
 
     public GenesisValidator() {
         super();
     }
 
-    public Boolean validateRequiredParams(HashMap<String, String> requiredParams) {
+    public Boolean isValidRequiredParams(HashMap<String, String> requiredParams) {
         // Missing params
-        StringBuilder missingParams = new StringBuilder();
-
         for (String key : requiredParams.keySet()) {
-            if ((requiredParams.get(key) == null || requiredParams.get(key).isEmpty()
-                    || requiredParams.get(key).equals("null")) && !missingParamsList.contains(key)) {
+            if ((requiredParams.get(key) == null || requiredParams.get(key).isEmpty())
+                    && !missingParamsList.contains(key)) {
                 missingParamsList.add(key);
             }
         }
 
-        for (Integer i = 0; i < missingParamsList.size(); i++) {
-            if (i == 0) {
-                missingParams.append(missingParamsList.get(0));
-            } else {
-                missingParams.append(", " + missingParamsList.get(i));
-            }
-        }
-
         if (!missingParamsList.isEmpty()) {
-            if (missingParamsList.size() > 1) {
-                throw new GenesisException(missingParams.toString() + " Required params are missing");
-            } else {
-                throw new GenesisException(missingParams.toString() + "Required param is missing");
-            }
+            throw new RequiredParamsException(String.join(", ", missingParamsList) + " Required param(s) are missing");
         } else {
             return true;
         }
     }
 
+    // Klarna requests validation
     protected Boolean validateTransactionAmount(KlarnaItemsRequest klarnaRequest, BigDecimal transactionAmount) {
         // Transaction amount
         if (transactionAmount != null
@@ -57,6 +44,14 @@ public class GenesisValidator extends RegexValidator {
             return true;
         } else {
             throw new GenesisException("Please populate valid total amounts");
+        }
+    }
+
+    public Boolean isValidRequest(HashMap<String, String> requiredParams) {
+        if (isValidRequiredParams(requiredParams)) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -76,7 +71,7 @@ public class GenesisValidator extends RegexValidator {
             case "klarna_authorize":
                 if (klarnaRequest != null) {
                     for (KlarnaItem item : klarnaRequest.getItems()) {
-                        return validateRequiredParams(item.getRequiredParams());
+                        return isValidRequiredParams(item.getRequiredParams());
                     }
 
                     // Validate amounts
@@ -96,7 +91,7 @@ public class GenesisValidator extends RegexValidator {
             case "klarna_capture":
                 if (klarnaRequest != null) {
                     for (KlarnaItem item : klarnaRequest.getItems()) {
-                        return validateRequiredParams(item.getRequiredParams());
+                        return isValidRequiredParams(item.getRequiredParams());
                     }
 
                     // Validate amounts

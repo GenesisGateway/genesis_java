@@ -2,7 +2,10 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,51 +34,63 @@ import java.util.Map;
 
 public class ReportsByDateRequest extends Request {
 
-	private String startdate;
-	private String enddate;
-	private Integer page;
+    private String startdate;
+    private String enddate;
+    private Integer page;
 
-	public ReportsByDateRequest() {
-		super();
-	}
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
-	public ReportsByDateRequest setStartDate(String startdate) {
-		this.startdate = startdate;
-		return this;
-	}
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
-	public ReportsByDateRequest setEndDate(String enddate) {
-		this.enddate = enddate;
-		return this;
-	}
+    public ReportsByDateRequest() {
+        super();
+    }
 
-	public ReportsByDateRequest setPage(Integer page) {
-		this.page = page;
-		return this;
-	}
+    public ReportsByDateRequest setStartDate(String startdate) {
+        this.startdate = startdate;
+        return this;
+    }
 
-	@Override
-	public String getTransactionType() {
-		return "fraud_reports_by_date";
-	}
+    public ReportsByDateRequest setEndDate(String enddate) {
+        this.enddate = enddate;
+        return this;
+    }
 
-	@Override
-	public String toXML() {
-		return buildRequest("fraud_report_request").toXML();
-	}
+    public ReportsByDateRequest setPage(Integer page) {
+        this.page = page;
+        return this;
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String getTransactionType() {
+        return "fraud_reports_by_date";
+    }
 
-	protected RequestBuilder buildRequest(String root) {
+    @Override
+    public String toXML() {
+        return buildRequest("fraud_report_request").toXML();
+    }
 
-		return new RequestBuilder(root).addElement("start_date", startdate).addElement("end_date", enddate)
-				.addElement("page", page);
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
 
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildRequest("payment_transaction").getElements();
-	}
+    protected RequestBuilder buildRequest(String root) {
+
+        // Set required params
+        requiredParams.put(RequiredParameters.startDate, startdate);
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
+        return new RequestBuilder(root).addElement("start_date", startdate).addElement("end_date", enddate)
+                .addElement("page", page);
+    }
+
+    public List<Map.Entry<String, Object>> getElements() {
+        return buildRequest("payment_transaction").getElements();
+    }
 }

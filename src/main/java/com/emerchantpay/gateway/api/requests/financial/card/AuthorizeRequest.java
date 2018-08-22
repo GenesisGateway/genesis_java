@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,8 @@ import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,82 +40,105 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  */
 
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-		CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes {
+        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes {
 
-	private String transactionType = TransactionTypes.AUTHORIZE;
-	private Boolean moto;
-	private Boolean gaming;
-	private BigDecimal amount;
-	private String currency;
+    // Request Builder
+    private RequestBuilder requestBuilder;
 
-	public AuthorizeRequest() {
-		super();
-	}
+    private String transactionType = TransactionTypes.AUTHORIZE;
+    private Boolean moto;
+    private Boolean gaming;
+    private BigDecimal amount;
+    private String currency;
 
-	public AuthorizeRequest setMoto(Boolean moto) {
-		this.moto = moto;
-		return this;
-	}
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
-	public AuthorizeRequest setGaming(Boolean gaming) {
-		this.gaming = gaming;
-		return this;
-	}
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
+    public AuthorizeRequest() {
+        super();
+    }
 
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    public AuthorizeRequest setMoto(Boolean moto) {
+        this.moto = moto;
+        return this;
+    }
 
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
+    public AuthorizeRequest setGaming(Boolean gaming) {
+        this.gaming = gaming;
+        return this;
+    }
 
-	@Override
-	public String getCurrency() {
-		return currency;
-	}
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
+        this.amount = amount;
+        return this;
+    }
 
-	@Override
-	public String getTransactionType() {
-		return transactionType;
-	}
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	@Override
-	public String toXML() {
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
+        this.currency = currency;
+        return this;
+    }
 
-		return buildRequest("payment_transaction").toXML();
-	}
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String getTransactionType() {
+        return transactionType;
+    }
 
-	protected RequestBuilder buildRequest(String root) {
+    @Override
+    public String toXML() {
 
-		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildBaseParams().toXML())
-				.addElement(buildPaymentParams().toXML())
-				.addElement(buildCreditCardParams().toXML())
-				.addElement("gaming", gaming)
-				.addElement("moto", moto)
-				.addElement(buildCustomerInfoParams().toXML())
-				.addElement("billing_address", buildBillingAddress().toXML())
-				.addElement("shipping_address", buildShippingAddress().toXML())
-				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-				.addElement("risk_params", buildRiskParams().toXML());
-	}
+        return buildRequest("payment_transaction").toXML();
+    }
 
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildRequest("payment_transaction").getElements();
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
+
+    protected RequestBuilder buildRequest(String root) {
+
+        requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML())
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildCreditCardParams().toXML())
+                .addElement("gaming", gaming)
+                .addElement("moto", moto)
+                .addElement(buildCustomerInfoParams().toXML())
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
+                .addElement("risk_params", buildRiskParams().toXML());
+
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
+        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
+        return requestBuilder;
+    }
+
+    public List<Map.Entry<String, Object>> getElements() {
+        return buildRequest("payment_transaction").getElements();
+    }
 }

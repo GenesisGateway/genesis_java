@@ -4,8 +4,11 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +20,12 @@ public class KlarnaRefundRequest extends KlarnaItemsRequest implements PaymentAt
     private String transactionType = TransactionTypes.KLARNA_REFUND;
     private BigDecimal amount;
     private String currency;
+
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
@@ -63,6 +72,15 @@ public class KlarnaRefundRequest extends KlarnaItemsRequest implements PaymentAt
     }
 
     protected RequestBuilder buildRequest(String root) {
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.remoteIp, getRemoteIp());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
         requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams())

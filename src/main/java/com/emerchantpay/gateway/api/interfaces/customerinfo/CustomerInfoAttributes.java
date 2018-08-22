@@ -4,6 +4,8 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
+import java.util.HashMap;
+
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -32,21 +34,33 @@ public interface CustomerInfoAttributes {
     RequestBuilder requestBuilder = new RequestBuilder("");
     GenesisValidator validator = new GenesisValidator();
 
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
+
     // Customer Info Params
     default CustomerInfoAttributes setCustomerEmail(String customerEmail) {
         if (validator.isValidEmail(customerEmail)) {
+            paramsMap.put("customer_email", customerEmail);
             requestBuilder.addElement("customer_email", customerEmail);
         }
 
         return this;
     }
 
+    default String getCustomerEmail() {
+       return paramsMap.get("customer_email");
+    }
+
     default CustomerInfoAttributes setCustomerPhone(String customerPhone) {
         if (validator.isValidPhone(customerPhone)) {
+            paramsMap.put("customer_phone", customerPhone);
             requestBuilder.addElement("customer_phone", customerPhone);
         }
 
         return this;
+    }
+
+    default String getCustomerPhone() {
+       return paramsMap.get("customer_phone");
     }
 
     default RequestBuilder buildCustomerInfoParams() {

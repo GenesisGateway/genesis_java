@@ -25,19 +25,32 @@ package com.emerchantpay.gateway.api.interfaces.financial;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 
+import java.util.HashMap;
+
 public interface SDDAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
 
     // SDD Params
     default SDDAttributes setIban(String iban) {
+        paramsMap.put("iban", iban);
         requestBuilder.addElement("iban", iban);
         return this;
     }
 
+    default String getIban() {
+        return paramsMap.get("iban");
+    }
+
     default SDDAttributes setBic(String bic) {
+        paramsMap.put("bic", bic);
         requestBuilder.addElement("bic", bic);
         return this;
+    }
+
+    default String getBic() {
+        return paramsMap.get("bic");
     }
 
     default RequestBuilder buildSDDParams() {

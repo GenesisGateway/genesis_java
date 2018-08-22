@@ -2,7 +2,10 @@ package com.emerchantpay.gateway.api.requests.wpf;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,12 @@ public class WPFReconcileRequest extends Request {
 
 	private String uniqueId;
 
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
+
 	public WPFReconcileRequest() {
 		super();
 	}
@@ -59,6 +68,12 @@ public class WPFReconcileRequest extends Request {
 	}
 
 	protected RequestBuilder buildRequest(String root) {
+
+		// Set required params
+		requiredParams.put(RequiredParameters.uniqueId, uniqueId);
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
 
 		return new RequestBuilder(root).addElement("unique_id", uniqueId);
 	}

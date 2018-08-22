@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,8 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,6 +42,12 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 	private String transactionType = TransactionTypes.PAYOUT;
 	private BigDecimal amount;
 	private String currency;
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	public PayoutRequest() {
 		super();
@@ -82,6 +91,18 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 	}
 
 	protected RequestBuilder buildRequest(String root) {
+
+		// Set required params
+		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+		requiredParams.put(RequiredParameters.amount, getAmount().toString());
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
+		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
 
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML())

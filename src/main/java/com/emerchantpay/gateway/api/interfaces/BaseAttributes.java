@@ -2,6 +2,8 @@ package com.emerchantpay.gateway.api.interfaces;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 
+import java.util.HashMap;
+
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -28,22 +30,39 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 public interface BaseAttributes {
 
     RequestBuilder requestBuilder = new RequestBuilder("");
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
 
     // Base Params
     default BaseAttributes setTransactionId(String transactionId) {
+        paramsMap.put("transaction_id", transactionId);
         requestBuilder.addElement("transaction_id", transactionId);
         return this;
     }
 
+    default String getTransactionId() {
+        return paramsMap.get("transaction_id");
+    }
+
     default BaseAttributes setUsage(String usage) {
+        paramsMap.put("usage", usage);
         requestBuilder.addElement("usage", usage);
         return this;
     }
 
+    default String getUsage() {
+        return paramsMap.get("usage");
+    }
+
     default BaseAttributes setRemoteIp(String remoteIP) {
+        paramsMap.put("remote_ip", remoteIP);
         requestBuilder.addElement("remote_ip", remoteIP);
         return this;
     }
+
+    default String getRemoteIp() {
+        return paramsMap.get("remote_ip");
+    }
+
 
     default RequestBuilder buildBaseParams() {
         return requestBuilder;

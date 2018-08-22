@@ -1,10 +1,13 @@
 package com.emerchantpay.gateway.api.requests.nonfinancial.fraud;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,6 +37,12 @@ public class RetrievalByDateRequest extends Request {
 	private String startdate;
 	private String enddate;
 	private Integer page;
+
+	// Required params
+	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+	// GenesisValidator
+	private GenesisValidator validator = new GenesisValidator();
 
 	public RetrievalByDateRequest() {
 		super();
@@ -70,6 +79,12 @@ public class RetrievalByDateRequest extends Request {
 	}
 
 	protected RequestBuilder buildRequest(String root) {
+
+		// Set required params
+		requiredParams.put(RequiredParameters.startDate, startdate);
+
+		// Validate request
+		validator.isValidRequest(requiredParams);
 
 		return new RequestBuilder(root).addElement("start_date", startdate).addElement("end_date", enddate)
 				.addElement("page", page);

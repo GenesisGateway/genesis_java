@@ -22,6 +22,9 @@ package com.emerchantpay.gateway.api.constants;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class TransactionTypes {
 	
 	// Account Verification
@@ -159,4 +162,48 @@ public class TransactionTypes {
 	public static String KLARNA_AUTHORIZE = "klarna_authorize";
 	public static String KLARNA_CAPTURE = "klarna_capture";
 	public static String KLARNA_REFUND = "klarna refund";
+
+    public static ArrayList<String> getWPFTransactionTypes() {
+        ArrayList<String> transactionTypes = new ArrayList<String>();
+
+        transactionTypes.addAll(Arrays.asList(new String[]{
+                AUTHORIZE,
+                AUTHORIZE_3D,
+                SALE,
+                SALE_3D,
+                INIT_RECURRING_SALE,
+                INIT_RECURRING_SALE_3D,
+                CASHU,
+                PAYSAFECARD,
+                EZEEWALLET,
+                PAYBYVOUCHER_YEEPAY,
+                PPRO,
+                SOFORT,
+                NETELLER,
+                ABNIDEAL,
+                WEBMONEY,
+                POLI,
+                PAYBYVOUCHER_SALE,
+                INPAY,
+                SDD_SALE,
+                SDD_INIT_RECURRING_SALE,
+                P24,
+                TRUSTLY_SALE,
+                TRUSTLY_WITHDRAWAL,
+                PAYPAL_EXPRESS_CHECKOUT,
+                CITADEL_PAYIN,
+                INSTADEBIT_PAYIN,
+                WECHAT,
+                ALIPAY,
+                PAYSEC,
+                PAYSEC_PAYOUT,
+                IDEBIT_PAYIN,
+                TCS,
+                FASHIONCHEQUE,
+                INTERSOLVE,
+                KLARNA_AUTHORIZE
+        }));
+
+        return transactionTypes;
+    }
 }

@@ -3,9 +3,15 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.util.Currency;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +46,12 @@ public class IDebitPayOutRequest extends Request implements PaymentAttributes {
     private BigDecimal amount;
     private String currency;
 
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
+
     public IDebitPayOutRequest() {
         super();
     }
@@ -49,7 +61,7 @@ public class IDebitPayOutRequest extends Request implements PaymentAttributes {
         return this;
     }
 
-    public IDebitPayOutRequest  setReferenceId(String referenceId) {
+    public IDebitPayOutRequest setReferenceId(String referenceId) {
         this.referenceId = referenceId;
         return this;
     }
@@ -93,10 +105,36 @@ public class IDebitPayOutRequest extends Request implements PaymentAttributes {
 
     protected RequestBuilder buildRequest(String root) {
 
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.referenceId, referenceId);
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+
+        setRequiredCurrencies();
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
         return new RequestBuilder(root).addElement("transaction_id", transactionId)
                 .addElement("transaction_type", transactionType)
                 .addElement("reference_id", referenceId)
                 .addElement(buildPaymentParams().toXML());
+    }
+
+    protected void setRequiredCurrencies() {
+        // Allowed Currencies
+        ArrayList<String> requiredCurrencies = new ArrayList<String>();
+
+        requiredCurrencies.add(Currency.CAD.getCurrency());
+        requiredCurrencies.add(Currency.EUR.getCurrency());
+        requiredCurrencies.add(Currency.GBP.getCurrency());
+        requiredCurrencies.add(Currency.AUD.getCurrency());
+
+        if (!requiredCurrencies.contains(getCurrency())) {
+            throw new RequiredParamsException("Invalid currency. Allowed currencies are: "
+                    + requiredCurrencies.toString());
+        }
     }
 
     public List<Map.Entry<String, Object>> getElements() {

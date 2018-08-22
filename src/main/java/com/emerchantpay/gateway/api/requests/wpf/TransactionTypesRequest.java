@@ -2,9 +2,10 @@ package com.emerchantpay.gateway.api.requests.wpf;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.TransactionTypeException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,8 +45,11 @@ public class TransactionTypesRequest extends Request {
     }
 
     protected TransactionTypesRequest addTransaction(String transactionType) {
-        customAttributes = new CustomAttributesRequest(this, transactionType);
-        customAttributesList.add(customAttributes);
+        if (isValidTransactionType(transactionType)) {
+            customAttributes = new CustomAttributesRequest(this, transactionType);
+            customAttributesList.add(customAttributes);
+        }
+
         return this;
     }
 
@@ -73,6 +77,14 @@ public class TransactionTypesRequest extends Request {
         }
 
         return builder;
+    }
+
+    public Boolean isValidTransactionType(String transactionType) {
+        if (TransactionTypes.getWPFTransactionTypes().contains(transactionType)) {
+            return true;
+        } else {
+            throw new TransactionTypeException("Invalid transaction type");
+        }
     }
 
     public ArrayList<String> getTransactionTypes() {

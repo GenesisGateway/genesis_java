@@ -9,8 +9,10 @@ import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +26,14 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
     private BigDecimal amount;
     private String currency;
 
+        // Required params
+        private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+        // GenesisValidator
+        private GenesisValidator validator = new GenesisValidator();
+
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
-
-    // Genesis validator
-    private GenesisValidator validator = new GenesisValidator();
 
     public KlarnaCaptureRequest() {
         super();
@@ -72,8 +77,7 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
     }
 
     protected RequestBuilder buildRequest(String root) {
-
-        if (validator.isValidKlarnaCaptureRequest(transactionType, this, amount)) {
+        if (validator.isValidKlarnaCaptureRequest(TransactionTypes.KLARNA_CAPTURE, this, amount)) {
             requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                     .addElement(buildBaseParams().toXML())
                     .addElement(buildPaymentParams().toXML())
@@ -83,6 +87,15 @@ public class KlarnaCaptureRequest extends KlarnaItemsRequest implements PaymentA
                     .addElement("shipping_address", buildShippingAddress().toXML())
                     .addElement(klarnaItemsRequest.toXML());
         }
+
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.remoteIp, getRemoteIp());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
 
         return requestBuilder;
     }

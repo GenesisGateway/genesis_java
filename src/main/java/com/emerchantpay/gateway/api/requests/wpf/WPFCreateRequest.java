@@ -19,6 +19,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
@@ -39,6 +40,9 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest;
+
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
@@ -175,6 +179,20 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
             validator.isValidKlarnaAuthorizeRequest(TransactionTypes.KLARNA_AUTHORIZE, klarnaItemsRequest,
                     amount, orderTaxAmount);
         }
+
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        requiredParams.put(RequiredParameters.description, description);
+        requiredParams.put(RequiredParameters.notificationUrl, getNotificationUrl());
+        requiredParams.put(RequiredParameters.returnSuccessUrl, getReturnSuccessUrl());
+        requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
+        requiredParams.put(RequiredParameters.returnCancelUrl, String.valueOf(cancelUrl));
+        requiredParams.put(RequiredParameters.transactionTypes, transactionTypes.toXML());
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
 
         return requestBuilder;
     }

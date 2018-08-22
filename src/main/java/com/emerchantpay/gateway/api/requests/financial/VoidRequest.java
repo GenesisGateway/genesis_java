@@ -3,6 +3,10 @@ package com.emerchantpay.gateway.api.requests.financial;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.util.HashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,37 +33,50 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 
 public class VoidRequest extends Request {
 
-	private String transactionType = TransactionTypes.VOID;
-	private String referenceId;
+    private String transactionType = TransactionTypes.VOID;
+    private String referenceId;
 
-	public VoidRequest() {
-		super();
-	}
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
-	public VoidRequest setReferencialId(String referencialId) {
-		this.referenceId = referencialId;
-		return this;
-	}
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
-	@Override
-	public String getTransactionType() {
-		return transactionType;
-	}
+    public VoidRequest() {
+        super();
+    }
 
-	@Override
-	public String toXML() {
-		return buildRequest("payment_transaction").toXML();
-	}
+    public VoidRequest setReferencialId(String referencialId) {
+        this.referenceId = referencialId;
+        return this;
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String getTransactionType() {
+        return transactionType;
+    }
 
-	protected RequestBuilder buildRequest(String root) {
+    @Override
+    public String toXML() {
+        return buildRequest("payment_transaction").toXML();
+    }
 
-		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildBaseParams().toXML())
-				.addElement("reference_id", referenceId);
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
+
+    protected RequestBuilder buildRequest(String root) {
+
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.referenceId, referenceId);
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML())
+                .addElement("reference_id", referenceId);
+    }
 }

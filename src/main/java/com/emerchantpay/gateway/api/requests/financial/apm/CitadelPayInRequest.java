@@ -3,12 +3,19 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.util.Country;
 
+import javax.xml.ws.RequestWrapper;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,12 +45,16 @@ import java.util.Map;
 public class CitadelPayInRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
         NotificationAttributes, AsyncAttributes {
 
-
     private String transactionType = TransactionTypes.CITADEL_PAYIN;
     private BigDecimal amount;
     private String currency;
     private String merchantCustomerId;
 
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
     public CitadelPayInRequest() {
         super();
@@ -93,6 +104,24 @@ public class CitadelPayInRequest extends Request implements PaymentAttributes, C
 
     protected RequestBuilder buildRequest(String root) {
 
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        requiredParams.put(RequiredParameters.returnSuccessUrl, getReturnSuccessUrl());
+        requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
+        requiredParams.put(RequiredParameters.notificationUrl, getNotificationUrl());
+        requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
+        requiredParams.put(RequiredParameters.merchantCustomerId, merchantCustomerId);
+        requiredParams.put(RequiredParameters.address1, getBillingPrimaryAddress());
+        requiredParams.put(RequiredParameters.firstName, getBillingFirstName());
+        requiredParams.put(RequiredParameters.lastName, getBillingLastName());
+
+        setRequiredCountries();
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
@@ -105,5 +134,39 @@ public class CitadelPayInRequest extends Request implements PaymentAttributes, C
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
+    }
+
+    protected void setRequiredCountries() {
+        // Allowed Countries
+        ArrayList<String> requiredCountries = new ArrayList<String>();
+
+        requiredCountries.add(Country.Austria.getCode());
+        requiredCountries.add(Country.Australia.getCode());
+        requiredCountries.add(Country.Belgium.getCode());
+        requiredCountries.add(Country.Canada.getCode());
+        requiredCountries.add(Country.CzechRepublic.getCode());
+        requiredCountries.add(Country.Germany.getCode());
+        requiredCountries.add(Country.Denmark.getCode());
+        requiredCountries.add(Country.Estonia.getCode());
+        requiredCountries.add(Country.Spain.getCode());
+        requiredCountries.add(Country.Finland.getCode());
+        requiredCountries.add(Country.France.getCode());
+        requiredCountries.add(Country.UnitedKingdom.getCode());
+        requiredCountries.add(Country.Greece.getCode());
+        requiredCountries.add(Country.Japan.getCode());
+        requiredCountries.add(Country.Hungary.getCode());
+        requiredCountries.add(Country.Ireland.getCode());
+        requiredCountries.add(Country.Italy.getCode());
+        requiredCountries.add(Country.Lithuania.getCode());
+        requiredCountries.add(Country.Latvia.getCode());
+        requiredCountries.add(Country.Poland.getCode());
+        requiredCountries.add(Country.Portugal.getCode());
+        requiredCountries.add(Country.Sweden.getCode());
+        requiredCountries.add(Country.Slovakia.getCode());
+
+        if (!requiredCountries.contains(getBillingCountryCode())) {
+            throw new RequiredParamsException("Invalid country. Allowed countries are: "
+                    + requiredCountries.toString());
+        }
     }
 }
