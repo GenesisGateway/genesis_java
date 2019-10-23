@@ -1,9 +1,13 @@
 package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.wpf.WPFCreateRequest;
 import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
+import com.emerchantpay.gateway.model.Reminder;
 import com.emerchantpay.gateway.util.Country;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -13,9 +17,10 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,6 +50,18 @@ public class WPFRequestsTest {
 
         client = mock(GenesisClient.class);
         wpfReconcile = mock(WPFReconcileRequest.class);
+    }
+
+    public void stubWPF() throws MalformedURLException {
+        wpfCreate = new WPFCreateRequest();
+        wpfCreate.setTransactionId(uidWpf);
+        wpfCreate.setAmount(new BigDecimal("2.00"));
+        wpfCreate.setCurrency("EUR");
+        wpfCreate.setDescription("TICKETS");
+        wpfCreate.setBillingCountry("DE");
+        wpfCreate.setReturnSuccessUrl(new URL("https://example.com"));
+        wpfCreate.setReturnFailureUrl(new URL("https://example.com"));
+        wpfCreate.setNotificationUrl(new URL("https://example.com"));
     }
 
     public void clearRequiredParams() {
@@ -148,7 +165,7 @@ public class WPFRequestsTest {
     }
 
     @Test
-    public  void testReconcile() {
+    public void testReconcile() {
         when(wpfReconcile.setUniqueId(isA(String.class))).thenReturn(wpfReconcile);
 
         assertEquals(wpfReconcile.setUniqueId(uidReconcile), wpfReconcile);
@@ -176,6 +193,52 @@ public class WPFRequestsTest {
         verifyNoMoreInteractions(wpfCreate);
 
         verifyWPFExecute();
+    }
+
+    @Test
+    public void testRemindersSuccess() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setPayLater(true);
+        wpfCreate.addReminder(ReminderConstants.REMINDERS_CHANNEL_EMAIL, 1)
+                .addReminder(ReminderConstants.REMINDERS_CHANNEL_SMS, 1).done();
+
+        assertEquals(wpfCreate.setPayLater(true), wpfCreate);
+        assertEquals(wpfCreate.addReminder(ReminderConstants.REMINDERS_CHANNEL_EMAIL, 1), wpfCreate.getReminders());
+        assertEquals(wpfCreate.addReminder(ReminderConstants.REMINDERS_CHANNEL_SMS, 1), wpfCreate.getReminders());
+        assertNotNull(wpfCreate.getReminders());
+    }
+
+    @Test(expected = GenesisException.class)
+    public void testRemindersFailure() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setPayLater(true);
+        wpfCreate.addReminder("test", 1).done();
+
+        assertEquals(wpfCreate.addReminder("test", 1), wpfCreate.getReminders());
+        assertEquals(wpfCreate.getReminders().getList(), new ArrayList<Reminder>());
+    }
+
+    @Test
+    public void testSuccessTokenization() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setConsumerId("123456");
+        wpfCreate.setCustomerEmail("test@example.com");
+        wpfCreate.setRememberCard(true);
+        wpfCreate.toXML();
+
+        assertEquals(wpfCreate.setConsumerId("123456"), wpfCreate);
+        assertEquals(wpfCreate.setRememberCard(true), wpfCreate);
+    }
+
+    @Test(expected = RequiredParamsException.class)
+    public void testFailureTokenization() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setConsumerId("123456");
+        wpfCreate.setRememberCard(true);
+        wpfCreate.toXML();
+
+        assertEquals(wpfCreate.setConsumerId("123456"), wpfCreate);
+        assertEquals(wpfCreate.setRememberCard(true), wpfCreate);
     }
 
     @Test(expected = ApiException.class)

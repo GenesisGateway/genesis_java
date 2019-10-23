@@ -35,8 +35,14 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     private Integer lifetime;
     private String customerGender;
     private BigDecimal orderTaxAmount;
+    private Boolean payLater = false;
+    private String consumerId;
+    private Boolean rememberCard = false;
 
     private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
+
+    // Reminders
+    private RemindersRequest reminders = new RemindersRequest(this);
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest;
@@ -101,6 +107,33 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return this;
     }
 
+    public WPFCreateRequest setPayLater(Boolean payLater) {
+        this.payLater = payLater;
+        return this;
+    }
+
+    public Boolean getPayLater() {
+        return payLater;
+    }
+
+    public WPFCreateRequest setConsumerId(String consumerId) {
+        this.consumerId = consumerId;
+        return this;
+    }
+
+    public String getConsumerId() {
+        return consumerId;
+    }
+
+    public WPFCreateRequest setRememberCard(Boolean rememberCard) {
+        this.rememberCard = rememberCard;
+        return this;
+    }
+
+    public Boolean getRememberCard() {
+        return rememberCard;
+    }
+
     public TransactionTypesRequest addTransactionType(String transactionType) {
         transactionTypes.addTransaction(transactionType);
         return transactionTypes;
@@ -127,6 +160,10 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     public KlarnaItemsRequest addKlarnaItems(ArrayList<KlarnaItem> klarnaItems) {
         return klarnaItemsRequest = new KlarnaItemsRequest(klarnaItems);
+    }
+
+    public RemindersRequest addReminder(String channel, Integer after) {
+        return reminders.addReminder(channel, after);
     }
 
     public TransactionTypesRequest addTransactionTypes(ArrayList<String> transactions) {
@@ -167,7 +204,9 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("shipping_address", buildShippingAddress().toXML())
                 .addElement("transaction_types", transactionTypes)
                 .addElement("risk_params", buildRiskParams().toXML())
-                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML());
+                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
+                .addElement("pay_later", payLater)
+                .addElement("remember_card", rememberCard);
 
         // Klarna payment method
         if (klarnaItemsRequest != null
@@ -180,6 +219,15 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                     amount, orderTaxAmount);
         }
 
+        // Pay Later
+        if (payLater == true) {
+            requestBuilder.addElement("reminders", reminders);
+        }
+
+        if (consumerId != null && !consumerId.isEmpty() && validator.isValidConsumerId(consumerId)) {
+            requestBuilder.addElement("consumer_id", consumerId);
+        }
+
         // Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
@@ -190,6 +238,9 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
         requiredParams.put(RequiredParameters.returnCancelUrl, String.valueOf(cancelUrl));
         requiredParams.put(RequiredParameters.transactionTypes, transactionTypes.toXML());
+        if ((consumerId != null && !consumerId.isEmpty()) || rememberCard == true) {
+            requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
+        }
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -199,5 +250,9 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("wpf_payment").getElements();
+    }
+
+    public RemindersRequest getReminders() {
+        return reminders;
     }
 }

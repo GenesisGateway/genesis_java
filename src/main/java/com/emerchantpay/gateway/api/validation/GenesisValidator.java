@@ -1,8 +1,11 @@
 package com.emerchantpay.gateway.api.validation;
 
+import com.emerchantpay.gateway.api.constants.ErrorMessages;
+import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
+import com.emerchantpay.gateway.model.Reminder;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 import java.math.BigDecimal;
@@ -101,6 +104,36 @@ public class GenesisValidator extends RegexValidator {
                 }
             default:
                 return false;
+        }
+    }
+
+    public Boolean validateReminder(String channel, Integer after) {
+        if (channel != ReminderConstants.REMINDERS_CHANNEL_EMAIL
+                && channel != ReminderConstants.REMINDERS_CHANNEL_SMS) {
+            throw new GenesisException(ErrorMessages.INVALID_CHANNEL
+                    + ReminderConstants.REMINDERS_CHANNEL_EMAIL
+                    + ", " + ReminderConstants.REMINDERS_CHANNEL_SMS);
+        } else if (after < ReminderConstants.MIN_ALLOWED_REMINDER_MINUTES
+                || after > ReminderConstants.MAX_ALLOWED_REMINDER_DAYS * 24 * 60) {
+            throw new GenesisException(ErrorMessages.INVALID_REMINDER_AFTER);
+        } else {
+            return true;
+        }
+    }
+
+    public Boolean validateRemindersNumber(ArrayList<Reminder> reminders) {
+        if (reminders.size() > 3) {
+            throw new GenesisException(ErrorMessages.INVALID_REMINDERS_NUMBER);
+        } else {
+            return true;
+        }
+    }
+
+    public Boolean isValidConsumerId(String consumerId) {
+        if (consumerId == null || consumerId.length() > 10 || !consumerId.matches("[0-9]+")) {
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_ID);
+        } else {
+            return true;
         }
     }
 }
