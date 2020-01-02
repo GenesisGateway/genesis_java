@@ -35,6 +35,17 @@ public class StringUtils {
 		return dasherize(klass.getSimpleName()).toLowerCase();
 	}
 
+	public static Map<String, String> replaceMap =
+			Collections.unmodifiableMap(new HashMap<String, String>() {{
+				put("&amp;", "&");
+				put("&lt;", "<");
+				put("&gt;", ">");
+				put("&apos;", "'");
+				put("&quot;", "\"");
+				put("<>", "");
+				put("</>", "");
+			}});
+
 	public static String dasherize(String str) {
 		if (str == null)
 			return null;
@@ -158,5 +169,12 @@ public class StringUtils {
 		uid = uid.replace("-", "").substring(0, 30);
 
 		return uid;
+	}
+
+	public static String replaceAllSpecialCharacters(String input) {
+		for(String key: replaceMap.keySet()) {
+			input = input.replace(key, replaceMap.get(key));
+		}
+		return input;
 	}
 }

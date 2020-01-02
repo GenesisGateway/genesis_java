@@ -25,25 +25,28 @@ package com.emerchantpay.gateway.api.constants;
 
 import java.io.Serializable;
 
-public class Endpoints implements Serializable {
+public class ConsumerEndpoints implements Serializable {
 
-    private String endpointName;
+	private String endpointName;
 
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
+	// Consumer API
+	public static ConsumerEndpoints CREATE_CONSUMER = new ConsumerEndpoints("/create_consumer");
+	public static ConsumerEndpoints RETRIEVE_CONSUMER = new ConsumerEndpoints("/retrieve_consumer");
+	public static ConsumerEndpoints UPDATE_CONSUMER = new ConsumerEndpoints("/update_consumer");
+	public static ConsumerEndpoints ENABLE_CONSUMER = new ConsumerEndpoints("/enable_consumer");
+	public static ConsumerEndpoints DISABLE_CONSUMER = new ConsumerEndpoints("/disable_consumer");
+	public static ConsumerEndpoints GET_CONSUMER_CARDS = new ConsumerEndpoints("/get_consumer_cards");
+	public static String CONSUMER_API_VERSION = "v1";
 
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
+	public ConsumerEndpoints(String endpointName) {
+		this.endpointName = endpointName;
+	}
 
-    public Endpoints(String endpointName) {
-        this.endpointName = endpointName;
-    }
+	public String getEndpointName() {
+		return this.endpointName;
+	}
 
-    public String getEndpointName() {
-        return this.endpointName;
-    }
-
-    public String toString() {
-        return getEndpointName();
-    }
+	public String toString() {
+		return getEndpointName();
+	}
 }

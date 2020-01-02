@@ -129,6 +129,9 @@ public class RegexValidatorUnitTest {
     public void testEmailValidationFailed() {
         customerEmail = "johndoe.example.com";
         assertFalse(validator.isValidEmail(customerEmail));
+
+        customerEmail = "";
+        assertFalse(validator.isValidEmail(customerEmail));
     }
 
     // Phone
@@ -140,6 +143,9 @@ public class RegexValidatorUnitTest {
     @Test
     public void testPhoneValidationFailed() {
         customerPhone = "test555555555";
+        assertFalse(validator.isValidPhone(customerPhone));
+
+        customerPhone = "";
         assertFalse(validator.isValidPhone(customerPhone));
     }
 

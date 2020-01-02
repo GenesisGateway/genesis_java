@@ -93,11 +93,6 @@ public class Transaction {
                 throw new ResponseException(getCode(), getTechnicalMessage());
             }
         }
-
-        if (getResponseCode() != null && ErrorCodes.getIssuerResponseCode(getResponseCode()) != null) {
-            throw new ResponseException(Integer.valueOf(getResponseCode()),
-                    ErrorCodes.getIssuerResponseCode(getResponseCode()));
-        }
     }
 
     public String getStatus() {
@@ -229,5 +224,17 @@ public class Transaction {
 
     public Map<String, String> getPaymentResponses() {
         return mapPaymentResponses;
+    }
+
+    public String getResponseCodeDescription() {
+        if (getCode() != null) {
+            return ErrorCodes.getErrorDescription(getCode());
+        }
+
+        if (getResponseCode() != null && !getResponseCode().isEmpty()) {
+            return ErrorCodes.getIssuerResponseCode(getResponseCode());
+        }
+
+        return null;
     }
 }

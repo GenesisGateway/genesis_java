@@ -36,6 +36,10 @@ public abstract class Request implements BaseAttributes, AddressAttributes, Seri
 		throw new UnsupportedOperationException();
 	}
 
+	public String toJSON() {
+		throw new UnsupportedOperationException();
+	}
+
 	public String toQueryString(String parent) {
 		throw new UnsupportedOperationException();
 	}
@@ -62,5 +66,9 @@ public abstract class Request implements BaseAttributes, AddressAttributes, Seri
 
 	public String getTransactionType() {
 		return null;
+	}
+
+	public Boolean isConsumer() {
+		return false;
 	}
 }

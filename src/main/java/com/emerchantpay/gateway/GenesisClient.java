@@ -60,8 +60,12 @@ public class GenesisClient extends Request {
 		return new TransactionGateway(configuration, getResponse());
 	}
 
+	public ConsumerGateway getConsumer() {
+		return new ConsumerGateway(configuration, getResponse());
+	}
+
 	public Request execute() {
-		switch (request.getTransactionType()) {
+        switch ((request.getTransactionType() != null) ? request.getTransactionType() : "") {
 			case "wpf_payment":
 				configuration.setWpfEnabled(true);
 				configuration.setTokenEnabled(false);
@@ -135,8 +139,14 @@ public class GenesisClient extends Request {
 				break;
 		}
 
+        if (request.isConsumer()) {
+            configuration.setWpfEnabled(false);
+            configuration.setTokenEnabled(false);
+            configuration.setAction("");
+        }
+
 		http = new Http(configuration);
-		response = http.post(configuration.getBaseUrl(), request);
+		response = http.postXML(configuration.getBaseUrl(), request);
 
 		return this;
 	}

@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.8.0</version>
+        <version>1.9.0</version>
 </dependency>
 ```
 
@@ -257,6 +257,59 @@ api.requests.wpf.WPFReconcileRequest
 api.requests.financial.giftcards.FashionchequeRequest
 api.requests.financial.giftcards.IntersolveRequest
 api.requests.financial.giftcards.TCSRequest
+
+
+// Consumer API
+api.requests.nonfinancial.consumer.CreateConsumerRequest
+api.requests.nonfinancial.consumer.RetrieveConsumerRequest
+api.requests.nonfinancial.consumer.EnableConsumerRequest
+api.requests.nonfinancial.consumer.DisableConsumerRequest
+api.requests.nonfinancial.consumer.UpdateConsumerRequest
+api.requests.nonfinancial.consumer.GetConsumerCardsRequest
+```
+
+
+```java
+// Consumer API example
+
+// Create configuration
+Configuration configuration = new Configuration(Environments.STAGING,
+    Endpoints.EMERCHANTPAY,
+    ConsumerEndpoints.RETRIEVE_CONSUMER,
+    ConsumerEndpoints.CONSUMER_API_VERSION);
+configuration.setUsername("SET_YOUR_USERNAME");
+configuration.setPassword("SET_YOUR_PASSWORD");
+
+RetrieveConsumerRequest createConsumer = new RetrieveConsumerRequest();
+createConsumer.setConsumerId("123456");
+createConsumer.setEmail("john@example.com");
+
+GenesisClient client = new GenesisClient(configuration, createConsumer);
+client.debugMode(true);
+client.execute();
+
+// Parse Consumer result
+ConsumerResult<? extends Consumer> result = client.getConsumer().getRequest();
+String consumerId = result.getConsumer().getConsumerId();
+System.out.println("Consumer Id: " + consumerId);
+```
+
+
+```java
+// FX API example
+
+// Create configuration
+Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY, FXEndpoints.FX_TIERS, FXEndpoints.FX_API_VERSION);
+
+configuration.setUsername("SET_YOUR_USERNAME");
+configuration.setPassword("SET_YOUR_PASSWORD");
+
+FXSearchRateRequest fxSearchRate = new FXSearchRateRequest(configuration);
+fxSearchRate.setTierId("TIER_ID")
+        .setTargetCurrency("USD")
+        .setSourceCurrency("EUR");
+fxSearchRate.execute();
+System.out.println(fxSearchRate.getRate().getTradingRate());
 ```
 
 

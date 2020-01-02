@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.wpf.WPFCreateRequest;
 import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
@@ -249,5 +250,23 @@ public class WPFRequestsTest {
         verifyNoMoreInteractions(wpfReconcile);
 
         verifyReconcileExecute();
+    }
+
+    @Test
+    public void  testSuccessConsumerPhone() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setCustomerPhone("+444444");
+        wpfCreate.setCustomerPhone("+444 444");
+        wpfCreate.setCustomerPhone("+55555555");
+
+        assertNotNull(wpfCreate.buildCustomerInfoParams());
+    }
+
+    @Test(expected = RegexException.class)
+    public void  testFailureConsumerPhone() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setCustomerPhone("+444 444");
+
+        assertNotNull(wpfCreate.buildCustomerInfoParams());
     }
 }

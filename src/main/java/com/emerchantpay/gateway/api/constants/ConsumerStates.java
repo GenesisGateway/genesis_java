@@ -23,27 +23,11 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.io.Serializable;
+public class ConsumerStates {
+    // Statuses of the consumer from Consumer API
+    public static String ENABLED = "enabled";
+    public static String DISABLED = "disabled";
 
-public class Endpoints implements Serializable {
-
-    private String endpointName;
-
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
-
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
-
-    public Endpoints(String endpointName) {
-        this.endpointName = endpointName;
-    }
-
-    public String getEndpointName() {
-        return this.endpointName;
-    }
-
-    public String toString() {
-        return getEndpointName();
-    }
+	// An error has occurred while negotiating with the schemes
+	public static String ERROR = "error";
 }

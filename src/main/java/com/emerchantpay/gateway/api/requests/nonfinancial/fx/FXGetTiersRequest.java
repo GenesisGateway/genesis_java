@@ -1,4 +1,13 @@
-package com.emerchantpay.gateway.api.constants;
+package com.emerchantpay.gateway.api.requests.nonfinancial.fx;
+
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.model.fx.Tier;
+import com.emerchantpay.gateway.model.fx.Tiers;
+import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.util.Http;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.List;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,27 +32,32 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.io.Serializable;
+public class FXGetTiersRequest extends Request {
 
-public class Endpoints implements Serializable {
+    protected Configuration configuration;
+    private Http http;
 
-    private String endpointName;
+    private JsonNode node;
 
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
-
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
-
-    public Endpoints(String endpointName) {
-        this.endpointName = endpointName;
+    public FXGetTiersRequest() {
+        super();
     }
 
-    public String getEndpointName() {
-        return this.endpointName;
+    public FXGetTiersRequest(Configuration configuration) {
+        super();
+        this.configuration = configuration;
     }
 
-    public String toString() {
-        return getEndpointName();
+    public JsonNode execute() {
+        configuration.setTokenEnabled(false);
+        configuration.setAction("");
+        http = new Http(configuration);
+        node = http.getJson(configuration.getBaseUrl());
+
+        return node;
+    }
+
+    public List<Tier> getTires() {
+        return new Tiers(node).getTiersList();
     }
 }

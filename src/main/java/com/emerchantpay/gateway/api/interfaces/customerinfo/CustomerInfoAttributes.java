@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /*
@@ -47,7 +48,7 @@ public interface CustomerInfoAttributes {
     }
 
     default String getCustomerEmail() {
-       return paramsMap.get("customer_email");
+        return paramsMap.get("customer_email");
     }
 
     default CustomerInfoAttributes setCustomerPhone(String customerPhone) {
@@ -60,14 +61,16 @@ public interface CustomerInfoAttributes {
     }
 
     default String getCustomerPhone() {
-       return paramsMap.get("customer_phone");
+        return paramsMap.get("customer_phone");
     }
 
     default RequestBuilder buildCustomerInfoParams() {
-        if (validator.getInvalidParams().isEmpty()) {
+        ArrayList<String> invalidParams = new ArrayList<String>(validator.getInvalidParams());
+        if (invalidParams.isEmpty()) {
             return requestBuilder;
         } else {
-            throw new RegexException(validator.getInvalidParams());
+            validator.clearInvalidParams();
+            throw new RegexException(invalidParams);
         }
     }
 }

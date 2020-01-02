@@ -1,4 +1,9 @@
-package com.emerchantpay.gateway.api.constants;
+package com.emerchantpay.gateway;
+
+import com.emerchantpay.gateway.api.ConsumerResult;
+import com.emerchantpay.gateway.model.Consumer;
+import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.util.NodeWrapper;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,27 +28,17 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.io.Serializable;
+public class ConsumerGateway {
+	Configuration configuration;
+	NodeWrapper response;
 
-public class Endpoints implements Serializable {
+	public ConsumerGateway(Configuration configuration, NodeWrapper response) {
 
-    private String endpointName;
+		this.configuration = configuration;
+		this.response = response;
+	}
 
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
-
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
-
-    public Endpoints(String endpointName) {
-        this.endpointName = endpointName;
-    }
-
-    public String getEndpointName() {
-        return this.endpointName;
-    }
-
-    public String toString() {
-        return getEndpointName();
-    }
+	public ConsumerResult<Consumer> getRequest() {
+		return new ConsumerResult<Consumer>(response, Consumer.class);
+	}
 }

@@ -63,7 +63,7 @@ public class AbnIDealBanksRetrieveRequest extends Request {
 		configuration.setTokenEnabled(false);
 		configuration.setAction("retrieve_abn_ideal_banks");
 		http = new Http(configuration);
-		http.get(configuration.getBaseUrl());
+		http.getXML(configuration.getBaseUrl());
 
 		return this;
 	}

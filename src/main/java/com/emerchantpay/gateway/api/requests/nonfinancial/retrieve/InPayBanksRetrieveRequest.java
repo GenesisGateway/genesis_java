@@ -63,7 +63,7 @@ public class InPayBanksRetrieveRequest extends Request {
 		configuration.setTokenEnabled(false);
 		configuration.setAction("retrieve_inpay_banks");
 		http = new Http(configuration);
-		http.get(configuration.getBaseUrl());
+		http.getXML(configuration.getBaseUrl());
 
 		return this;
 	}

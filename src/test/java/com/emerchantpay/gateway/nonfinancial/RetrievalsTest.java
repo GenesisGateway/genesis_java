@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.nonfinantial;
+package com.emerchantpay.gateway.nonfinancial;
 
 import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fraud.RetrievalByDateRequest;

@@ -25,17 +25,17 @@ package com.emerchantpay.gateway.api.constants;
 
 import java.io.Serializable;
 
-public class Endpoints implements Serializable {
+public class FXEndpoints implements Serializable {
 
     private String endpointName;
 
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
+    // FX API
+    public static FXEndpoints FX_TIERS = new FXEndpoints("/fx/tiers");
+    public static FXEndpoints FX_RATES = new FXEndpoints("/rates");
+    public static FXEndpoints FX_SEARCH_RATE = new FXEndpoints("/rates/search");
+    public static String FX_API_VERSION = "v1";
 
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
-
-    public Endpoints(String endpointName) {
+    public FXEndpoints(String endpointName) {
         this.endpointName = endpointName;
     }
 

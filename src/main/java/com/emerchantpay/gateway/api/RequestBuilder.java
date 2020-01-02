@@ -1,16 +1,16 @@
 package com.emerchantpay.gateway.api;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import com.emerchantpay.gateway.util.QueryString;
 import com.emerchantpay.gateway.util.StringUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -88,10 +88,26 @@ public class RequestBuilder {
         }
         builder.append(String.format("</%s>", parent));
 
-        String[] findArray = new String[]{"&amp;", "&lt;", "&gt;", "&apos;", "&quot;", "<>", "</>"};
-        String[] replaceArray = new String[]{"&", "<", ">", "'", "\"", "", ""};
+        return StringUtils.replaceAllSpecialCharacters(builder.toString());
+    }
 
-        return replaceAllStrings(findArray, replaceArray, builder.toString());
+    public String toJSON() {
+        XmlMapper xmlMapper = new XmlMapper();
+        JsonNode node = null;
+
+        try {
+            node = xmlMapper.readTree(StringUtils.replaceAllSpecialCharacters(toXML()).getBytes());
+        } catch (IOException error) {
+            error.printStackTrace();
+        }
+
+        ObjectMapper jsonMapper = new ObjectMapper();
+        try {
+            return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+        } catch (JsonProcessingException error) {
+            error.printStackTrace();
+            return null;
+        }
     }
 
     protected static String buildXMLElement(Object element) {
@@ -160,19 +176,8 @@ public class RequestBuilder {
         return String.format("<%s type=\"%s\">%s</%s>", tagName, type, xml, tagName);
     }
 
-    protected static String replaceAllStrings(String[] findArr, String[] replaceArr, String input) {
-        for (Integer i = 0; i < findArr.length; i++) {
-            input = input.replace(findArr[i], replaceArr[i]);
-        }
-
-        return input;
-    }
-
     protected static String xmlEscape(String input) {
-        String[] findArray = new String[]{"&", "<", ">", "'", "\""};
-        String[] replaceArray = new String[]{"&amp;", "&lt;", "&gt;", "&apos;", "&quot;"};
-
-        return replaceAllStrings(findArray, replaceArray, input);
+        return StringUtils.replaceAllSpecialCharacters(input);
     }
 
     public List<Map.Entry<String, Object>> getElements() {

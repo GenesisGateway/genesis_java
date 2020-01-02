@@ -14,7 +14,6 @@ import java.util.HashMap;
 
 public class GenesisValidator extends RegexValidator {
 
-    private ArrayList<String> notValidParamsList = new ArrayList<String>();
     private ArrayList<String> missingParamsList = new ArrayList<String>();
 
     public GenesisValidator() {

@@ -1,12 +1,15 @@
 package com.emerchantpay.gateway.util;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.emerchantpay.gateway.api.constants.Endpoints;
-import com.emerchantpay.gateway.api.constants.Environments;
+
+import com.emerchantpay.gateway.api.constants.*;
+import com.emerchantpay.gateway.api.exceptions.GenesisException;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,129 +36,185 @@ import com.emerchantpay.gateway.api.constants.Environments;
 
 public class Configuration implements Serializable {
 
-	private Environments environment;
-	private Endpoints endpoint;
-	private String username;
-	private String password;
-	private String token;
-	private String action;
-	private Boolean tokenEnabled = true;
-	private Boolean wpf = false;
-	private Boolean enabledDebugMode = false;
-	private Locale language;
+    private Environments environment;
+    private Endpoints endpoint;
+    private String username;
+    private String password;
+    private String token;
+    private String action;
+    private Boolean tokenEnabled = true;
+    private Boolean wpf = false;
+    private Boolean enabledDebugMode = false;
+    private Locale language;
+    private String consumerAPIVersion;
+    private String fxAPIVersion;
 
-	private static Logger logger;
 
-	static {
-		logger = Logger.getLogger("Genesis");
-		logger.addHandler(new ConsoleHandler());
-		logger.setLevel(Level.INFO);
-		logger.setUseParentHandlers(false);
-	}
+    private static Logger logger;
+    private static String[] availableFXAPIVersions = new String[]{"v1"};
+    private static String[] availableConsumerAPIVersions = new String[]{"v1"};
+    private static String pathSeparator = "/";
 
-	public Configuration(Environments environment, Endpoints endpoint) {
 
-		this.environment = environment;
-		this.endpoint = endpoint;
-	}
+    static {
+        logger = Logger.getLogger("Genesis");
+        logger.addHandler(new ConsoleHandler());
+        logger.setLevel(Level.INFO);
+        logger.setUseParentHandlers(false);
+    }
 
-	public void setLogger(Logger log) {
-		logger = log;
-	}
+    public Configuration(Environments environment, Endpoints endpoint) {
+        this.environment = environment;
+        this.endpoint = endpoint;
+    }
 
-	public Logger getLogger() {
-		return logger;
-	}
+    // Consumer
+    public Configuration(Environments environment, Endpoints endpoint, ConsumerEndpoints consumerEndpoint, String version) {
+        List<String> availableVersionsList = Arrays.asList(availableConsumerAPIVersions);
+        if (availableVersionsList.contains(version)) {
+            this.consumerAPIVersion = version;
+            this.environment = environment;
+            this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + consumerAPIVersion + consumerEndpoint.getEndpointName());
+        } else {
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableConsumerAPIVersions.toString());
+        }
+    }
 
-	public void setDebugMode(Boolean enabled) {
-		this.enabledDebugMode = enabled;
-	}
+    // FX
+    public Configuration(Environments environment, Endpoints endpoint, FXEndpoints fxEndpoints, String version) {
+        List<String> availableVersionsList = Arrays.asList(availableFXAPIVersions);
+        if (availableVersionsList.contains(version)) {
+            this.fxAPIVersion = version;
+            this.environment = environment;
+            this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + fxAPIVersion + fxEndpoints.getEndpointName());
+        } else {
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableFXAPIVersions.toString());
+        }
+    }
 
-	public Boolean isDebugModeEnabled() {
-		return this.enabledDebugMode;
-	}
+    public void setLogger(Logger log) {
+        logger = log;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public Logger getLogger() {
+        return logger;
+    }
 
-	public String getUsername() {
+    public void setDebugMode(Boolean enabled) {
+        this.enabledDebugMode = enabled;
+    }
 
-		return username;
-	}
+    public Boolean isDebugModeEnabled() {
+        return this.enabledDebugMode;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getPassword() {
+    public String getUsername() {
 
-		return password;
-	}
+        return username;
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public String getToken() {
+    public String getPassword() {
 
-		return token;
-	}
+        return password;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-	public String getAction() {
-		return action;
-	}
+    public String getToken() {
 
-	public void setWpfEnabled(Boolean wpf) {
-		this.wpf = wpf;
-	}
+        return token;
+    }
 
-	public Boolean getWpfEnabled() {
-		return wpf;
-	}
+    public void setAction(String action) {
+        this.action = action;
+    }
 
-	public void setTokenEnabled(Boolean tokenEnabled) {
-		this.tokenEnabled = tokenEnabled;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	public Boolean getTokenEnabled() {
-		return tokenEnabled;
-	}
+    public void setWpfEnabled(Boolean wpf) {
+        this.wpf = wpf;
+    }
 
-	public void setLanguage(Locale language) {
-		this.language = language;
-	}
+    public Boolean getWpfEnabled() {
+        return wpf;
+    }
 
-	public Locale getLanguage() {
-		return language;
-	}
+    public void setTokenEnabled(Boolean tokenEnabled) {
+        this.tokenEnabled = tokenEnabled;
+    }
 
-	public String getBaseUrl() {
+    public Boolean getTokenEnabled() {
+        return tokenEnabled;
+    }
 
-		if (getTokenEnabled() == true) {
-			return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + "/" + getAction()
-					+ "/" + token;
-		} else {
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
 
-			if (getWpfEnabled() == true) {
-				return "https://" + environment.getEnvironmentName().replace("gate", "wpf") + "."
-						+ endpoint.getEndpointName() + "/" + getAction();
-			} else {
-				return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + "/"
-						+ getAction();
-			}
-		}
-	}
+    public Locale getLanguage() {
+        return language;
+    }
 
-	public Environments getEnvironment() {
-		return environment;
-	}
+    public String getBaseUrl() {
 
-	public Endpoints getEndpoint() {
-		return endpoint;
-	}
+        if (getTokenEnabled() == true) {
+            return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator + getAction()
+                    + pathSeparator + token;
+        } else {
+
+            if (getWpfEnabled() == true) {
+                return "https://" + environment.getEnvironmentName().replace("gate", "wpf") + "."
+                        + endpoint.getEndpointName() + pathSeparator + getAction();
+            } else {
+                return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator
+                        + getAction();
+            }
+        }
+    }
+
+    public Environments getEnvironment() {
+        return environment;
+    }
+
+    public Endpoints getEndpoint() {
+        return endpoint;
+    }
+
+    public void setConsumerAPIVersion(String version) {
+        List<String> availableVersionsList = Arrays.asList(availableConsumerAPIVersions);
+        if (availableVersionsList.contains(version)) {
+            this.consumerAPIVersion = version;
+        } else {
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableConsumerAPIVersions.toString());
+        }
+    }
+
+    public String getConsumerVersion() {
+        return consumerAPIVersion;
+    }
+
+    public void setFXAPIVersion(String version) {
+        List<String> availableVersionsList = Arrays.asList(availableFXAPIVersions);
+        if (availableVersionsList.contains(version)) {
+            this.fxAPIVersion = version;
+        } else {
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableFXAPIVersions.toString());
+        }
+    }
+
+    public String getFXAPIVersion() {
+        return fxAPIVersion;
+    }
 }

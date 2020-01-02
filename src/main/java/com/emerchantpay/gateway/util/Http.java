@@ -33,12 +33,15 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.emerchantpay.gateway.api.*;
+import com.emerchantpay.gateway.api.constants.ContentTypes;
 import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
 import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
 import com.emerchantpay.gateway.api.exceptions.NotFoundException;
 import com.emerchantpay.gateway.api.exceptions.ServerException;
 import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
 import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -79,44 +82,60 @@ public class Http implements Serializable {
     }
 
     public void delete(String url) {
-        httpRequest(RequestMethod.DELETE, url);
+        httpRequestXML(RequestMethod.DELETE, url);
     }
 
-    public NodeWrapper get(String url) {
-        return httpRequest(RequestMethod.GET, url);
+    public NodeWrapper getXML(String url) {
+        return httpRequestXML(RequestMethod.GET, url);
     }
 
-    public NodeWrapper post(String url) {
-        return httpRequest(RequestMethod.POST, url, null);
+    public JsonNode getJson(String url) {
+        return httpRequestJson(RequestMethod.GET, url);
     }
 
-    public NodeWrapper post(String url, Request request) {
-        return httpRequest(RequestMethod.POST, url, request.toXML());
+    public NodeWrapper postXML(String url) {
+        return httpRequestXML(RequestMethod.POST, url, null);
+    }
+
+    public NodeWrapper postXML(String url, Request request) {
+        return httpRequestXML(RequestMethod.POST, url, request.toXML());
+    }
+
+    public JsonNode postJson(String url) {
+        return httpRequestJson(RequestMethod.POST, url, null);
+    }
+
+    public JsonNode postJson(String url, Request request) {
+        return httpRequestJson(RequestMethod.POST, url, request.toJSON());
     }
 
     public NodeWrapper postQuery(String url, Request request) {
 
-        return httpRequest(RequestMethod.POST, url, request.toQueryString(""));
+        return httpRequestXML(RequestMethod.POST, url, request.toQueryString(""));
     }
 
     public NodeWrapper put(String url) {
-        return httpRequest(RequestMethod.PUT, url, null);
+        return httpRequestXML(RequestMethod.PUT, url, null);
     }
 
     public NodeWrapper put(String url, Request request) {
-        return httpRequest(RequestMethod.PUT, url, request.toXML());
+        return httpRequestXML(RequestMethod.PUT, url, request.toXML());
     }
 
-    private NodeWrapper httpRequest(RequestMethod requestMethod, String url) {
-        return httpRequest(requestMethod, url, null);
+    private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url) {
+        return httpRequestXML(requestMethod, url, null);
     }
 
-    private NodeWrapper httpRequest(RequestMethod requestMethod, String url, String postBody) {
+    private JsonNode httpRequestJson(RequestMethod requestMethod, String url) {
+        return httpRequestJson(requestMethod, url, null);
+    }
+
+    private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url, String postBody) {
         HttpURLConnection connection = null;
         NodeWrapper nodeWrapper = null;
 
         try {
-            connection = buildConnection(requestMethod, url);
+            connection = buildConnection(requestMethod, url, ContentTypes.XML);
 
             host = connection.getURL().getHost();
             port = connection.getURL().getDefaultPort();
@@ -184,6 +203,79 @@ public class Http implements Serializable {
         }
 
         return nodeWrapper;
+    }
+
+    private JsonNode httpRequestJson(RequestMethod requestMethod, String url, String postBody) {
+        HttpURLConnection connection = null;
+        JsonNode jsonNode = null;
+
+        try {
+            connection = buildConnection(requestMethod, url, ContentTypes.JSON);
+
+            host = connection.getURL().getHost();
+            port = connection.getURL().getDefaultPort();
+
+            if (connection instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) connection).setSSLSocketFactory(getSSLSocketFactory());
+            }
+
+            if (postBody != null) {
+                OutputStream outputStream = null;
+                try {
+                    outputStream = connection.getOutputStream();
+                    outputStream.write(postBody.getBytes("UTF-8"));
+                } finally {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                }
+            }
+
+            throwExceptionIfErrorStatusCode(connection.getResponseCode(), null);
+            if (requestMethod.equals(RequestMethod.DELETE)) {
+                return null;
+            }
+
+            InputStream responseStream = null;
+            try {
+                responseStream = connection.getResponseCode() == 422 ? connection.getErrorStream()
+                        : connection.getInputStream();
+
+                String json = StringUtils.inputStreamToString(responseStream);
+
+                configuration.getLogger().log(Level.INFO, "[Genesis] [{0}]] {1} {2}",
+                        new Object[]{getCurrentTime(), requestMethod.toString(), url});
+                configuration.getLogger().log(Level.FINE, "[Genesis] [{0}] {1} {2} {3}",
+                        new Object[]{getCurrentTime(), requestMethod.toString(), url, connection.getResponseCode()});
+
+                if (json != null && configuration.isDebugModeEnabled() == true) {
+                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(postBody));
+                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(json));
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.writer().writeValueAsString(json);
+
+                jsonNode = objectMapper.readTree(json);
+            } finally {
+                if (responseStream != null) {
+                    responseStream.close();
+                }
+            }
+        } catch (IOException e) {
+            try {
+                throw new UnexpectedException(e.getMessage(), e);
+            } catch (UnexpectedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return jsonNode;
     }
 
     private String formatSanitizeBodyForLog(String body) {
@@ -312,7 +404,7 @@ public class Http implements Serializable {
         return null;
     }
 
-    private HttpURLConnection buildConnection(RequestMethod requestMethod, String urlString)
+    private HttpURLConnection buildConnection(RequestMethod requestMethod, String urlString, String contentType)
             throws java.io.IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection;
@@ -322,8 +414,8 @@ public class Http implements Serializable {
 
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod.toString());
-        connection.addRequestProperty("Accept", "application/xml");
-        connection.setRequestProperty("Content-Type", "application/xml");
+        connection.addRequestProperty("Accept", contentType);
+        connection.setRequestProperty("Content-Type",contentType);
         connection.addRequestProperty("Authorization", "Basic " + encoded);
         connection.setDoOutput(true);
         connection.setReadTimeout(60000);

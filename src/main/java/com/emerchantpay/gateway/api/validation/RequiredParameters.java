@@ -76,11 +76,23 @@ public class RequiredParameters {
     public static String totalAmount = "total_amount";
     public static String paymentMethodCategory = "payment_method_category";
 
+    // Consumer API
+    public static String consumerId = "consumer_id";
+    public static String email = "email";
+
+    // FX Rates
+    public static String sourceCurrency = "source_currency";
+    public static String targetCurrency = "target_currency";
+    public static String tierId = "tier_id";
+    public static String rateId = "rate_id";
+
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
 
     public HashMap<String, String> getRequiredParametersForAddress(AddressAttributes address) {
-        requiredParamsMap.put(country, address.getBillingCountryCode());
+        if (!address.getBillingAddressParams().isEmpty()) {
+            requiredParamsMap.put(country, address.getBillingCountryCode());
+        }
 
         if (!address.getShippingAddressParams().isEmpty()) {
             requiredParamsMap.put(country, address.getShippingCountryCode());
