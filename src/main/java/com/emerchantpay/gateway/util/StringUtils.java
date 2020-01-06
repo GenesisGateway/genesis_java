@@ -35,15 +35,24 @@ public class StringUtils {
 		return dasherize(klass.getSimpleName()).toLowerCase();
 	}
 
-	public static Map<String, String> replaceMap =
+	public static Map<String, String> replaceAllCharactersMap =
 			Collections.unmodifiableMap(new HashMap<String, String>() {{
-				put("&amp;", "&");
 				put("&lt;", "<");
 				put("&gt;", ">");
 				put("&apos;", "'");
 				put("&quot;", "\"");
 				put("<>", "");
 				put("</>", "");
+			}});
+
+	public static Map<String, String> replaceXMLEscapeMap =
+			Collections.unmodifiableMap(new HashMap<String, String>() {{
+				put("&", "&amp;");
+				put("amp;amp;", "amp;");
+				put("<", "&lt;");
+				put(">", "&gt;");
+				put("'", "&apos;");
+				put("\"", "&quot;");
 			}});
 
 	public static String dasherize(String str) {
@@ -172,8 +181,15 @@ public class StringUtils {
 	}
 
 	public static String replaceAllSpecialCharacters(String input) {
-		for(String key: replaceMap.keySet()) {
-			input = input.replace(key, replaceMap.get(key));
+		for(String key: replaceAllCharactersMap.keySet()) {
+			input = input.replace(key, replaceAllCharactersMap.get(key));
+		}
+		return input;
+	}
+
+	public static String replaceXMLEscapeCharacters(String input) {
+		for(String key: replaceXMLEscapeMap.keySet()) {
+			input = input.replace(key, replaceXMLEscapeMap.get(key));
 		}
 		return input;
 	}

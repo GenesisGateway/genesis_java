@@ -12,7 +12,6 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
 
-import javax.xml.ws.RequestWrapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.9.0</version>
+        <version>1.9.1</version>
 </dependency>
 ```
 
@@ -280,11 +280,11 @@ Configuration configuration = new Configuration(Environments.STAGING,
 configuration.setUsername("SET_YOUR_USERNAME");
 configuration.setPassword("SET_YOUR_PASSWORD");
 
-RetrieveConsumerRequest createConsumer = new RetrieveConsumerRequest();
-createConsumer.setConsumerId("123456");
-createConsumer.setEmail("john@example.com");
+RetrieveConsumerRequest retrieveConsumer = new RetrieveConsumerRequest();
+retrieveConsumer.setConsumerId("123456");
+retrieveConsumer.setEmail("john@example.com");
 
-GenesisClient client = new GenesisClient(configuration, createConsumer);
+GenesisClient client = new GenesisClient(configuration, retrieveConsumer);
 client.debugMode(true);
 client.execute();
 

@@ -177,7 +177,7 @@ public class RequestBuilder {
     }
 
     protected static String xmlEscape(String input) {
-        return StringUtils.replaceAllSpecialCharacters(input);
+        return StringUtils.replaceXMLEscapeCharacters(input);
     }
 
     public List<Map.Entry<String, Object>> getElements() {
