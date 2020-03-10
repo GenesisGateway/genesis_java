@@ -11,11 +11,7 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.MpiAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
@@ -43,7 +39,8 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
-		MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes {
+		MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
+        FXAttributes, ScaAttributes {
 
 	private String transactionType = TransactionTypes.SALE_3D;
 	private Boolean moto;
@@ -124,6 +121,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
 		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
 		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+		requiredParams.putAll(getMpiConditionalRequiredFields());
+		requiredParams.putAll(getScaConditionalRequiredFields());
 
 		// Validate request
 		validator.isValidRequest(requiredParams);
@@ -142,7 +141,9 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
 				.addElement("mpi_params", buildMpiParams().toXML())
-				.addElement("risk_params", buildRiskParams().toXML());
+				.addElement("risk_params", buildRiskParams().toXML())
+				.addElement("sca_params", buildScaParams().toXML())
+                .addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

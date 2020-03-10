@@ -57,13 +57,25 @@ public class RegexValidatorUnitTest {
     // Card holder
     @Test
     public void testCardHolderSuccess() {
-        cardHolder = "Emil Example";
+        cardHolder = "John Doe";
         assertTrue(validator.isValidCardHolder(cardHolder));
     }
 
     @Test
     public void testCardHolderFailure() {
-        cardHolder = "Emil Example123";
+        cardHolder = "John123";
+        assertFalse(validator.isValidCardHolder(cardHolder));
+    }
+
+    @Test
+    public void testCardHolderSpecialCharsSuccess() {
+        cardHolder = "张伟 王伟";
+        assertTrue(validator.isValidCardHolder(cardHolder));
+    }
+
+    @Test
+    public void testCardHolderSpecialCharsFailure() {
+        cardHolder = "张伟 ";
         assertFalse(validator.isValidCardHolder(cardHolder));
     }
 

@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.nonfinantial.fx;
+package com.emerchantpay.gateway.nonfinancial.fx;
 
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.nonfinancial.fx.FXGetTierRequest;

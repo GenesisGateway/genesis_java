@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.api.constants;
+package com.emerchantpay.gateway.api.interfaces.financial;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,31 +23,17 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.io.Serializable;
+import com.emerchantpay.gateway.api.RequestBuilder;
 
-public class Endpoints implements Serializable {
+public interface FXAttributes {
+    RequestBuilder requestBuilder = new RequestBuilder("");
 
-    private String endpointName;
-
-    // Domain for E-ComProcessing's Genesis instance
-    public static Endpoints ECOMPROCESSING = new Endpoints("e-comprocessing.net");
-
-    // Domain for Emerchantpay's Genesis instance
-    public static Endpoints EMERCHANTPAY = new Endpoints("emerchantpay.net");
-
-    // SCA Checker endpoint
-    public static Endpoints SCA_CHECKER = new Endpoints("sca/checker");
-    public static String SCA_CHECKER_API_VERSION = "v1";
-
-    public Endpoints(String endpointName) {
-        this.endpointName = endpointName;
+    default FXAttributes setFXRateId(String fxRateId) {
+        requestBuilder.addElement("fx_rate_id", fxRateId);
+        return this;
     }
 
-    public String getEndpointName() {
-        return this.endpointName;
-    }
-
-    public String toString() {
-        return getEndpointName();
+    default RequestBuilder buildFXParams() {
+        return requestBuilder;
     }
 }

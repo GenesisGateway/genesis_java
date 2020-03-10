@@ -109,6 +109,10 @@ public class Http implements Serializable {
         return httpRequestJson(RequestMethod.POST, url, request.toJSON());
     }
 
+    public JsonNode postJson(String url, String requestBody) {
+        return httpRequestJson(RequestMethod.POST, url, requestBody);
+    }
+
     public NodeWrapper postQuery(String url, Request request) {
 
         return httpRequestXML(RequestMethod.POST, url, request.toQueryString(""));

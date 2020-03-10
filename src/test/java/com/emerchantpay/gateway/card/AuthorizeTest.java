@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
@@ -75,6 +76,7 @@ public class AuthorizeTest {
         when(authorize.setCustomerEmail(isA(String.class))).thenReturn(authorize);
         when(authorize.setCustomerPhone(isA(String.class))).thenReturn(authorize);
         when(authorize.setBirthDate(isA(String.class))).thenReturn(authorize);
+        when(authorize.setFXRateId(isA(String.class))).thenReturn(authorize);
 
         assertEquals(authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize);
         assertEquals(authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize);
@@ -85,6 +87,7 @@ public class AuthorizeTest {
                 .setBillingFirstname("Plamen").setBillingLastname("Petrov")
                 .setBillingCity("New York").setBillingCountry("US")
                 .setBillingZipCode("M4B1B3").setBillingState("CA"), authorize);
+        assertEquals(authorize.setFXRateId("123"), authorize);
 
         verify(authorize).setTransactionId(uniqueId);
         verify(authorize).setRemoteIp("82.137.112.202");
@@ -105,6 +108,7 @@ public class AuthorizeTest {
         verify(authorize).setBillingCountry("US");
         verify(authorize).setBillingZipCode("M4B1B3");
         verify(authorize).setBillingState("CA");
+        verify(authorize).setFXRateId("123");
         verifyNoMoreInteractions(authorize);
 
         verifyExecute();

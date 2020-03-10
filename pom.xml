@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.emerchantpay.gateway</groupId>
 	<artifactId>genesis-java</artifactId>
-	<version>1.9.1</version>
+	<version>1.10.0</version>
 	<name>Genesis Gateway Java Client Library</name>
 	<description>Java Client Library for Genesis Gateway</description>
 	<url>https://www.emerchantpay.com</url>
@@ -32,7 +32,7 @@
 		<developerConnection>
        ${scmConnection}
      </developerConnection>
-		<tag>1.9.1</tag>
+		<tag>1.10.0</tag>
 	</scm>
 
 	<distributionManagement>

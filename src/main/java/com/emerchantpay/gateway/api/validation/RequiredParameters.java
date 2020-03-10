@@ -86,6 +86,10 @@ public class RequiredParameters {
     public static String tierId = "tier_id";
     public static String rateId = "rate_id";
 
+    // SCA Checker
+    public static String transactionAmount = "transaction_amount";
+    public static String transactionCurrency = "transaction_currency";
+
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
 
@@ -100,4 +104,9 @@ public class RequiredParameters {
 
         return requiredParamsMap;
     }
+
+    // Conditional required
+    public static String mpiProtocolVersion = "protocol_version";
+    public static String mpiDirectoryServerId = "directory_server_id";
+    public static String scaVisaMerchantId = "visa_merchant_id";
 }

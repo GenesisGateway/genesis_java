@@ -2,6 +2,7 @@ package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.constants.ReminderConstants;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
@@ -253,7 +254,7 @@ public class WPFRequestsTest {
     }
 
     @Test
-    public void  testSuccessConsumerPhone() throws MalformedURLException {
+    public void testSuccessConsumerPhone() throws MalformedURLException {
         stubWPF();
         wpfCreate.setCustomerPhone("+444444");
         wpfCreate.setCustomerPhone("+444 444");
@@ -263,10 +264,23 @@ public class WPFRequestsTest {
     }
 
     @Test(expected = RegexException.class)
-    public void  testFailureConsumerPhone() throws MalformedURLException {
+    public void testFailureConsumerPhone() throws MalformedURLException {
         stubWPF();
         wpfCreate.setCustomerPhone("+444 444");
 
         assertNotNull(wpfCreate.buildCustomerInfoParams());
+    }
+
+    @Test
+    public void testWPFWithFXRateId() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.addTransactionType(TransactionTypes.AUTHORIZE).addParam("fx_rate_id", "123");
+        wpfCreate.toXML();
+
+        assertEquals(wpfCreate.addTransactionType(TransactionTypes.AUTHORIZE)
+                .addParam("fx_rate_id", "123").done(), wpfCreate);
+        assertTrue(wpfCreate.addTransactionType(TransactionTypes.AUTHORIZE)
+                .addParam("fx_rate_id", "123").toXML()
+                .contains("<fx_rate_id>123</fx_rate_id>"));
     }
 }

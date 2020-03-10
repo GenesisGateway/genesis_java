@@ -69,7 +69,6 @@ public class FXGetRatesRequest extends Request {
         requiredParams.put(RequiredParameters.tierId, tierId);
 
         // Validate request
-        System.out.println(  validator.isValidRequest(requiredParams));
         validator.isValidRequest(requiredParams);
 
         configuration.setTokenEnabled(false);

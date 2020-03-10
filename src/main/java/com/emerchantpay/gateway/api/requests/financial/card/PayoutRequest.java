@@ -10,6 +10,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -37,7 +38,8 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PayoutRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes {
+public class PayoutRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
+        FXAttributes {
 
 	private String transactionType = TransactionTypes.PAYOUT;
 	private BigDecimal amount;
@@ -110,7 +112,8 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 				.addElement(buildCreditCardParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML())
 				.addElement("billing_address", buildBillingAddress().toXML())
-				.addElement("shipping_address", buildShippingAddress().toXML());
+				.addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

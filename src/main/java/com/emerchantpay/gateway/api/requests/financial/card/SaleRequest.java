@@ -12,6 +12,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -40,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class SaleRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
-		DescriptorAttributes, RiskParamsAttributes {
+		DescriptorAttributes, RiskParamsAttributes, FXAttributes {
 
 	private String transactionType = TransactionTypes.SALE;
 	private Boolean moto;
@@ -136,7 +137,8 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-				.addElement("risk_params", buildRiskParams().toXML());
+				.addElement("risk_params", buildRiskParams().toXML())
+				.addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

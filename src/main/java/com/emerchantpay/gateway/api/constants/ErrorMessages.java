@@ -7,4 +7,5 @@ public class ErrorMessages {
     public static String INVALID_CONSUMER_ID = "Invalid consumer_id. Max. length is 10 digits.";
     public static String INVALID_CONSUMER_API_VERSION = "Invalid Consumer API version, available versions are: ";
     public static String INVALID_FX_API_VERSION = "Invalid FX API version, available versions are: ";
+    public static String INVALID_SCA_API_VERSION = "Invalid SCA API version, available versions are: ";
 }

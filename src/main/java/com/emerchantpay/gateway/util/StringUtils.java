@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,6 +31,7 @@ import java.util.*;
 public class StringUtils {
 
 	String uid;
+	public static final Pattern NUMBER_REGEX = Pattern.compile("-?\\+?\\d+(.\\d+)?");
 
 	public static <T> String classToXMLName(Class<T> klass) {
 		return dasherize(klass.getSimpleName()).toLowerCase();
@@ -193,4 +195,16 @@ public class StringUtils {
 		}
 		return input;
 	}
+
+    public static Boolean isNumeric(final String str) {
+        // null or empty
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        if (NUMBER_REGEX.matcher(str).matches()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

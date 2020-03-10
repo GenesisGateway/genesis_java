@@ -1,6 +1,10 @@
 package com.emerchantpay.gateway.api.interfaces.financial;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.MpiProtocolVersions;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.util.HashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,25 +31,73 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 
 public interface MpiAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
+    RequestBuilder request3DSv1Builder = new RequestBuilder("");
+    RequestBuilder request3DSv2Builder = new RequestBuilder("");
+
+    HashMap<String, String> paramsMap = new HashMap<String, String>();
 
     // Mpi Params
-    default MpiAttributes setCavv(String cavv) {
-        requestBuilder.addElement("cavv", cavv);
+    default MpiAttributes setMpiCavv(String mpiCavv) {
+        paramsMap.put("cavv", mpiCavv);
+        request3DSv1Builder.addElement("cavv", mpiCavv);
+        request3DSv2Builder.addElement("cavv", mpiCavv);
         return this;
     }
 
-    default MpiAttributes setEci(String eci) {
-        requestBuilder.addElement("eci", eci);
+    default MpiAttributes setMpiEci(String mpiEci) {
+        paramsMap.put("eci", mpiEci);
+        request3DSv1Builder.addElement("eci", mpiEci);
+        request3DSv2Builder.addElement("eci", mpiEci);
         return this;
     }
 
-    default MpiAttributes setXid(String xid) {
-        requestBuilder.addElement("xid", xid);
+    default MpiAttributes setMpiXid(String mpiXid) {
+        paramsMap.put("xid", mpiXid);
+        request3DSv1Builder.addElement("xid", mpiXid);
         return this;
+    }
+
+    default MpiAttributes setMpiProtocolVersion(String mpiProtocolVersion) {
+        paramsMap.put("protocol_version", mpiProtocolVersion);
+        request3DSv2Builder.addElement("protocol_version", mpiProtocolVersion);
+        return this;
+    }
+
+    default MpiAttributes setMpiDirectoryServerId(String mpiDirectoryServerId) {
+        paramsMap.put("directory_server_id", mpiDirectoryServerId);
+        request3DSv2Builder.addElement("directory_server_id", mpiDirectoryServerId);
+        return this;
+    }
+
+    default RequestBuilder buildMpi3DSv1ParamsStructure() {
+        return request3DSv1Builder;
+    }
+
+    default RequestBuilder buildMpi3DSv2ParamsStructure() {
+        return request3DSv2Builder;
     }
 
     default RequestBuilder buildMpiParams() {
-        return requestBuilder;
+        if (is3DSv2()) {
+            return buildMpi3DSv2ParamsStructure();
+        } else {
+            return buildMpi3DSv1ParamsStructure();
+        }
+    }
+
+    default Boolean is3DSv2() {
+        return paramsMap.get("protocol_version") == MpiProtocolVersions.PROTOCOL_VERSION_2;
+    }
+
+    default HashMap<String, String> getMpiConditionalRequiredFields() {
+        if (is3DSv2()) {
+            return new HashMap<String, String>() {
+                {
+                    put(RequiredParameters.mpiDirectoryServerId, paramsMap.get("directory_server_id"));
+                }
+            };
+        } else {
+            return new HashMap<>();
+        }
     }
 }

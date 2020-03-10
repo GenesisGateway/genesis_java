@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.9.1</version>
+        <version>1.10.0</version>
 </dependency>
 ```
 
@@ -310,6 +310,27 @@ fxSearchRate.setTierId("TIER_ID")
         .setSourceCurrency("EUR");
 fxSearchRate.execute();
 System.out.println(fxSearchRate.getRate().getTradingRate());
+```
+
+```java
+// SCA Check example
+// Create configuration
+Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY, Endpoints.SCA_CHECKER_API_VERSION);
+
+configuration.setUsername("SET_YOUR_USERNAME");
+configuration.setPassword("SET_YOUR_PASSWORD");
+
+ScaCheckerRequest scaCheckRequest = new ScaCheckerRequest(configuration);
+
+scaCheckRequest.setCardNumber("4200000000000000")
+        .setMit(false)
+        .setMoto(false)
+        .setRecurring(false)
+        .setTransactionAmount(new BigDecimal("2.00"))
+        .setTransactionCurrency("EUR");
+
+scaCheckRequest.execute();
+System.out.println("Response: " + scaCheckRequest.getResponse().getDocument());
 ```
 
 

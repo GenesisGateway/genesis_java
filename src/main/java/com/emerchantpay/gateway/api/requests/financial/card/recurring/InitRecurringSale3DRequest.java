@@ -41,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
 		CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
-		RiskParamsAttributes {
+		RiskParamsAttributes, FXAttributes, ScaAttributes {
 
 	private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
 	private Boolean moto;
@@ -109,6 +109,8 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
 		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
 		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+		requiredParams.putAll(getMpiConditionalRequiredFields());
+		requiredParams.putAll(getScaConditionalRequiredFields());
 
 		// Validate request
 		validator.isValidRequest(requiredParams);
@@ -125,7 +127,9 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
 				.addElement("mpi_params", buildMpiParams().toXML())
-				.addElement("risk_params", buildRiskParams().toXML());
+				.addElement("risk_params", buildRiskParams().toXML())
+				.addElement("sca_params", buildScaParams().toXML())
+                .addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

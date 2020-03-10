@@ -48,11 +48,13 @@ public class Configuration implements Serializable {
     private Locale language;
     private String consumerAPIVersion;
     private String fxAPIVersion;
+    private String scaCheckerAPIVersion;
 
 
     private static Logger logger;
     private static String[] availableFXAPIVersions = new String[]{"v1"};
     private static String[] availableConsumerAPIVersions = new String[]{"v1"};
+    private static String[] availableScaAPIVersions = new String[]{"v1"};
     private static String pathSeparator = "/";
 
 
@@ -76,7 +78,7 @@ public class Configuration implements Serializable {
             this.environment = environment;
             this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + consumerAPIVersion + consumerEndpoint.getEndpointName());
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableConsumerAPIVersions.toString());
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList.toString());
         }
     }
 
@@ -88,8 +90,15 @@ public class Configuration implements Serializable {
             this.environment = environment;
             this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + fxAPIVersion + fxEndpoints.getEndpointName());
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableFXAPIVersions.toString());
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList.toString());
         }
+    }
+
+    // SCA Checker
+    public Configuration(Environments environment, Endpoints endpoint, String version) {
+        this.scaCheckerAPIVersion = version;
+        this.environment = environment;
+        this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + version);
     }
 
     public void setLogger(Logger log) {
@@ -197,7 +206,7 @@ public class Configuration implements Serializable {
         if (availableVersionsList.contains(version)) {
             this.consumerAPIVersion = version;
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableConsumerAPIVersions.toString());
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList.toString());
         }
     }
 
@@ -210,11 +219,24 @@ public class Configuration implements Serializable {
         if (availableVersionsList.contains(version)) {
             this.fxAPIVersion = version;
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableFXAPIVersions.toString());
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList.toString());
         }
     }
 
     public String getFXAPIVersion() {
         return fxAPIVersion;
+    }
+
+    public void setScaCheckerAPIVersion(String version) {
+        List<String> availableVersionsList = Arrays.asList(availableScaAPIVersions);
+        if (availableVersionsList.contains(version)) {
+            this.scaCheckerAPIVersion = version;
+        } else {
+            throw new GenesisException(ErrorMessages.INVALID_SCA_API_VERSION + availableVersionsList.toString());
+        }
+    }
+
+    public String getScaCheckerAPIVersion() {
+        return scaCheckerAPIVersion;
     }
 }

@@ -13,29 +13,30 @@ import com.emerchantpay.gateway.util.Configuration;
 
 public class ConfigurationTest {
 
-	Environments environment = new Environments("staging.gate");
-	Endpoints endpoint = new Endpoints("emerchantpay.net");
-	Configuration configurationConsumer = new Configuration(environment, endpoint, ConsumerEndpoints.CREATE_CONSUMER, "v1");
+    Environments environment = new Environments("staging.gate");
+    Endpoints endpoint = new Endpoints("emerchantpay.net");
+    Configuration configurationConsumer = new Configuration(environment, endpoint, ConsumerEndpoints.CREATE_CONSUMER, "v1");
     Configuration configurationFX = new Configuration(environment, endpoint, FXEndpoints.FX_TIERS, "v1");
+    Configuration configurationScaChecker = new Configuration(environment, endpoint, "v1");
 
     @Test
     public void testEnvironment() {
         Configuration configuration = new Configuration(environment, endpoint);
 
-		assertEquals(Environments.STAGING.getEnvironmentName(), configuration.getEnvironment().getEnvironmentName());
-		assertEquals(Endpoints.EMERCHANTPAY.getEndpointName(), configuration.getEndpoint().getEndpointName());
-	}
+        assertEquals(Environments.STAGING.getEnvironmentName(), configuration.getEnvironment().getEnvironmentName());
+        assertEquals(Endpoints.EMERCHANTPAY.getEndpointName(), configuration.getEndpoint().getEndpointName());
+    }
 
-	@Test
-	public void testConsumerVersionSuccess() {
-		assertEquals("v1", configurationConsumer.getConsumerVersion());
-	}
+    @Test
+    public void testConsumerVersionSuccess() {
+        assertEquals("v1", configurationConsumer.getConsumerVersion());
+    }
 
-	@Test(expected = GenesisException.class)
-	public void testConsumerVersionFailure() {
+    @Test(expected = GenesisException.class)
+    public void testConsumerVersionFailure() {
         configurationConsumer.setConsumerAPIVersion("v5");
-		assertEquals("v5", configurationConsumer.getConsumerVersion());
-	}
+        assertEquals("v5", configurationConsumer.getConsumerVersion());
+    }
 
     @Test
     public void testFXVersionSuccess() {
@@ -46,5 +47,16 @@ public class ConfigurationTest {
     public void testFXAPIVersionFailure() {
         configurationFX.setFXAPIVersion("v5");
         assertEquals("v5", configurationFX.getFXAPIVersion());
+    }
+
+    @Test
+    public void testScaCheckerVersionSuccess() {
+        assertEquals("v1", configurationScaChecker.getScaCheckerAPIVersion());
+    }
+
+    @Test(expected = GenesisException.class)
+    public void testScaCheckerAPIVersionFailure() {
+        configurationScaChecker.setScaCheckerAPIVersion("v5");
+        assertEquals("v5", configurationScaChecker.getFXAPIVersion());
     }
 }

@@ -12,6 +12,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -40,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes {
+        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
@@ -121,7 +122,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-                .addElement("risk_params", buildRiskParams().toXML());
+                .addElement("risk_params", buildRiskParams().toXML())
+                .addElement(buildFXParams().toXML());
 
         // Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());

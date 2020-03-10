@@ -23,7 +23,8 @@ public class GenesisValidator extends RegexValidator {
     public Boolean isValidRequiredParams(HashMap<String, String> requiredParams) {
         // Missing params
         for (String key : requiredParams.keySet()) {
-            if ((requiredParams.get(key) == null || requiredParams.get(key).isEmpty())
+            if ((requiredParams.get(key) == null
+                    || requiredParams.get(key).isEmpty())
                     && !missingParamsList.contains(key)) {
                 missingParamsList.add(key);
             }

@@ -79,6 +79,7 @@ public class InitRecurringSale3DTest {
         when(initrecsale3d.setReturnSuccessUrl(isA(URL.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setReturnFailureUrl(isA(URL.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setNotificationUrl(isA(URL.class))).thenReturn(initrecsale3d);
+        when(initrecsale3d.setFXRateId(isA(String.class))).thenReturn(initrecsale3d);;
 
         assertEquals(initrecsale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 initrecsale3d);
@@ -100,6 +101,7 @@ public class InitRecurringSale3DTest {
                 .setBillingCountry("US")
                 .setBillingZipCode("M4B1B3")
                 .setBillingState("CA"), initrecsale3d);
+        assertEquals(initrecsale3d.setFXRateId("123"), initrecsale3d);
 
         verify(initrecsale3d).setTransactionId(uniqueId.toString());
         verify(initrecsale3d).setRemoteIp("192.168.0.1");
@@ -125,6 +127,7 @@ public class InitRecurringSale3DTest {
         verify(initrecsale3d).setNotificationUrl(new URL("http://www.example.com/notification"));
         verify(initrecsale3d).setReturnSuccessUrl(new URL("http://www.example.com/success"));
         verify(initrecsale3d).setReturnFailureUrl(new URL("http://www.example.com/failure"));
+        verify(initrecsale3d).setFXRateId("123");
         verifyNoMoreInteractions(initrecsale3d);
 
         verifyExecute();

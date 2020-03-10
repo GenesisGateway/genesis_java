@@ -74,6 +74,7 @@ public class PayoutTest {
         when(payout.setBillingCountry(isA(String.class))).thenReturn(payout);
         when(payout.setBillingZipCode(isA(String.class))).thenReturn(payout);
         when(payout.setBillingState(isA(String.class))).thenReturn(payout);
+        when(payout.setFXRateId(isA(String.class))).thenReturn(payout);
 
         assertEquals(payout.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 payout);
@@ -89,6 +90,7 @@ public class PayoutTest {
                 .setBillingCountry("US")
                 .setBillingZipCode("1000")
                 .setBillingState("NY"), payout);
+        assertEquals(payout.setFXRateId("123"), payout);
 
         verify(payout).setTransactionId(uniqueId.toString());
         verify(payout).setRemoteIp("192.168.0.1");
@@ -111,6 +113,7 @@ public class PayoutTest {
         verify(payout).setBillingCountry("US");
         verify(payout).setBillingZipCode("1000");
         verify(payout).setBillingState("NY");
+        verify(payout).setFXRateId("123");
 
         verifyNoMoreInteractions(payout);
 

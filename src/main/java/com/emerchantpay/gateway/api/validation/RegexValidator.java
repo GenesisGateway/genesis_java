@@ -15,7 +15,7 @@ public class RegexValidator {
             .compile("\\b(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
     // Credit card Regular expressions
-    public static final Pattern VALID_CREDIT_CARD_HOLDER = Pattern.compile("(?<! )[-a-zA-Z' ]{2,26}");
+    public static final Pattern VALID_CREDIT_CARD_HOLDER = Pattern.compile("\\A(?!\\A[\\d\\s]*\\Z).+\\s+.+\\Z");
     public static final Pattern VALID_CREDIT_CARD_NUMBER = Pattern.compile("^(?:4[0-9]{12}(?:[0-9]{3})"
             + "?|[25][1-7][0-9]{14}|6"
             + "(?:s011|5[0-9][0-9])"
