@@ -4,27 +4,13 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.security.KeyStore;
-import java.security.Principal;
-import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManagerFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -149,10 +135,6 @@ public class Http implements Serializable {
                 configuration.getLogger().log(Level.FINE, formatSanitizeBodyForLog(postBody));
             }
 
-            if (connection instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) connection).setSSLSocketFactory(getSSLSocketFactory());
-            }
-
             if (postBody != null) {
                 OutputStream outputStream = null;
                 try {
@@ -218,10 +200,6 @@ public class Http implements Serializable {
 
             host = connection.getURL().getHost();
             port = connection.getURL().getDefaultPort();
-
-            if (connection instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) connection).setSSLSocketFactory(getSSLSocketFactory());
-            }
 
             if (postBody != null) {
                 OutputStream outputStream = null;
@@ -326,86 +304,6 @@ public class Http implements Serializable {
 
     private String getCurrentTime() {
         return new SimpleDateFormat("d/MMM/yyyy HH:mm:ss Z").format(new Date());
-    }
-
-    private SSLSocketFactory getSSLSocketFactory() {
-        try {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null);
-
-            String[] certificateFilenames = new String[]{"ca-bundle.pem"};
-
-            for (String certificateFilename : certificateFilenames) {
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                InputStream certStream = null;
-                try {
-                    certStream = Http.class.getClassLoader().getResourceAsStream(certificateFilename);
-
-                    Collection<? extends Certificate> coll = cf.generateCertificates(certStream);
-                    for (Certificate cert : coll) {
-                        if (cert instanceof X509Certificate) {
-                            X509Certificate x509cert = (X509Certificate) cert;
-                            Principal principal = x509cert.getSubjectDN();
-                            String subject = principal.getName();
-                            keyStore.setCertificateEntry(subject, cert);
-                        }
-                    }
-                } finally {
-                    if (certStream != null) {
-                        certStream.close();
-                    }
-                }
-            }
-
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keyStore, null);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(keyStore);
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init((KeyManager[]) kmf.getKeyManagers(), tmf.getTrustManagers(),
-                    SecureRandom.getInstance("SHA1PRNG"));
-
-            if (configuration.isDebugModeEnabled() == true) {
-                try {
-                    configuration.getLogger().log(Level.INFO, "[Debug] {0}",
-                            new Object[]{"Socket factory for SSL..."});
-                    SSLSocketFactory factory = (SSLSocketFactory) sslContext.getSocketFactory().getDefault();
-
-                    configuration.getLogger().log(Level.INFO, "[Debug] {0}",
-                            new Object[]{"Creating socket to " + host + ":" + port});
-                    SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
-
-                    configuration.getLogger().log(Level.INFO, "[Debug] {0}",
-                            new Object[]{"Enable all available Cipher suites..."});
-                    String[] suites = socket.getSupportedCipherSuites();
-                    socket.setEnabledCipherSuites(suites);
-
-                    socket.addHandshakeCompletedListener(new HandshakeListener());
-
-                    configuration.getLogger().log(Level.INFO, "[Debug] {0}",
-                            new Object[]{"Start Handshaking..."});
-                    socket.startHandshake();
-
-                    configuration.getLogger().log(Level.INFO, "[Debug] {0}",
-                            new Object[]{"Connected to " + socket.getRemoteSocketAddress()});
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return sslContext.getSocketFactory();
-        } catch (Exception e) {
-            configuration.getLogger().log(Level.SEVERE, "SSL Verification failed. Error message: {0}", new Object[]{e.getMessage()});
-            try {
-                throw new UnexpectedException(e.getMessage(), e);
-            } catch (UnexpectedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-        }
-
-        return null;
     }
 
     private HttpURLConnection buildConnection(RequestMethod requestMethod, String urlString, String contentType)
