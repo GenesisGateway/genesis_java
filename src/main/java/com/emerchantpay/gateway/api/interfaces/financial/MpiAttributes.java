@@ -31,50 +31,47 @@ import java.util.HashMap;
 
 public interface MpiAttributes {
 
-    RequestBuilder request3DSv1Builder = new RequestBuilder("");
-    RequestBuilder request3DSv2Builder = new RequestBuilder("");
-
     HashMap<String, String> paramsMap = new HashMap<String, String>();
 
     // Mpi Params
     default MpiAttributes setMpiCavv(String mpiCavv) {
         paramsMap.put("cavv", mpiCavv);
-        request3DSv1Builder.addElement("cavv", mpiCavv);
-        request3DSv2Builder.addElement("cavv", mpiCavv);
+        getMpiAttrRequest3DSv1Builder().addElement("cavv", mpiCavv);
+        getMpiAttrRequest3DSv2Builder().addElement("cavv", mpiCavv);
         return this;
     }
 
     default MpiAttributes setMpiEci(String mpiEci) {
         paramsMap.put("eci", mpiEci);
-        request3DSv1Builder.addElement("eci", mpiEci);
-        request3DSv2Builder.addElement("eci", mpiEci);
+        getMpiAttrRequest3DSv1Builder().addElement("eci", mpiEci);
+        getMpiAttrRequest3DSv2Builder().addElement("eci", mpiEci);
         return this;
     }
 
     default MpiAttributes setMpiXid(String mpiXid) {
         paramsMap.put("xid", mpiXid);
-        request3DSv1Builder.addElement("xid", mpiXid);
+        getMpiAttrRequest3DSv1Builder().addElement("xid", mpiXid);
         return this;
     }
 
     default MpiAttributes setMpiProtocolVersion(String mpiProtocolVersion) {
         paramsMap.put("protocol_version", mpiProtocolVersion);
-        request3DSv2Builder.addElement("protocol_version", mpiProtocolVersion);
+        getMpiAttrRequest3DSv2Builder().addElement("protocol_version", mpiProtocolVersion);
         return this;
     }
 
     default MpiAttributes setMpiDirectoryServerId(String mpiDirectoryServerId) {
         paramsMap.put("directory_server_id", mpiDirectoryServerId);
-        request3DSv2Builder.addElement("directory_server_id", mpiDirectoryServerId);
+        getMpiAttrRequest3DSv2Builder().addElement("directory_server_id", mpiDirectoryServerId);
         return this;
     }
 
     default RequestBuilder buildMpi3DSv1ParamsStructure() {
-        return request3DSv1Builder;
+        return getMpiAttrRequest3DSv1Builder();
     }
 
     default RequestBuilder buildMpi3DSv2ParamsStructure() {
-        return request3DSv2Builder;
+        return getMpiAttrRequest3DSv2Builder();
     }
 
     default RequestBuilder buildMpiParams() {
@@ -100,4 +97,7 @@ public interface MpiAttributes {
             return new HashMap<>();
         }
     }
+
+    RequestBuilder getMpiAttrRequest3DSv1Builder();
+    RequestBuilder getMpiAttrRequest3DSv2Builder();
 }

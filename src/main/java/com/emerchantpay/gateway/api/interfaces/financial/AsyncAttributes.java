@@ -32,41 +32,40 @@ import java.util.Map;
 
 public interface AsyncAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-
-    // Genesis validator
-    GenesisValidator validator = new GenesisValidator();
-
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // Async Params
     default AsyncAttributes setReturnSuccessUrl(URL successUrl) {
-        if (validator.isValidUrl("return_success_url", String.valueOf(successUrl))) {
-            paramsMap.put("return_success_url", String.valueOf(successUrl));
-            requestBuilder.addElement("return_success_url", successUrl);
+        if (getValidator().isValidUrl("return_success_url", String.valueOf(successUrl))) {
+            getAsyncAttrParamsMap().put("return_success_url", String.valueOf(successUrl));
+            getAsyncAttrRequestBuilder().addElement("return_success_url", successUrl);
         }
 
         return this;
     }
 
     default AsyncAttributes setReturnFailureUrl(URL failureUrl) {
-        if (validator.isValidUrl("return_failure_url", String.valueOf(failureUrl))) {
-            paramsMap.put("return_failure_url", String.valueOf(failureUrl));
-            requestBuilder.addElement("return_failure_url", failureUrl);
+        if (getValidator().isValidUrl("return_failure_url", String.valueOf(failureUrl))) {
+            getAsyncAttrParamsMap().put("return_failure_url", String.valueOf(failureUrl));
+            getAsyncAttrRequestBuilder().addElement("return_failure_url", failureUrl);
         }
 
         return this;
     }
 
     default String getReturnSuccessUrl() {
-        return paramsMap.get("return_success_url");
+        return getAsyncAttrParamsMap().get("return_success_url");
     }
 
     default String getReturnFailureUrl() {
-        return paramsMap.get("return_failure_url");
+        return getAsyncAttrParamsMap().get("return_failure_url");
     }
 
     default RequestBuilder buildAsyncParams() {
-        return requestBuilder;
+        return getAsyncAttrRequestBuilder();
     }
+
+    RequestBuilder getAsyncAttrRequestBuilder();
+
+    HashMap<String, String> getAsyncAttrParamsMap();
+
+    GenesisValidator getValidator();
 }

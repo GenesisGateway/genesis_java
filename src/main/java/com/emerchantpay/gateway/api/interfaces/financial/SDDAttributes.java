@@ -29,31 +29,32 @@ import java.util.HashMap;
 
 public interface SDDAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // SDD Params
     default SDDAttributes setIban(String iban) {
-        paramsMap.put("iban", iban);
-        requestBuilder.addElement("iban", iban);
+        getSDDAttrParamsMap().put("iban", iban);
+        getSDDAttrRequestBuilder().addElement("iban", iban);
         return this;
     }
 
     default String getIban() {
-        return paramsMap.get("iban");
+        return getSDDAttrParamsMap().get("iban");
     }
 
     default SDDAttributes setBic(String bic) {
-        paramsMap.put("bic", bic);
-        requestBuilder.addElement("bic", bic);
+        getSDDAttrParamsMap().put("bic", bic);
+        getSDDAttrRequestBuilder().addElement("bic", bic);
         return this;
     }
 
     default String getBic() {
-        return paramsMap.get("bic");
+        return getSDDAttrParamsMap().get("bic");
     }
 
     default RequestBuilder buildSDDParams() {
-        return requestBuilder;
+        return getSDDAttrRequestBuilder();
     }
+
+    RequestBuilder getSDDAttrRequestBuilder();
+
+    HashMap<String, String> getSDDAttrParamsMap();
 }

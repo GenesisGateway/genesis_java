@@ -54,7 +54,7 @@ public class WPFRequestsTest {
         wpfReconcile = mock(WPFReconcileRequest.class);
     }
 
-    public void stubWPF() throws MalformedURLException {
+    public WPFCreateRequest stubWPF() throws MalformedURLException {
         wpfCreate = new WPFCreateRequest();
         wpfCreate.setTransactionId(uidWpf);
         wpfCreate.setAmount(new BigDecimal("2.00"));
@@ -64,6 +64,7 @@ public class WPFRequestsTest {
         wpfCreate.setReturnSuccessUrl(new URL("https://example.com"));
         wpfCreate.setReturnFailureUrl(new URL("https://example.com"));
         wpfCreate.setNotificationUrl(new URL("https://example.com"));
+        return wpfCreate;
     }
 
     public void clearRequiredParams() {
@@ -282,5 +283,23 @@ public class WPFRequestsTest {
         assertTrue(wpfCreate.addTransactionType(TransactionTypes.AUTHORIZE)
                 .addParam("fx_rate_id", "123").toXML()
                 .contains("<fx_rate_id>123</fx_rate_id>"));
+    }
+
+
+    @Test
+    public void testTwoWPFRequestParams() throws MalformedURLException {
+
+        //First request
+        WPFCreateRequest wpfCreateRequest1 = stubWPF();
+        wpfCreateRequest1.setCustomerEmail("john@example.com");
+
+        //Second request - no customer email
+        WPFCreateRequest wpfCreateRequest2 = stubWPF();
+
+        assertNotEquals(wpfCreateRequest1.getValidator(), wpfCreateRequest2.getValidator());
+        assertNotEquals(wpfCreateRequest1.getCustomerInfoAttrRequestBuilder(), wpfCreateRequest2.getCustomerInfoAttrRequestBuilder());
+        assertNotEquals(wpfCreateRequest1.toXML(), wpfCreateRequest2.toXML());
+        assertNotEquals(wpfCreateRequest1.getCustomerEmail(), wpfCreateRequest2.getCustomerEmail());
+        assertNotEquals(wpfCreateRequest1.getRequest(), wpfCreateRequest2.getRequest());
     }
 }

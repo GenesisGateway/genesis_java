@@ -29,42 +29,43 @@ import java.util.HashMap;
 
 public interface BaseAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // Base Params
     default BaseAttributes setTransactionId(String transactionId) {
-        paramsMap.put("transaction_id", transactionId);
-        requestBuilder.addElement("transaction_id", transactionId);
+        getBaseAttrParamsMap().put("transaction_id", transactionId);
+        getBaseAttrRequestBuilder().addElement("transaction_id", transactionId);
         return this;
     }
 
     default String getTransactionId() {
-        return paramsMap.get("transaction_id");
+        return getBaseAttrParamsMap().get("transaction_id");
     }
 
     default BaseAttributes setUsage(String usage) {
-        paramsMap.put("usage", usage);
-        requestBuilder.addElement("usage", usage);
+        getBaseAttrParamsMap().put("usage", usage);
+        getBaseAttrRequestBuilder().addElement("usage", usage);
         return this;
     }
 
     default String getUsage() {
-        return paramsMap.get("usage");
+        return getBaseAttrParamsMap().get("usage");
     }
 
     default BaseAttributes setRemoteIp(String remoteIP) {
-        paramsMap.put("remote_ip", remoteIP);
-        requestBuilder.addElement("remote_ip", remoteIP);
+        getBaseAttrParamsMap().put("remote_ip", remoteIP);
+        getBaseAttrRequestBuilder().addElement("remote_ip", remoteIP);
         return this;
     }
 
     default String getRemoteIp() {
-        return paramsMap.get("remote_ip");
+        return getBaseAttrParamsMap().get("remote_ip");
     }
 
 
     default RequestBuilder buildBaseParams() {
-        return requestBuilder;
+        return getBaseAttrRequestBuilder();
     }
+
+    RequestBuilder getBaseAttrRequestBuilder();
+
+    HashMap<String, String> getBaseAttrParamsMap();
 }

@@ -30,7 +30,7 @@ import java.io.Serializable;
 /**
  * Abstract class for fluent interface request builders.
  */
-public abstract class Request implements BaseAttributes, AddressAttributes, Serializable {
+public abstract class Request extends RequestRoot implements BaseAttributes, AddressAttributes, Serializable {
 
 	public String toXML() {
 		throw new UnsupportedOperationException();

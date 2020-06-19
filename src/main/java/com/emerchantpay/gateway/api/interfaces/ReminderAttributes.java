@@ -29,31 +29,32 @@ import java.util.HashMap;
 
 public interface ReminderAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // Reminders Params
     default ReminderAttributes setChannel(String channel) {
-        paramsMap.put("channel", channel);
-        requestBuilder.addElement("channel", channel);
+        getReminderAttrParamsMap().put("channel", channel);
+        getReminderAttrRequestBuilder().addElement("channel", channel);
         return this;
     }
 
     default String getChannel() {
-        return paramsMap.get("channel");
+        return getReminderAttrParamsMap().get("channel");
     }
 
     default ReminderAttributes setAfter(Integer after) {
-        paramsMap.put("after", after.toString());
-        requestBuilder.addElement("after", after);
+        getReminderAttrParamsMap().put("after", after.toString());
+        getReminderAttrRequestBuilder().addElement("after", after);
         return this;
     }
 
     default String getAfter() {
-        return paramsMap.get("after");
+        return getReminderAttrParamsMap().get("after");
     }
 
     default RequestBuilder buildReminders() {
-        return requestBuilder;
+        return getReminderAttrRequestBuilder();
     }
+
+    RequestBuilder getReminderAttrRequestBuilder();
+
+    HashMap<String, String> getReminderAttrParamsMap();
 }

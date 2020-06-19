@@ -26,14 +26,15 @@ package com.emerchantpay.gateway.api.interfaces.financial;
 import com.emerchantpay.gateway.api.RequestBuilder;
 
 public interface FXAttributes {
-    RequestBuilder requestBuilder = new RequestBuilder("");
 
     default FXAttributes setFXRateId(String fxRateId) {
-        requestBuilder.addElement("fx_rate_id", fxRateId);
+        getFXAttrRequestBuilder().addElement("fx_rate_id", fxRateId);
         return this;
     }
 
     default RequestBuilder buildFXParams() {
-        return requestBuilder;
+        return getFXAttrRequestBuilder();
     }
+
+    RequestBuilder getFXAttrRequestBuilder();
 }

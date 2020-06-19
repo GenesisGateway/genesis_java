@@ -32,9 +32,6 @@ import java.math.BigDecimal;
 
 public interface PaymentAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    GenesisValidator validator = new GenesisValidator();
-
     // Payment Params
     PaymentAttributes setAmount(BigDecimal amount);
 
@@ -56,13 +53,17 @@ public interface PaymentAttributes {
             convertedAmount = curr.getAmount();
         }
         
-        if (validator.isValidAmount(convertedAmount)) {
-            requestBuilder.addElement("amount", convertedAmount)
+        if (getValidator().isValidAmount(convertedAmount)) {
+            getPaymentAttrRequestBuilder().addElement("amount", convertedAmount)
                     .addElement("currency", getCurrency());
         } else {
-            throw new RegexException(validator.getInvalidParams());
+            throw new RegexException(getValidator().getInvalidParams());
         }
 
-        return requestBuilder;
+        return getPaymentAttrRequestBuilder();
     }
+
+    RequestBuilder getPaymentAttrRequestBuilder();
+
+    GenesisValidator getValidator();
 }

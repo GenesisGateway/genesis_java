@@ -33,101 +33,97 @@ import java.util.HashMap;
 
 public interface ShippingAddressAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-    GenesisValidator validator = new GenesisValidator();
-
     // Shipping Address
     default ShippingAddressAttributes setShippingFirstname(String firstname) {
-        paramsMap.put("first_name", firstname);
-        requestBuilder.addElement("first_name", firstname);
+        getShipAddrAttrParamsMap().put("first_name", firstname);
+        getShipAddrAttrRequestBuilder().addElement("first_name", firstname);
         return this;
     }
 
     default ShippingAddressAttributes setShippingLastname(String lastname) {
-        paramsMap.put("last_name", lastname);
-        requestBuilder.addElement("last_name", lastname);
+        getShipAddrAttrParamsMap().put("last_name", lastname);
+        getShipAddrAttrRequestBuilder().addElement("last_name", lastname);
         return this;
     }
 
     default ShippingAddressAttributes setShippingPrimaryAddress(String primaryAddress) {
-        paramsMap.put("address1", primaryAddress);
-        requestBuilder.addElement("address1", primaryAddress);
+        getShipAddrAttrParamsMap().put("address1", primaryAddress);
+        getShipAddrAttrRequestBuilder().addElement("address1", primaryAddress);
         return this;
     }
 
     default ShippingAddressAttributes setShippingSecondaryAddress(String secondaryAddress) {
-        paramsMap.put("address2", secondaryAddress);
-        requestBuilder.addElement("address2", secondaryAddress);
+        getShipAddrAttrParamsMap().put("address2", secondaryAddress);
+        getShipAddrAttrRequestBuilder().addElement("address2", secondaryAddress);
         return this;
     }
 
     default ShippingAddressAttributes setShippingCity(String city) {
-        paramsMap.put("city", city);
-        requestBuilder.addElement("city", city);
+        getShipAddrAttrParamsMap().put("city", city);
+        getShipAddrAttrRequestBuilder().addElement("city", city);
         return this;
     }
 
     default ShippingAddressAttributes setShippingZipCode(String zipCode) {
-        paramsMap.put("zip_code", zipCode);
-        requestBuilder.addElement("zip_code", zipCode);
+        getShipAddrAttrParamsMap().put("zip_code", zipCode);
+        getShipAddrAttrRequestBuilder().addElement("zip_code", zipCode);
         return this;
     }
 
     default ShippingAddressAttributes setShippingState(String state) {
-        paramsMap.put("state", state);
-        requestBuilder.addElement("state", state);
+        getShipAddrAttrParamsMap().put("state", state);
+        getShipAddrAttrRequestBuilder().addElement("state", state);
         return this;
     }
 
     default ShippingAddressAttributes setShippingCountry(String country) {
         Country c = new Country();
 
-        paramsMap.put("country", c.getIsoCode(country));
-        requestBuilder.addElement("country", c.getIsoCode(country));
+        getShipAddrAttrParamsMap().put("country", c.getIsoCode(country));
+        getShipAddrAttrRequestBuilder().addElement("country", c.getIsoCode(country));
 
         return this;
     }
 
     default String getShippingFirstName() {
-        return paramsMap.get("first_name");
+        return getShipAddrAttrParamsMap().get("first_name");
     }
 
     default String getShippingLastName() {
-        return paramsMap.get("last_name");
+        return getShipAddrAttrParamsMap().get("last_name");
     }
 
     default String getShippingPrimaryAddress() {
-        return paramsMap.get("address1");
+        return getShipAddrAttrParamsMap().get("address1");
     }
 
     default String getShippingSecondary() {
-        return paramsMap.get("address2");
+        return getShipAddrAttrParamsMap().get("address2");
     }
 
     default String getShippingCity() {
-        return paramsMap.get("city");
+        return getShipAddrAttrParamsMap().get("city");
     }
 
     default String getShippingZipCode() {
-        return paramsMap.get("zip_code");
+        return getShipAddrAttrParamsMap().get("zip_code");
     }
 
     default String getShippingState() {
-        return paramsMap.get("state");
+        return getShipAddrAttrParamsMap().get("state");
     }
 
     default String getShippingCountryCode() {
-        return paramsMap.get("country");
+        return getShipAddrAttrParamsMap().get("country");
     }
 
     default HashMap<String, String> getShippingAddressParams() {
-        return paramsMap;
+        return getShipAddrAttrParamsMap();
     }
 
     default RequestBuilder buildShippingAddress() {
         if (isShippingAddressValid()) {
-            return requestBuilder;
+            return getShipAddrAttrRequestBuilder();
         } else {
             return null;
         }
@@ -144,4 +140,8 @@ public interface ShippingAddressAttributes {
 
         return requiredParametersValidator.isValidRequiredParams();
     }
+
+    RequestBuilder getShipAddrAttrRequestBuilder();
+
+    HashMap<String, String> getShipAddrAttrParamsMap();
 }

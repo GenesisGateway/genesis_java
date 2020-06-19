@@ -25,7 +25,7 @@ import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
         DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes {
 
-    // Request Builder
+    //Request Builder
     private RequestBuilder requestBuilder;
 
     private String description;

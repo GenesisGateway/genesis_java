@@ -8,28 +8,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface NotificationAttributes {
-    RequestBuilder requestBuilder = new RequestBuilder("");
-
-    // Genesis validator
-    GenesisValidator validator = new GenesisValidator();
-
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
 
     // Notification Params
     default NotificationAttributes setNotificationUrl(URL notificationUrl) {
-        if (validator.isValidUrl("notification_url", String.valueOf(notificationUrl))) {
-            paramsMap.put("notification_url", String.valueOf(notificationUrl));
-            requestBuilder.addElement("notification_url", notificationUrl);
+        if (getValidator().isValidUrl("notification_url", String.valueOf(notificationUrl))) {
+            getNotificationAttrParamsMap().put("notification_url", String.valueOf(notificationUrl));
+            getNotificationAttrRequestBuilder().addElement("notification_url", notificationUrl);
         }
 
         return this;
     }
 
     default String getNotificationUrl() {
-        return paramsMap.get("notification_url");
+        return getNotificationAttrParamsMap().get("notification_url");
     }
 
     default RequestBuilder buildNotificationParams() {
-        return requestBuilder;
+        return getNotificationAttrRequestBuilder();
     }
+
+    RequestBuilder getNotificationAttrRequestBuilder();
+
+    HashMap<String, String> getNotificationAttrParamsMap();
+
+    GenesisValidator getValidator();
 }

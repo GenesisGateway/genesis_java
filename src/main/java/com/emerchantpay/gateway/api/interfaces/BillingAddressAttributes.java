@@ -33,101 +33,97 @@ import java.util.HashMap;
 
 public interface BillingAddressAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-    GenesisValidator validator = new GenesisValidator();
-
     // Billing Address
     default BillingAddressAttributes setBillingFirstname(String firstname) {
-        paramsMap.put("first_name", firstname);
-        requestBuilder.addElement("first_name", firstname);
+        getBillAddrAttrParamsMap().put("first_name", firstname);
+        getBillAddrAttrRequestBuilder().addElement("first_name", firstname);
         return this;
     }
 
     default BillingAddressAttributes setBillingLastname(String lastname) {
-        paramsMap.put("last_name", lastname);
-        requestBuilder.addElement("last_name", lastname);
+        getBillAddrAttrParamsMap().put("last_name", lastname);
+        getBillAddrAttrRequestBuilder().addElement("last_name", lastname);
         return this;
     }
 
     default BillingAddressAttributes setBillingPrimaryAddress(String primaryAddress) {
-        paramsMap.put("address1", primaryAddress);
-        requestBuilder.addElement("address1", primaryAddress);
+        getBillAddrAttrParamsMap().put("address1", primaryAddress);
+        getBillAddrAttrRequestBuilder().addElement("address1", primaryAddress);
         return this;
     }
 
     default BillingAddressAttributes setBillingSecondaryAddress(String secondaryAddress) {
-        paramsMap.put("address2", secondaryAddress);
-        requestBuilder.addElement("address2", secondaryAddress);
+        getBillAddrAttrParamsMap().put("address2", secondaryAddress);
+        getBillAddrAttrRequestBuilder().addElement("address2", secondaryAddress);
         return this;
     }
 
     default BillingAddressAttributes setBillingCity(String city) {
-        paramsMap.put("city", city);
-        requestBuilder.addElement("city", city);
+        getBillAddrAttrParamsMap().put("city", city);
+        getBillAddrAttrRequestBuilder().addElement("city", city);
         return this;
     }
 
     default BillingAddressAttributes setBillingZipCode(String zipCode) {
-        paramsMap.put("zip_code", zipCode);
-        requestBuilder.addElement("zip_code", zipCode);
+        getBillAddrAttrParamsMap().put("zip_code", zipCode);
+        getBillAddrAttrRequestBuilder().addElement("zip_code", zipCode);
         return this;
     }
 
     default BillingAddressAttributes setBillingState(String state) {
-        paramsMap.put("state", state);
-        requestBuilder.addElement("state", state);
+        getBillAddrAttrParamsMap().put("state", state);
+        getBillAddrAttrRequestBuilder().addElement("state", state);
         return this;
     }
 
     default BillingAddressAttributes setBillingCountry(String country) {
         Country c = new Country();
 
-        paramsMap.put("country", c.getIsoCode(country));
-        requestBuilder.addElement("country", c.getIsoCode(country));
+        getBillAddrAttrParamsMap().put("country", c.getIsoCode(country));
+        getBillAddrAttrRequestBuilder().addElement("country", c.getIsoCode(country));
 
         return this;
     }
 
     default String getBillingFirstName() {
-        return paramsMap.get("first_name");
+        return getBillAddrAttrParamsMap().get("first_name");
     }
 
     default String getBillingLastName() {
-        return paramsMap.get("last_name");
+        return getBillAddrAttrParamsMap().get("last_name");
     }
 
     default String getBillingPrimaryAddress() {
-        return paramsMap.get("address1");
+        return getBillAddrAttrParamsMap().get("address1");
     }
 
     default String getBillingSecondary() {
-        return paramsMap.get("address2");
+        return getBillAddrAttrParamsMap().get("address2");
     }
 
     default String getBillingCity() {
-        return paramsMap.get("city");
+        return getBillAddrAttrParamsMap().get("city");
     }
 
     default String getBillingZipCode() {
-        return paramsMap.get("zip_code");
+        return getBillAddrAttrParamsMap().get("zip_code");
     }
 
     default String getBillingState() {
-        return paramsMap.get("state");
+        return getBillAddrAttrParamsMap().get("state");
     }
 
     default String getBillingCountryCode() {
-        return paramsMap.get("country");
+        return getBillAddrAttrParamsMap().get("country");
     }
 
     default HashMap<String, String> getBillingAddressParams() {
-        return paramsMap;
+        return getBillAddrAttrParamsMap();
     }
 
     default RequestBuilder buildBillingAddress() {
         if (isBillingAddressValid()) {
-            return requestBuilder;
+            return getBillAddrAttrRequestBuilder();
         } else {
             return null;
         }
@@ -144,4 +140,8 @@ public interface BillingAddressAttributes {
 
         return requiredParametersValidator.isValidRequiredParams();
     }
+
+    RequestBuilder getBillAddrAttrRequestBuilder();
+
+    HashMap<String, String> getBillAddrAttrParamsMap();
 }

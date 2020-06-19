@@ -32,45 +32,48 @@ import java.util.HashMap;
 
 public interface CustomerInfoAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    GenesisValidator validator = new GenesisValidator();
-
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
+    //GenesisValidator validator = new GenesisValidator();
 
     // Customer Info Params
     default CustomerInfoAttributes setCustomerEmail(String customerEmail) {
-        if (validator.isValidEmail(customerEmail)) {
-            paramsMap.put("customer_email", customerEmail);
-            requestBuilder.addElement("customer_email", customerEmail);
+        if (getValidator().isValidEmail(customerEmail)) {
+            getCustomerInfoAttrParamsMap().put("customer_email", customerEmail);
+            getCustomerInfoAttrRequestBuilder().addElement("customer_email", customerEmail);
         }
 
         return this;
     }
 
     default String getCustomerEmail() {
-        return paramsMap.get("customer_email");
+        return getCustomerInfoAttrParamsMap().get("customer_email");
     }
 
     default CustomerInfoAttributes setCustomerPhone(String customerPhone) {
-        if (validator.isValidPhone(customerPhone)) {
-            paramsMap.put("customer_phone", customerPhone);
-            requestBuilder.addElement("customer_phone", customerPhone);
+        if (getValidator().isValidPhone(customerPhone)) {
+            getCustomerInfoAttrParamsMap().put("customer_phone", customerPhone);
+            getCustomerInfoAttrRequestBuilder().addElement("customer_phone", customerPhone);
         }
 
         return this;
     }
 
     default String getCustomerPhone() {
-        return paramsMap.get("customer_phone");
+        return getCustomerInfoAttrParamsMap().get("customer_phone");
     }
 
     default RequestBuilder buildCustomerInfoParams() {
-        ArrayList<String> invalidParams = new ArrayList<String>(validator.getInvalidParams());
+        ArrayList<String> invalidParams = new ArrayList<String>(getValidator().getInvalidParams());
         if (invalidParams.isEmpty()) {
-            return requestBuilder;
+            return getCustomerInfoAttrRequestBuilder();
         } else {
-            validator.clearInvalidParams();
+            getValidator().clearInvalidParams();
             throw new RegexException(invalidParams);
         }
     }
+
+    RequestBuilder getCustomerInfoAttrRequestBuilder();
+
+    HashMap<String, String> getCustomerInfoAttrParamsMap();
+
+    GenesisValidator getValidator();
 }

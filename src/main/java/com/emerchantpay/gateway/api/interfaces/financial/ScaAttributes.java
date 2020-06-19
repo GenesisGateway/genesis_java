@@ -31,36 +31,36 @@ import java.util.HashMap;
 
 public interface ScaAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // SCA Params
     default ScaAttributes setScaExemption(String scaExemption) {
-        paramsMap.put("exemption", scaExemption);
-        requestBuilder.addElement("exemption", scaExemption);
+        getScaAttrParamsMap().put("exemption", scaExemption);
+        getScaAttrRequestBuilder().addElement("exemption", scaExemption);
         return this;
     }
 
     default ScaAttributes setScaVisaMerchantId(String scaVisaMerchantId) {
-        paramsMap.put("visa_merchant_id", scaVisaMerchantId);
-        requestBuilder.addElement("visa_merchant_id", scaVisaMerchantId);
+        getScaAttrParamsMap().put("visa_merchant_id", scaVisaMerchantId);
+        getScaAttrRequestBuilder().addElement("visa_merchant_id", scaVisaMerchantId);
         return this;
     }
 
     default RequestBuilder buildScaParams() {
-        return requestBuilder;
+        return getScaAttrRequestBuilder();
     }
 
     default HashMap<String, String> getScaConditionalRequiredFields() {
-        if (paramsMap.get("exemption") == ScaExemptions.EXEMPTION_TRUSTED_MERCHANT) {
+        if (getScaAttrParamsMap().get("exemption") == ScaExemptions.EXEMPTION_TRUSTED_MERCHANT) {
             return new HashMap<String, String>() {
                 {
-                    put(RequiredParameters.scaVisaMerchantId, paramsMap.get("visa_merchant_id"));
+                    put(RequiredParameters.scaVisaMerchantId, getScaAttrParamsMap().get("visa_merchant_id"));
                 }
             };
         } else {
             return new HashMap<>();
         }
     }
+
+    RequestBuilder getScaAttrRequestBuilder();
+
+    HashMap<String, String> getScaAttrParamsMap();
 }

@@ -27,110 +27,110 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 
 public interface RiskParamsAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-
     // Risk Params
     default RiskParamsAttributes setRiskSSN(String ssn) {
-        requestBuilder.addElement("ssn", ssn);
+        getRiskParamsAttrRequestBuilder().addElement("ssn", ssn);
         return this;
     }
 
     default RiskParamsAttributes setRiskMacAddress(String macAddress) {
-        requestBuilder.addElement("mac_address", macAddress);
+        getRiskParamsAttrRequestBuilder().addElement("mac_address", macAddress);
         return this;
     }
 
     default RiskParamsAttributes setRiskSessionId(String sessionId) {
-        requestBuilder.addElement("session_id", sessionId);
+        getRiskParamsAttrRequestBuilder().addElement("session_id", sessionId);
         return this;
     }
 
     default RiskParamsAttributes setRiskUserId(String userId) {
-        requestBuilder.addElement("user_id", userId);
+        getRiskParamsAttrRequestBuilder().addElement("user_id", userId);
         return this;
     }
 
     default RiskParamsAttributes setRiskUserLevel(String userLevel) {
-        requestBuilder.addElement("user_level", userLevel);
+        getRiskParamsAttrRequestBuilder().addElement("user_level", userLevel);
         return this;
     }
 
     default RiskParamsAttributes setRiskEmail(String email) {
-        requestBuilder.addElement("email", email);
+        getRiskParamsAttrRequestBuilder().addElement("email", email);
         return this;
     }
 
     default RiskParamsAttributes setRiskPhone(String phone) {
-        requestBuilder.addElement("phone", phone);
+        getRiskParamsAttrRequestBuilder().addElement("phone", phone);
         return this;
     }
 
     default RiskParamsAttributes setRiskRemoteIp(String remoteIp) {
-        requestBuilder.addElement("remote_ip", remoteIp);
+        getRiskParamsAttrRequestBuilder().addElement("remote_ip", remoteIp);
         return this;
     }
 
     default RiskParamsAttributes setRiskSerialNumber(String serialNumber) {
-        requestBuilder.addElement("serial_number", serialNumber);
+        getRiskParamsAttrRequestBuilder().addElement("serial_number", serialNumber);
         return this;
     }
 
     default RiskParamsAttributes setRiskPanTail(String panTail) {
-        requestBuilder.addElement("pan_tail", panTail);
+        getRiskParamsAttrRequestBuilder().addElement("pan_tail", panTail);
         return this;
     }
 
     default RiskParamsAttributes setRiskBin(String bin) {
-        requestBuilder.addElement("bin", bin);
+        getRiskParamsAttrRequestBuilder().addElement("bin", bin);
         return this;
     }
 
     default RiskParamsAttributes setRiskFirstName(String firstname) {
-        requestBuilder.addElement("first_name", firstname);
+        getRiskParamsAttrRequestBuilder().addElement("first_name", firstname);
         return this;
     }
 
     default RiskParamsAttributes setRiskLastName(String lastname) {
-        requestBuilder.addElement("last_name", lastname);
+        getRiskParamsAttrRequestBuilder().addElement("last_name", lastname);
         return this;
     }
 
     default RiskParamsAttributes setRiskCountry(String country) {
-        requestBuilder.addElement("country", country);
+        getRiskParamsAttrRequestBuilder().addElement("country", country);
         return this;
     }
 
     default RiskParamsAttributes setRiskPan(String pan) {
-        requestBuilder.addElement("pan", pan);
+        getRiskParamsAttrRequestBuilder().addElement("pan", pan);
         return this;
     }
 
     default RiskParamsAttributes setRiskForwardedIp(String forwardedIp) {
-        requestBuilder.addElement("forwarded_ip", forwardedIp);
+        getRiskParamsAttrRequestBuilder().addElement("forwarded_ip", forwardedIp);
         return this;
     }
 
     default RiskParamsAttributes setRiskUsername(String username) {
-        requestBuilder.addElement("username", username);
+        getRiskParamsAttrRequestBuilder().addElement("username", username);
         return this;
     }
 
     default RiskParamsAttributes setRiskPassword(String password) {
-        requestBuilder.addElement("password", password);
+        getRiskParamsAttrRequestBuilder().addElement("password", password);
         return this;
     }
 
     default RiskParamsAttributes setRiskBinName(String binName) {
-        requestBuilder.addElement("bin_name", binName);
+        getRiskParamsAttrRequestBuilder().addElement("bin_name", binName);
         return this;
     }
 
     default RiskParamsAttributes setRiskBinPhone(String binPhone) {
-        requestBuilder.addElement("bin_phone", binPhone);
+        getRiskParamsAttrRequestBuilder().addElement("bin_phone", binPhone);
         return this;
     }
 
     default RequestBuilder buildRiskParams() {
-        return requestBuilder;
+        return getRiskParamsAttrRequestBuilder();
     }
+
+    RequestBuilder getRiskParamsAttrRequestBuilder();
 }

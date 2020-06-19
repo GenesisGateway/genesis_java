@@ -27,20 +27,20 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 
 public interface DescriptorAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-
     // Descriptor Params
     default DescriptorAttributes setDynamicMerchantName(String dynamicMerchantName) {
-        requestBuilder.addElement("merchant_name", dynamicMerchantName);
+        getDescriptorAttrRequestBuilder().addElement("merchant_name", dynamicMerchantName);
         return this;
     }
 
     default DescriptorAttributes setDynamicMerchantCity(String dynamicMerchantCity) {
-        requestBuilder.addElement("merchant_city", dynamicMerchantCity);
+        getDescriptorAttrRequestBuilder().addElement("merchant_city", dynamicMerchantCity);
         return this;
     }
 
     default RequestBuilder buildDescriptorParams() {
-        return requestBuilder;
+        return getDescriptorAttrRequestBuilder();
     }
+
+    RequestBuilder getDescriptorAttrRequestBuilder();
 }

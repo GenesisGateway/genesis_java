@@ -29,31 +29,32 @@ import java.util.HashMap;
 
 public interface PBVAttributes {
 
-    RequestBuilder requestBuilder = new RequestBuilder("");
-    HashMap<String, String> paramsMap = new HashMap<String, String>();
-
     // PBV Params
     default PBVAttributes setCardType(String cardType) {
-        paramsMap.put("card_type", cardType);
-        requestBuilder.addElement("card_type", cardType);
+        getPBVAttrParamsMap().put("card_type", cardType);
+        getPBVAttrRequestBuilder().addElement("card_type", cardType);
         return this;
     }
 
     default String getCardType() {
-        return paramsMap.get("card_type");
+        return getPBVAttrParamsMap().get("card_type");
     }
 
     default PBVAttributes setRedeemType(String redeemType) {
-        paramsMap.put("redeem_type", redeemType);
-        requestBuilder.addElement("redeem_type", redeemType);
+        getPBVAttrParamsMap().put("redeem_type", redeemType);
+        getPBVAttrRequestBuilder().addElement("redeem_type", redeemType);
         return this;
     }
 
     default String getRedeemType() {
-        return paramsMap.get("redeem_type");
+        return getPBVAttrParamsMap().get("redeem_type");
     }
 
     default RequestBuilder buildPBVParams() {
-        return requestBuilder;
+        return getPBVAttrRequestBuilder();
     }
+
+    RequestBuilder getPBVAttrRequestBuilder();
+
+    HashMap<String, String> getPBVAttrParamsMap();
 }
