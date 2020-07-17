@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.model.Transaction;
 
+import java.util.LinkedList;
+
 public class TransactionGatewayTest {
 
 	private TransactionGateway gateway;
@@ -31,14 +33,20 @@ public class TransactionGatewayTest {
 		when(gateway.getRequest()).thenReturn(result);
 		when(result.getTransaction()).thenReturn(transaction);
 		when(transaction.getStatus()).thenReturn("approved");
+        Transaction paymentTransaction = mock(Transaction.class);
+        LinkedList paymentTransactions = new LinkedList<>();
+        paymentTransactions.add(paymentTransaction);
+        when(transaction.getPaymentTransactions()).thenReturn(paymentTransactions);
 
 		assertEquals(gateway.getRequest(),result);
 		assertEquals(result.getTransaction(), transaction);
 		assertEquals(transaction.getStatus(), "approved");
+        assertEquals(transaction.getPaymentTransactions(), paymentTransactions);
 
 		verify(gateway).getRequest();
 		verify(result).getTransaction();
 		verify(transaction).getStatus();
+        verify(transaction).getPaymentTransactions();
 
 		verifyNoMoreInteractions(result);
 	}

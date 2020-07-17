@@ -56,7 +56,7 @@ public class GenesisClient extends Request {
 	}
 
 	public TransactionGateway getTransaction() {
-
+	    
 		return new TransactionGateway(configuration, getResponse());
 	}
 

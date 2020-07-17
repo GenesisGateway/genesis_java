@@ -153,6 +153,17 @@ public class SimpleNodeWrapper extends NodeWrapper {
 		return nodes;
 	}
 
+    @Override
+    public List<NodeWrapper> getChildNodes(String nodeName) {
+        List<NodeWrapper> childNodes = new LinkedList<NodeWrapper>();
+        for(NodeWrapper childNode : childNodes()){
+            if(nodeName != null && nodeName.equals(childNode.getElementName())){
+                childNodes.add(childNode);
+            }
+        }
+        return childNodes;
+    }
+
 	@Override
 	public Map<String, String> getFormParameters() {
 		Map<String, String> params = new LinkedHashMap<String, String>();

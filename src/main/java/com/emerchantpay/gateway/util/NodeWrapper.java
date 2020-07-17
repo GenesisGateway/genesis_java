@@ -116,4 +116,6 @@ public abstract class NodeWrapper implements Serializable {
 	public abstract Map<String, String> getFormParameters();
 
 	public abstract boolean isBlank();
+
+    public abstract List<NodeWrapper> getChildNodes(String nodeName);
 }

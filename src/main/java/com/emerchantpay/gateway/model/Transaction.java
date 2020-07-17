@@ -1,8 +1,7 @@
 package com.emerchantpay.gateway.model;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ResponseException;
@@ -43,8 +42,14 @@ public class Transaction {
     private String splitPayment;
     private Integer leftoverAmount;
     private Map<String, String> mapPaymentResponses;
+    private List<Transaction> paymentTransactions;
+    private Boolean isChildNode = false;
 
     public Transaction(NodeWrapper node) {
+        this(node, false);
+    }
+
+    private Transaction(NodeWrapper node, Boolean isChildNode){
 
         this.rawDocument = node.toString();
         this.status = node.findString("status");
@@ -78,6 +83,11 @@ public class Transaction {
         this.leftoverAmount = node.findInteger("leftover_amount");
         this.mapPaymentResponses = node.getFormParameters();
 
+        this.paymentTransactions = new LinkedList<>();
+        for(NodeWrapper childNode : node.getChildNodes("payment_transaction")){
+            paymentTransactions.add(new Transaction(childNode, true));
+        }
+
         if (this.amount != null && this.currency != null) {
 
             Currency curr = new Currency();
@@ -85,8 +95,7 @@ public class Transaction {
             curr.setExponentToAmount(this.amount, this.currency);
             this.amount = curr.getAmount();
         }
-
-        if ("error".equals(getStatus())) {
+        if ("error".equals(getStatus()) && getCode() != null && !isChildNode) {
             if (ErrorCodes.getErrorDescription(getCode()) != null) {
                 throw new ResponseException(getCode(), ErrorCodes.getErrorDescription(getCode()));
             } else {
@@ -225,6 +234,11 @@ public class Transaction {
     public Map<String, String> getPaymentResponses() {
         return mapPaymentResponses;
     }
+
+    public List<Transaction> getPaymentTransactions() {
+        return paymentTransactions;
+    }
+
 
     public String getResponseCodeDescription() {
         if (getCode() != null) {
