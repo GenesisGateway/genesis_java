@@ -7,6 +7,7 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
@@ -32,7 +33,7 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RecurringSaleRequest extends Request implements PaymentAttributes  {
+public class RecurringSaleRequest extends Request implements PaymentAttributes, BusinessParamsAttributes {
 
 	private String transactionType = TransactionTypes.RECURRING_SALE;
 	private BigDecimal amount;
@@ -90,6 +91,7 @@ public class RecurringSaleRequest extends Request implements PaymentAttributes  
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML())
 				.addElement(buildPaymentParams().toXML())
+				.addElement("business_attributes", buildBusinessParams().toXML())
 				.addElement("reference_id", referenceId);
 	}
 

@@ -82,6 +82,7 @@ public class Sale3DTest {
         when(sale3d.setReturnSuccessUrl(isA(URL.class))).thenReturn(sale3d);
         when(sale3d.setReturnFailureUrl(isA(URL.class))).thenReturn(sale3d);
         when(sale3d.setFXRateId(isA(String.class))).thenReturn(sale3d);
+        when(sale3d.setCrypto(isA(Boolean.class))).thenReturn(sale3d);
 
         assertEquals(sale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 sale3d);
@@ -101,6 +102,7 @@ public class Sale3DTest {
                 .setBillingZipCode("1000")
                 .setBillingState("NY"), sale3d);
         assertEquals(sale3d.setFXRateId("123"), sale3d);
+        assertEquals(sale3d.setCrypto(true), sale3d);
 
         verify(sale3d).setTransactionId(uniqueId);
         verify(sale3d).setRemoteIp("192.168.0.1");
@@ -126,6 +128,7 @@ public class Sale3DTest {
         verify(sale3d).setBillingZipCode("1000");
         verify(sale3d).setBillingState("NY");
         verify(sale3d).setFXRateId("123");
+        verify(sale3d).setCrypto(true);
         verifyNoMoreInteractions(sale3d);
 
         verifyExecute();

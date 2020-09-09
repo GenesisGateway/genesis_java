@@ -8,9 +8,11 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.CryptoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
@@ -41,7 +43,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class SaleRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
-		DescriptorAttributes, RiskParamsAttributes, FXAttributes {
+		DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes, CryptoAttributes {
 
 	private String transactionType = TransactionTypes.SALE;
 	private Boolean moto;
@@ -133,11 +135,13 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
 				.addElement(buildCreditCardParams().toXML())
 				.addElement("gaming", gaming)
 				.addElement("moto", moto)
+				.addElement(buildCryptoParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML())
 				.addElement("billing_address", buildBillingAddress().toXML())
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML())
+				.addElement("business_attributes", buildBusinessParams().toXML())
 				.addElement(buildFXParams().toXML());
 	}
 

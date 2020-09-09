@@ -30,6 +30,12 @@ public class RegexValidator {
     // Gift card Regex
     public static final Pattern VALID_GIFT_CARD_NUMBER = Pattern.compile("[1-9][0-9]{9,20}");
 
+    //Date in format dd-mm-yyyy. Leading zeros required
+    public static final Pattern VALID_DATE = Pattern.compile("(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}");
+
+    //Virtual Payment Address (VPA) of the customer, format: someone@bank
+    public static final Pattern VALID_VIRTUAL_PAYMENT_ADDRESS = Pattern.compile(".+@.+");
+
     private ArrayList<String> invalidParamsList = new ArrayList<String>();
 
     // Validate amount
@@ -159,6 +165,33 @@ public class RegexValidator {
             return true;
         } else {
             invalidParamsList.add("gift_card_number");
+            return false;
+        }
+    }
+
+    //Validate date
+    public Boolean isValidDate(String date, String paramName) {
+        if (date == null || date.isEmpty()) {
+            return true;
+        } else if (VALID_DATE.matcher(date).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
+    //Validate Virtual Payment Address
+    public Boolean isValidVirtualPaymentAddress(String virtualPaymentAddress) {
+        if (virtualPaymentAddress == null || virtualPaymentAddress.isEmpty()) {
+            invalidParamsList.add(RequiredParameters.virtualPaymentAddress);
+            return false;
+        } else if (VALID_VIRTUAL_PAYMENT_ADDRESS.matcher(virtualPaymentAddress).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(RequiredParameters.virtualPaymentAddress));
+            return true;
+        } else {
+            invalidParamsList.add(RequiredParameters.virtualPaymentAddress);
             return false;
         }
     }

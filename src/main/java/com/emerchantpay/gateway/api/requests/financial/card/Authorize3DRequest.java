@@ -8,6 +8,7 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
@@ -40,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
-		MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes {
+		MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes {
 
 	private String transactionType = TransactionTypes.AUTHORIZE_3D;
 	private BigDecimal amount;
@@ -127,6 +128,7 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 				.addElement(buildCreditCardParams().toXML())
 				.addElement("gaming", gaming)
 				.addElement("moto", moto)
+				.addElement(buildCryptoParams().toXML())
 				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML())
@@ -136,6 +138,7 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 				.addElement("mpi_params", buildMpiParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML())
 				.addElement("sca_params", buildScaParams().toXML())
+				.addElement("business_attributes", buildBusinessParams().toXML())
 				.addElement(buildFXParams().toXML());
 	}
 

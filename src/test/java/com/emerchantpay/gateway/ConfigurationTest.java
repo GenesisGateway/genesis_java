@@ -59,4 +59,20 @@ public class ConfigurationTest {
         configurationScaChecker.setScaCheckerAPIVersion("v5");
         assertEquals("v5", configurationScaChecker.getFXAPIVersion());
     }
+
+    @Test
+    public void testConfigurationClone(){
+        configurationConsumer.setUsername("user1234");
+        configurationConsumer.setPassword("password12345");
+        configurationConsumer.setToken("testtoken1234");
+
+        Configuration configurationClone = configurationConsumer.clone();
+        assertEquals(configurationConsumer.getUsername(), configurationClone.getUsername());
+        assertEquals(configurationConsumer.getPassword(), configurationClone.getPassword());
+        assertEquals(configurationConsumer.getToken(), configurationClone.getToken());
+        assertEquals(configurationConsumer.getEnvironment(), configurationClone.getEnvironment());
+        assertEquals(configurationConsumer.getEndpoint(), configurationClone.getEndpoint());
+        assertEquals(configurationConsumer.getConsumerVersion(), configurationClone.getConsumerVersion());
+        assertEquals(configurationConsumer.getBaseUrl(), configurationClone.getBaseUrl());
+    }
 }

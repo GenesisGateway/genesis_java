@@ -2,9 +2,18 @@ package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.exceptions.DeprecatedMethodException;
+import com.emerchantpay.gateway.api.exceptions.LimitsException;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,113 +40,216 @@ import com.emerchantpay.gateway.util.NodeWrapper;
 
 public class GenesisClient extends Request {
 
-	private Configuration configuration;
-	private Request request;
+    private Configuration configuration;
+    //Transaction id to Configuration if specific configuration is needed for any request
+    private HashMap<String, Configuration> configurationMap = new HashMap<String, Configuration>();
+    private List<Request> requestList = new ArrayList<Request>();
 
-	// Execute
-	private Http http;
-	private NodeWrapper response;
+    //Maximum number of requests to be chained sync or async
+    private static final int maxRequestNumber = 100;
+    //Execute requests asynchronously in chunks of 10.
+    private static final int asyncRequestsChunkSize = 10;
 
-	public GenesisClient(Configuration configuration, Request request) {
+    // Execute
+    private Http http;
+    //Transaction Id to response
+    private ConcurrentHashMap<String, NodeWrapper> responseMap = new ConcurrentHashMap<String, NodeWrapper>();
+    private Boolean asyncExecute = false;
 
-		super();
-		this.configuration = configuration;
-		this.request = request;
-	}
+    public GenesisClient(Configuration configuration, Request request) {
 
-	public GenesisClient debugMode(Boolean enabled) {
-		configuration.setDebugMode(enabled);
-		return this;
-	}
+        super();
+        this.configuration = configuration;
+        this.requestList.add(request);
+    }
 
-	public GenesisClient changeRequest(Request request) {
-		this.request = request;
-		return this;
-	}
+    public GenesisClient(Configuration configuration, List<Request> requestList) {
 
-	public TransactionGateway getTransaction() {
-	    
-		return new TransactionGateway(configuration, getResponse());
-	}
+        super();
+        checkRequestsCount(requestList.size());
+        this.configuration = configuration;
+        this.requestList.addAll(requestList);
+    }
 
-	public ConsumerGateway getConsumer() {
-		return new ConsumerGateway(configuration, getResponse());
-	}
+    public GenesisClient(Map<Request, Configuration> requestWithConfigurationMap) {
 
-	public Request execute() {
+        super();
+        checkRequestsCount(requestWithConfigurationMap.size());
+        for(Request request : requestWithConfigurationMap.keySet()){
+            this.configurationMap.put(request.getTransactionId(), requestWithConfigurationMap.get(request));
+            this.requestList.add(request);
+        }
+    }
+
+    public Boolean getAsyncExecute() {
+        return asyncExecute;
+    }
+
+    public GenesisClient setAsyncExecute(Boolean asyncExecute) {
+        this.asyncExecute = asyncExecute;
+        return this;
+    }
+
+    public static int getMaxRequestNumber() {
+        return maxRequestNumber;
+    }
+
+    public GenesisClient debugMode(Boolean enabled) {
+        if(configuration != null){
+            configuration.setDebugMode(enabled);
+        }
+
+        for(String transactionId : configurationMap.keySet()){
+            configurationMap.get(transactionId).setDebugMode(enabled);
+        }
+        return this;
+    }
+
+    public GenesisClient changeRequest(Request request) {
+        this.requestList.clear();
+        this.requestList.add(request);
+        return this;
+    }
+
+    public GenesisClient addRequest(Request request) {
+        checkRequestsCount(requestList.size() + 1);
+        this.requestList.add(request);
+        return this;
+    }
+
+    public GenesisClient addRequest(Request request, Configuration configuration) {
+        checkRequestsCount(requestList.size() + 1);
+        this.requestList.add(request);
+        this.configurationMap.put(request.getTransactionId(), configuration);
+        return this;
+    }
+
+    public TransactionGateway getTransaction() {
+        return new TransactionGateway(getConfiguration(), getResponse());
+    }
+
+    public ConsumerGateway getConsumer() {
+        return new ConsumerGateway(getConfiguration(), getResponse());
+    }
+
+    public TransactionGateway getTransaction(String transactionId) {
+        return new TransactionGateway(getConfiguration(transactionId), getResponse(transactionId));
+    }
+
+    public ConsumerGateway getConsumer(String transactionId) {
+        return new ConsumerGateway(getConfiguration(transactionId), getResponse(transactionId));
+    }
+
+    public Request execute() {
+        if(asyncExecute){
+            executeAsync();
+        }else{
+            for(Request request : requestList){
+                execute(request, getConfiguration(request.getTransactionId()));
+            }
+        }
+        return this;
+    }
+
+    private void executeAsync(){
+
+        ArrayList<CompletableFuture> requestFutures = new ArrayList<CompletableFuture>();
+        for(int requestIndex = 0; requestIndex < requestList.size(); requestIndex++){
+            Request request = requestList.get(requestIndex);
+            //Clone configuration for each request so asynchronous execution doesn't throw errors
+            Configuration requestConfig = getConfiguration(request.getTransactionId()).clone();
+            // Using Lambda Expression
+            CompletableFuture<Void> futureRequest = CompletableFuture.runAsync(() -> {
+                execute(request, requestConfig);
+            });
+            requestFutures.add(futureRequest);
+            //Execute CompletableFutures at the end of each chunk or end of the array
+            if(((requestIndex + 1)%asyncRequestsChunkSize == 0) ||
+                    requestIndex == requestList.size() - 1){
+                // Create a combined Future and wait until all are completed
+                CompletableFuture.allOf(requestFutures.toArray(new CompletableFuture[requestFutures.size()]))
+                        .join();
+                //Clear list for next chunk
+                requestFutures.clear();
+            }
+        }
+    }
+
+    private void execute(Request request, Configuration configuration) {
+
         switch ((request.getTransactionType() != null) ? request.getTransactionType() : "") {
-			case "wpf_payment":
-				configuration.setWpfEnabled(true);
-				configuration.setTokenEnabled(false);
+            case "wpf_payment":
+                configuration.setWpfEnabled(true);
+                configuration.setTokenEnabled(false);
 
-				if (configuration.getLanguage() != null) {
-					configuration.setAction(configuration.getLanguage() + "/wpf");
-				} else {
-					configuration.setAction("wpf");
-				}
-				break;
-			case "wpf_reconcile":
-				configuration.setWpfEnabled(true);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("wpf/reconcile");
-				break;
-			case "reconcile":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(true);
-				configuration.setAction("reconcile");
-				break;
-			case "reconcile_by_date":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(true);
-				configuration.setAction("reconcile/by_date");
-				break;
-			case "blacklist":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("blacklists");
-				break;
-			case "chargeback":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("chargebacks");
-				break;
-			case "chargeback_by_date":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("chargebacks/by_date");
-				break;
-			case "reports_fraud":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("fraud_reports");
-				break;
-			case "reports_fraud_by_date":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("fraud_reports/by_date");
-				break;
-			case "retrieval_requests":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("retrieval_requests");
-				break;
-			case "retrieval_requests_by_date":
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(false);
-				configuration.setAction("retrieval_requests/by_date");
-				break;
-			case "avs":
-				throw new DeprecatedMethodException("AVS");
-			case "abn_ideal":
-				throw  new DeprecatedMethodException("ABNiDEAL");
-			case "inpay":
-				throw new DeprecatedMethodException("InPay");
-			default:
-				configuration.setWpfEnabled(false);
-				configuration.setTokenEnabled(true);
-				configuration.setAction("process");
-				break;
-		}
+                if (configuration.getLanguage() != null) {
+                    configuration.setAction(configuration.getLanguage() + "/wpf");
+                } else {
+                    configuration.setAction("wpf");
+                }
+                break;
+            case "wpf_reconcile":
+                configuration.setWpfEnabled(true);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("wpf/reconcile");
+                break;
+            case "reconcile":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(true);
+                configuration.setAction("reconcile");
+                break;
+            case "reconcile_by_date":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(true);
+                configuration.setAction("reconcile/by_date");
+                break;
+            case "blacklist":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("blacklists");
+                break;
+            case "chargeback":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("chargebacks");
+                break;
+            case "chargeback_by_date":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("chargebacks/by_date");
+                break;
+            case "reports_fraud":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("fraud_reports");
+                break;
+            case "reports_fraud_by_date":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("fraud_reports/by_date");
+                break;
+            case "retrieval_requests":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("retrieval_requests");
+                break;
+            case "retrieval_requests_by_date":
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                configuration.setAction("retrieval_requests/by_date");
+                break;
+            case "avs":
+                throw new DeprecatedMethodException("AVS");
+            case "abn_ideal":
+                throw  new DeprecatedMethodException("ABNiDEAL");
+            case "inpay":
+                throw new DeprecatedMethodException("InPay");
+            default:
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(true);
+                configuration.setAction("process");
+                break;
+        }
 
         if (request.isConsumer()) {
             configuration.setWpfEnabled(false);
@@ -145,13 +257,50 @@ public class GenesisClient extends Request {
             configuration.setAction("");
         }
 
-		http = new Http(configuration);
-		response = http.postXML(configuration.getBaseUrl(), request);
+        http = new Http(configuration);
+        NodeWrapper response = http.postXML(configuration.getBaseUrl(), request);
+        responseMap.put(request.getTransactionId(), response);
+    }
 
-		return this;
-	}
+    public NodeWrapper getResponse() {
+        //Return first element. Map isn't ordered but it's for compatibility when working with single request.
+        Iterator<NodeWrapper> iterator = responseMap.values().iterator();
+        if(iterator.hasNext()){
+            return iterator.next();
+        } else{
+            return null;
+        }
+    }
 
-	public NodeWrapper getResponse() {
-		return response;
-	}
+    public NodeWrapper getResponse(String transactionId) {
+        return responseMap.get(transactionId);
+    }
+
+    private Configuration getConfiguration(){
+        Iterator<Configuration> iterator = configurationMap.values().iterator();
+
+        if(configuration != null){
+            return configuration;
+        } else if(iterator.hasNext()){
+            //Return first element. Map isn't ordered but it's for compatibility when working with single request.
+            return iterator.next();
+        } else {
+            return null;
+        }
+    }
+
+    private Configuration getConfiguration(String transactionId){
+        if(configurationMap.containsKey(transactionId)){
+            return configurationMap.get(transactionId);
+        } else{
+            return configuration;
+        }
+    }
+
+    private void checkRequestsCount(int requestsCount){
+        if (requestsCount > maxRequestNumber) {
+            throw new LimitsException("Maximum requests number reached. Limit is: "
+                    + maxRequestNumber);
+        }
+    }
 }

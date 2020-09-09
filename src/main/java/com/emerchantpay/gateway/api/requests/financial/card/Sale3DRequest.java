@@ -8,6 +8,7 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
@@ -40,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
 		MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
-        FXAttributes, ScaAttributes {
+        FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes {
 
 	private String transactionType = TransactionTypes.SALE_3D;
 	private Boolean moto;
@@ -134,6 +135,7 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 				.addElement(buildCreditCardParams().toXML())
 				.addElement("gaming", gaming)
 				.addElement("moto", moto)
+				.addElement(buildCryptoParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML())
 				.addElement(buildNotificationParams().toXML())
 				.addElement(buildAsyncParams().toXML())
@@ -143,7 +145,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 				.addElement("mpi_params", buildMpiParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML())
 				.addElement("sca_params", buildScaParams().toXML())
-                .addElement(buildFXParams().toXML());
+				.addElement("business_attributes", buildBusinessParams().toXML())
+				.addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
@@ -41,7 +42,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
 		CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
-		RiskParamsAttributes, FXAttributes, ScaAttributes {
+		RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes {
 
 	private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
 	private Boolean moto;
@@ -129,7 +130,8 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 				.addElement("mpi_params", buildMpiParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML())
 				.addElement("sca_params", buildScaParams().toXML())
-                .addElement(buildFXParams().toXML());
+				.addElement("business_attributes", buildBusinessParams().toXML())
+				.addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

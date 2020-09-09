@@ -82,6 +82,7 @@ public class Authorize3DTest {
         when(authorize3d.setReturnSuccessUrl(isA(URL.class))).thenReturn(authorize3d);
         when(authorize3d.setReturnFailureUrl(isA(URL.class))).thenReturn(authorize3d);
         when(authorize3d.setFXRateId(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setCrypto(isA(Boolean.class))).thenReturn(authorize3d);
 
         assertEquals(authorize3d.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize3d);
         assertEquals(authorize3d.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize3d);
@@ -95,6 +96,7 @@ public class Authorize3DTest {
         assertEquals(authorize3d.setReturnSuccessUrl(new URL("http://www.example.com/success"))
                 .setReturnFailureUrl(new URL("http://www.example.com/failure")), authorize3d);
         assertEquals(authorize3d.setFXRateId("123"), authorize3d);
+        assertEquals(authorize3d.setCrypto(true), authorize3d);
 
         verify(authorize3d).setTransactionId(uniqueId);
         verify(authorize3d).setRemoteIp("82.137.112.202");
@@ -118,6 +120,7 @@ public class Authorize3DTest {
         verify(authorize3d).setReturnSuccessUrl(new URL("http://www.example.com/success"));
         verify(authorize3d).setReturnFailureUrl(new URL("http://www.example.com/failure"));
         verify(authorize3d).setFXRateId("123");
+        verify(authorize3d).setCrypto(true);
 
         verifyNoMoreInteractions(authorize3d);
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
@@ -41,7 +42,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class InitRecurringSaleRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-		CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes {
+		CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes {
 
 	private String transactionType = TransactionTypes.INIT_RECURRING_SALE;
 	private Boolean moto;
@@ -124,7 +125,8 @@ public class InitRecurringSaleRequest extends Request implements PaymentAttribut
 				.addElement("shipping_address", buildShippingAddress().toXML())
 				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
 				.addElement("risk_params", buildRiskParams().toXML())
-                .addElement(buildFXParams().toXML());
+				.addElement("business_attributes", buildBusinessParams().toXML())
+				.addElement(buildFXParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

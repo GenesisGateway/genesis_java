@@ -163,6 +163,12 @@ public class TransactionTypes {
 	public static String KLARNA_CAPTURE = "klarna_capture";
 	public static String KLARNA_REFUND = "klarna refund";
 
+    //Apple Pay
+    public static String APPLE_PAY = "apple_pay";
+
+	  //UPI (Unified Payment Interface)
+    public static String UPI = "upi";
+
     public static ArrayList<String> getWPFTransactionTypes() {
         ArrayList<String> transactionTypes = new ArrayList<String>();
 
@@ -201,7 +207,8 @@ public class TransactionTypes {
                 TCS,
                 FASHIONCHEQUE,
                 INTERSOLVE,
-                KLARNA_AUTHORIZE
+                KLARNA_AUTHORIZE,
+                UPI
         }));
 
         return transactionTypes;

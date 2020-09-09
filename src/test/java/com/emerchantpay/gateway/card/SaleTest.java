@@ -75,6 +75,7 @@ public class SaleTest {
         when(sale.setBillingZipCode(isA(String.class))).thenReturn(sale);
         when(sale.setBillingState(isA(String.class))).thenReturn(sale);
         when(sale.setFXRateId(isA(String.class))).thenReturn(sale);
+        when(sale.setCrypto(isA(Boolean.class))).thenReturn(sale);
 
         assertEquals(sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"), sale);
         assertEquals(sale.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency()), sale);
@@ -89,6 +90,7 @@ public class SaleTest {
                 .setBillingZipCode("1000")
                 .setBillingState("NY"), sale);
         assertEquals(sale.setFXRateId("123"), sale);
+        assertEquals(sale.setCrypto(true), sale);
 
         verify(sale).setTransactionId(uniqueId);
         verify(sale).setRemoteIp("192.168.0.1");
@@ -111,6 +113,7 @@ public class SaleTest {
         verify(sale).setBillingZipCode("1000");
         verify(sale).setBillingState("NY");
         verify(sale).setFXRateId("123");
+        verify(sale).setCrypto(true);
         verifyNoMoreInteractions(sale);
 
         verifyExecute();

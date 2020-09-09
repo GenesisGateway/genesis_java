@@ -59,6 +59,21 @@ public class RequiredParameters {
     public static String bankName = "bank_name";
     public static String accountName = "account_name";
 
+    public static String paymentType = "payment_type";
+    //Payment Token attributes
+    public static String tokenVersion = "version";
+    public static String tokenData = "data";
+    public static String tokenSignature = "signature";
+    public static String tokenEphemeralPublicKey = "ephemeralPublicKey";
+    public static String tokenPublicKeyHash = "publicKeyHash";
+    public static String tokenTransactionId = "transactionId";
+    public static String tokenDisplayName = "displayName";
+    public static String tokenNetwork = "network";
+    public static String tokenType = "type";
+    public static String tokenTransactionIdentifier = "transactionIdentifier";
+
+    public static String virtualPaymentAddress = "virtual_payment_address";
+
     // Payment params
     public static String cardHolder = "card_holder";
     public static String cardNumber = "card_number";

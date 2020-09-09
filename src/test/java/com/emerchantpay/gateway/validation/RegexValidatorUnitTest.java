@@ -191,5 +191,43 @@ public class RegexValidatorUnitTest {
         giftCardNumber = "test555555555";
         assertFalse(validator.isValidGiftCard(giftCardNumber));
     }
+
+    // Date in format dd-mm-yyyy. Leading zeros required
+    @Test
+    public void testDateValidationSuccess() {
+        String dateStr = "10-12-1999";
+        assertTrue(validator.isValidDate(dateStr, "some_date_param"));
+
+        dateStr = "";
+        assertTrue(validator.isValidDate(dateStr, "some_date_param"));
+    }
+
+    @Test
+    public void testDateValidationFailure() {
+        String dateStr = "1-1-2020";
+        assertFalse(validator.isValidDate(dateStr, "some_date_param"));
+
+        dateStr = "32-10-2020";
+        assertFalse(validator.isValidDate(dateStr, "some_date_param"));
+
+        dateStr = "12-13-2020";
+        assertFalse(validator.isValidDate(dateStr, "some_date_param"));
+    }
+
+    // Virtual Payment Address(VPA)
+    @Test
+    public void testVPAValidationSuccess() {
+        String vpa = "someone@bank";
+        assertTrue(validator.isValidVirtualPaymentAddress(vpa));
+    }
+
+    @Test
+    public void testVPAValidationFailure() {
+        String vpa = "johndoe.bank";
+        assertFalse(validator.isValidVirtualPaymentAddress(vpa));
+
+        vpa = "";
+        assertFalse(validator.isValidVirtualPaymentAddress(vpa));
+    }
 }
 

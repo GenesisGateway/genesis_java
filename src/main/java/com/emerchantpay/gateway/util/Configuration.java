@@ -34,7 +34,7 @@ import com.emerchantpay.gateway.api.exceptions.GenesisException;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Configuration implements Serializable {
+public class Configuration implements Serializable, Cloneable {
 
     private Environments environment;
     private Endpoints endpoint;
@@ -50,6 +50,14 @@ public class Configuration implements Serializable {
     private String fxAPIVersion;
     private String scaCheckerAPIVersion;
 
+    public Configuration clone() {
+        try {
+            return (Configuration) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private static Logger logger;
     private static String[] availableFXAPIVersions = new String[]{"v1"};

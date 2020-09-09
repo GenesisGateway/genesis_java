@@ -89,6 +89,13 @@ public abstract class RequestRoot {
     private RequestBuilder reminderAttrRequestBuilder;
     private HashMap<String, String> reminderAttrParamsMap;
 
+    //Crypto Attributes
+    private RequestBuilder cryptoAttrRequestBuilder;
+    private HashMap<String, String> cryptoAttrParamsMap;
+
+    //Business Attributes
+    private RequestBuilder businessAttrRequestBuilder;
+    private HashMap<String, String> businessAttrParamsMap;
 
     public GenesisValidator getValidator(){
         if( validator == null){
@@ -291,6 +298,34 @@ public abstract class RequestRoot {
             reminderAttrParamsMap = new HashMap<String, String>();
         }
         return reminderAttrParamsMap;
+    }
+
+    public RequestBuilder getBusinessParamsAttrRequestBuilder(){
+        if(businessAttrRequestBuilder == null){
+            businessAttrRequestBuilder = new RequestBuilder("");
+        }
+        return businessAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getBusinessAttrParamsMap() {
+        if (businessAttrParamsMap == null) {
+            businessAttrParamsMap = new HashMap<String, String>();
+        }
+        return businessAttrParamsMap;
+    }
+
+    public RequestBuilder getCryptoAttrRequestBuilder(){
+        if(cryptoAttrRequestBuilder == null){
+            cryptoAttrRequestBuilder = new RequestBuilder("");
+        }
+        return cryptoAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getCryptoAttrParamsMap(){
+        if(cryptoAttrParamsMap == null){
+            cryptoAttrParamsMap = new HashMap<String, String>();
+        }
+        return cryptoAttrParamsMap;
     }
 }
 
