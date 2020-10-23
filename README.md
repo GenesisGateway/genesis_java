@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.11.0</version>
+        <version>1.12.0</version>
 </dependency>
 ```
 
@@ -184,6 +184,8 @@ api.requests.financial.apm.TrustlySaleRequest
 api.requests.financial.apm.TrustlyWithdrawalRequest
 api.requests.financial.apm.PayPalExpressRequest
 api.requests.financial.apm.EarthportRequest
+api.requests.financial.apm.NeosurfRequest
+api.requests.financial.card.TarjetaShoppingRequest
 
 // PayByVouchers transactions
 api.requests.financial.pbv.PBVSaleRequest
@@ -199,6 +201,25 @@ api.requests.financial.card.Sale3DRequest
 api.requests.financial.card.recurring.InitRecurringSaleRequest
 api.requests.financial.card.recurring.InitRecurringSale3DRequest
 api.requests.financial.card.recurring.RecurringSaleRequest
+
+//South American Card transactions
+api.requests.financial.card.southamerican.ArgencardRequest
+api.requests.financial.card.southamerican.AuraRequest
+api.requests.financial.card.southamerican.CabalRequest
+api.requests.financial.card.southamerican.CencosudRequest
+api.requests.financial.card.southamerican.EloRequest
+api.requests.financial.card.southamerican.NaranjaRequest
+api.requests.financial.card.southamerican.NativaRequest
+api.requests.financial.card.southamerican.TarjetaShoppingRequest
+
+//South American Cash Payment transactions
+api.requests.financial.cash.southamerican.BalotoRequest
+api.requests.financial.cash.southamerican.BancodeOccidenteRequest
+api.requests.financial.cash.southamerican.BoletoRequest
+api.requests.financial.cash.southamerican.EfectyRequest
+api.requests.financial.cash.southamerican.OXXORequest
+api.requests.financial.cash.southamerican.PagoFacilRequest
+api.requests.financial.cash.southamerican.RedpagosRequest
 
 //Sepa Direct Debit transactions
 api.requests.financial.sdd.SDDSaleRequest
@@ -221,6 +242,7 @@ api.requests.financial.oBeP.PaySecPayoutRequest
 api.requests.financial.oBeP.RPNRequest
 api.requests.financial.oBeP.RPNPayoutRequest
 api.requests.financial.oBeP.UPIRequest
+api.requests.financial.oBeP.PayURequest
 
 // Electronic Wallets transactions
 api.requests.financial.wallets.eZeeWalletRequest
@@ -261,6 +283,17 @@ api.requests.financial.giftcards.TCSRequest
 
 //Mobile Payments
 api.requests.financial.mobile.ApplePayRequest
+
+//South American oBeP requests
+api.requests.financial.oBeP.southamerican.BancodoBrasilRequest
+api.requests.financial.oBeP.southamerican.BancomerRequest
+api.requests.financial.oBeP.southamerican.BradescoRequest
+api.requests.financial.oBeP.southamerican.DaviviendaRequest
+api.requests.financial.oBeP.southamerican.ItauRequest
+api.requests.financial.oBeP.southamerican.PSERequest
+api.requests.financial.oBeP.southamerican.RapiPagoRequest
+api.requests.financial.oBeP.southamerican.SantanderRequest
+api.requests.financial.oBeP.southamerican.WebpayRequest
 
 
 // Consumer API

@@ -36,6 +36,17 @@ public class RegexValidator {
     //Virtual Payment Address (VPA) of the customer, format: someone@bank
     public static final Pattern VALID_VIRTUAL_PAYMENT_ADDRESS = Pattern.compile(".+@.+");
 
+    //Neosurf voucher number. Alphanumeric maximum 10 characters.
+    public static final Pattern VALID_NEOSURF_VOUCHER_NUMBER = Pattern.compile("^[A-Za-z0-9]{1,10}$");
+
+    //Car Rental Еxtra charge. Array of max 6. Each position can be used to indicate a type of charge.
+    //Allowed values: 1, 2, 3, 4, 5.
+    public static final Pattern VALID_CAR_EXTRA_CHARGE = Pattern.compile("^[12345]{1,6}$");
+
+    //Hotel Rental Еxtra charge. Array of max 6. Each position can be used to indicate a type of charge.
+    //Allowed values: 2, 3, 4, 5, 6, 7.
+    public static final Pattern VALID_HOTEL_EXTRA_CHARGE = Pattern.compile("^[234567]{1,6}$");
+
     private ArrayList<String> invalidParamsList = new ArrayList<String>();
 
     // Validate amount
@@ -192,6 +203,45 @@ public class RegexValidator {
             return true;
         } else {
             invalidParamsList.add(RequiredParameters.virtualPaymentAddress);
+            return false;
+        }
+    }
+
+    //Validate Neosurf voucher number
+    public Boolean isValidNeosurfVoucherNumber(String voucherNumber, String paramName) {
+        if (voucherNumber == null || voucherNumber.isEmpty()) {
+            return true;
+        } else if (VALID_NEOSURF_VOUCHER_NUMBER.matcher(voucherNumber).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
+    //Validate Car Rental Extra charge
+    public Boolean isValidCarExtraCharge(String extraCharge, String paramName) {
+        if (extraCharge == null || extraCharge.isEmpty()) {
+            return true;
+        } else if (VALID_CAR_EXTRA_CHARGE.matcher(extraCharge).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
+    //Validate Hotel Rental Extra charge
+    public Boolean isValidHotelExtraCharge(String extraCharge, String paramName) {
+        if (extraCharge == null || extraCharge.isEmpty()) {
+            return true;
+        } else if (VALID_HOTEL_EXTRA_CHARGE.matcher(extraCharge).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
             return false;
         }
     }

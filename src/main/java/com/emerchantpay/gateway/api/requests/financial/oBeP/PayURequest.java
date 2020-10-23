@@ -1,22 +1,4 @@
-package com.emerchantpay.gateway.api.requests.financial.card.recurring;
-
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
-import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.*;
-import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
-import com.emerchantpay.gateway.api.validation.GenesisValidator;
-import com.emerchantpay.gateway.api.validation.RequiredParameters;
+package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,12 +23,31 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
-        RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, TravelDataAttributes {
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
+import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
+import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
+import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.util.Country;
+import com.emerchantpay.gateway.util.Currency;
 
-    private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
-    private Boolean moto;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class PayURequest extends Request implements BaseAttributes, PaymentAttributes, AsyncAttributes,
+        CustomerInfoAttributes, AddressAttributes {
+
+
+    private String transactionType = TransactionTypes.PAYU;
     private BigDecimal amount;
     private String currency;
 
@@ -56,10 +57,11 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
 
-    public InitRecurringSale3DRequest() {
+    public PayURequest() {
         super();
     }
 
+    @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;
@@ -81,11 +83,6 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
         return currency;
     }
 
-    public InitRecurringSale3DRequest setMoto(Boolean moto) {
-        this.moto = moto;
-        return this;
-    }
-
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -103,37 +100,43 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 
     protected RequestBuilder buildRequest(String root) {
 
-        // Set required params
+        //Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
-        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
-        requiredParams.putAll(getMpiConditionalRequiredFields());
-        requiredParams.putAll(getScaConditionalRequiredFields());
+        requiredParams.put(RequiredParameters.returnSuccessUrl, getReturnSuccessUrl());
+        requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
+        requiredParams.put(RequiredParameters.remoteIp, getRemoteIp());
+        requiredParams.put(RequiredParameters.country, getBillingCountryCode());
 
-        // Validate request
+        //Validate request
         validator.isValidRequest(requiredParams);
+
+        // Allowed currencies
+        ArrayList<String> allowedCurrencies = new ArrayList<String>();
+        allowedCurrencies.add(Currency.PLN.getCurrency());
+        allowedCurrencies.add(Currency.CZK.getCurrency());
+
+        if (!allowedCurrencies.contains(getCurrency())) {
+            throw new InvalidParamException(RequiredParameters.currency, allowedCurrencies);
+        }
+
+        //Allowed billing countries
+        ArrayList<String> allowedCountries = new ArrayList<String>();
+        allowedCountries.add(Country.Poland.getCode());
+        allowedCountries.add(Country.CzechRepublic.getCode());
+
+        if (!allowedCountries.contains(getBillingCountryCode())) {
+            throw new InvalidParamException(RequiredParameters.country, allowedCountries);
+        }
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
-                .addElement(buildCreditCardParams().toXML())
-                .addElement("moto", moto)
                 .addElement(buildCustomerInfoParams().toXML())
-                .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
-                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-                .addElement("mpi_params", buildMpiParams().toXML())
-                .addElement("risk_params", buildRiskParams().toXML())
-                .addElement("sca_params", buildScaParams().toXML())
-                .addElement("business_attributes", buildBusinessParams().toXML())
-                .addElement(buildFXParams().toXML())
-                .addElement("travel", buildTravelDataParams().toXML());
+                .addElement("shipping_address", buildShippingAddress().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

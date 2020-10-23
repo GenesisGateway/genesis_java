@@ -26,22 +26,10 @@ public class ValidationError {
 		return attribute;
 	}
 
-	/**
-	 * Returns the {@link ValidationErrorCode} for the specific validation
-	 * error.
-	 * 
-	 * @return a {@link ValidationErrorCode}.
-	 */
 	public ErrorCodes getCode() {
 		return code;
 	}
 
-	/**
-	 * Returns the message associated with the validation error. Messages may
-	 * change over time; rely on {@link #getCode()} for comparisons.
-	 * 
-	 * @return a String for the message.
-	 */
 	public String getMessage() {
 		return message;
 	}

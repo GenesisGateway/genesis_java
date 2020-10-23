@@ -169,6 +169,42 @@ public class TransactionTypes {
 	  //UPI (Unified Payment Interface)
     public static String UPI = "upi";
 
+    //PayU
+    public static String PAYU = "payu";
+
+    //Neosurf
+    public static String NEOSURF = "neosurf";
+
+    //South American oBeP
+    public static String BANCO_DO_BRASIL = "banco_do_brasil";
+    public static String BANCOMER = "bancomer";
+    public static String BRADESCO = "bradesco";
+    public static String DAVIVIENDA = "davivienda";
+    public static String ITAU = "itau";
+    public static String PSE = "pse";
+    public static String RAPI_PAGO = "rapi_pago";
+    public static String SANTANDER = "santander";
+    public static String WEBPAY = "webpay";
+    
+    //South American Payments
+    public static String TARJETA_SHOPPING = "tarjeta_shopping";
+    public static String ARGENCARD = "argencard";
+    public static String AURA = "aura";
+    public static String CABAL = "cabal";
+    public static String ELO = "elo";
+    public static String CENCOSUD = "cencosud";
+    public static String NATIVA = "nativa";
+    public static String NARANJA = "naranja";
+
+    //South American Cash Payments
+    public static String BALOTO = "baloto";
+    public static String BANCO_DE_OCCIDENTE = "banco_de_occidente";
+    public static String BOLETO = "boleto";
+    public static String EFECTY = "efecty";
+    public static String OXXO = "oxxo";
+    public static String PAGO_FACIL = "pago_facil";
+    public static String REDPAGOS = "redpagos";
+
     public static ArrayList<String> getWPFTransactionTypes() {
         ArrayList<String> transactionTypes = new ArrayList<String>();
 
@@ -208,7 +244,33 @@ public class TransactionTypes {
                 FASHIONCHEQUE,
                 INTERSOLVE,
                 KLARNA_AUTHORIZE,
-                UPI
+                UPI,
+                PAYU,
+                NEOSURF,
+                TARJETA_SHOPPING,
+                ARGENCARD,
+                AURA,
+                CABAL,
+                ELO,
+                CENCOSUD,
+                NATIVA,
+                NARANJA,
+                BALOTO,
+                BANCO_DE_OCCIDENTE,
+                BOLETO,
+                EFECTY,
+                OXXO,
+                PAGO_FACIL,
+                REDPAGOS,
+                BANCO_DO_BRASIL,
+                BANCOMER,
+                BRADESCO,
+                DAVIVIENDA,
+                ITAU,
+                PSE,
+                RAPI_PAGO,
+                SANTANDER,
+                WEBPAY
         }));
 
         return transactionTypes;

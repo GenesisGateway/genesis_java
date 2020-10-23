@@ -105,6 +105,13 @@ public class RequiredParameters {
     public static String transactionAmount = "transaction_amount";
     public static String transactionCurrency = "transaction_currency";
 
+    //Neosurf
+    public static String voucherNumber = "voucher_number";
+
+    //South American Payments
+    public static String consumerReference = "consumer_reference";
+    public static String nationalId = "national_id";
+
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
 

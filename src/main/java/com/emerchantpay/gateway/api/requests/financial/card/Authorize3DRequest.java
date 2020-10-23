@@ -13,6 +13,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
@@ -41,33 +42,34 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
-		MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes {
+        MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
+        TravelDataAttributes {
 
-	private String transactionType = TransactionTypes.AUTHORIZE_3D;
-	private BigDecimal amount;
-	private String currency;
-	private Boolean moto;
-	private Boolean gaming;
+    private String transactionType = TransactionTypes.AUTHORIZE_3D;
+    private BigDecimal amount;
+    private String currency;
+    private Boolean moto;
+    private Boolean gaming;
 
-	// Required params
-	private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    // Required params
+    private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
-	// GenesisValidator
-	private GenesisValidator validator = new GenesisValidator();
+    // GenesisValidator
+    private GenesisValidator validator = new GenesisValidator();
 
-	public Authorize3DRequest() {
-		super();
-	}
+    public Authorize3DRequest() {
+        super();
+    }
 
-	public Authorize3DRequest setMoto(Boolean moto) {
-		this.moto = moto;
-		return this;
-	}
+    public Authorize3DRequest setMoto(Boolean moto) {
+        this.moto = moto;
+        return this;
+    }
 
-	public Authorize3DRequest setGaming(Boolean gaming) {
-		this.gaming = gaming;
-		return this;
-	}
+    public Authorize3DRequest setGaming(Boolean gaming) {
+        this.gaming = gaming;
+        return this;
+    }
 
     @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
@@ -93,56 +95,57 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 
     @Override
     public String getTransactionType() {
-	    return transactionType;
+        return transactionType;
     }
 
-	@Override
-	public String toXML() {
-		return buildRequest("payment_transaction").toXML();
-	}
+    @Override
+    public String toXML() {
+        return buildRequest("payment_transaction").toXML();
+    }
 
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
+    @Override
+    public String toQueryString(String root) {
+        return buildRequest(root).toQueryString();
+    }
 
-	protected RequestBuilder buildRequest(String root) {
+    protected RequestBuilder buildRequest(String root) {
 
-		// Set required params
-		requiredParams.put(RequiredParameters.transactionId, getTransactionId());
-		requiredParams.put(RequiredParameters.amount, getAmount().toString());
-		requiredParams.put(RequiredParameters.currency, getCurrency());
-		requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
-		requiredParams.putAll(getMpiConditionalRequiredFields());
-		requiredParams.putAll(getScaConditionalRequiredFields());
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
+        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        requiredParams.putAll(getMpiConditionalRequiredFields());
+        requiredParams.putAll(getScaConditionalRequiredFields());
 
-		// Validate request
-		validator.isValidRequest(requiredParams);
+        // Validate request
+        validator.isValidRequest(requiredParams);
 
-		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildBaseParams().toXML())
-				.addElement(buildPaymentParams().toXML())
-				.addElement(buildCreditCardParams().toXML())
-				.addElement("gaming", gaming)
-				.addElement("moto", moto)
-				.addElement(buildCryptoParams().toXML())
-				.addElement(buildNotificationParams().toXML())
-				.addElement(buildAsyncParams().toXML())
-				.addElement(buildCustomerInfoParams().toXML())
-				.addElement("billing_address", buildBillingAddress().toXML())
-				.addElement("shipping_address", buildShippingAddress().toXML())
-				.addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-				.addElement("mpi_params", buildMpiParams().toXML())
-				.addElement("risk_params", buildRiskParams().toXML())
-				.addElement("sca_params", buildScaParams().toXML())
-				.addElement("business_attributes", buildBusinessParams().toXML())
-				.addElement(buildFXParams().toXML());
-	}
+        return new RequestBuilder(root).addElement("transaction_type", transactionType)
+                .addElement(buildBaseParams().toXML())
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildCreditCardParams().toXML())
+                .addElement("gaming", gaming)
+                .addElement("moto", moto)
+                .addElement(buildCryptoParams().toXML())
+                .addElement(buildNotificationParams().toXML())
+                .addElement(buildAsyncParams().toXML())
+                .addElement(buildCustomerInfoParams().toXML())
+                .addElement("billing_address", buildBillingAddress().toXML())
+                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
+                .addElement("mpi_params", buildMpiParams().toXML())
+                .addElement("risk_params", buildRiskParams().toXML())
+                .addElement("sca_params", buildScaParams().toXML())
+                .addElement("business_attributes", buildBusinessParams().toXML())
+                .addElement(buildFXParams().toXML())
+                .addElement("travel", buildTravelDataParams().toXML());
+    }
 
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildRequest("payment_transaction").getElements();
-	}
+    public List<Map.Entry<String, Object>> getElements() {
+        return buildRequest("payment_transaction").getElements();
+    }
 }

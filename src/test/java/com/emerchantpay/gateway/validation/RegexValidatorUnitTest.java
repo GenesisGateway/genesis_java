@@ -229,5 +229,62 @@ public class RegexValidatorUnitTest {
         vpa = "";
         assertFalse(validator.isValidVirtualPaymentAddress(vpa));
     }
+
+    //Neosurf voucher number
+    @Test
+    public void testNeosurfVoucherNumberValidationSuccess() {
+        String voucherNumber = "ABCDE123";
+        assertTrue(validator.isValidNeosurfVoucherNumber(voucherNumber, "some_param_name"));
+
+        voucherNumber = "";
+        assertTrue(validator.isValidNeosurfVoucherNumber(voucherNumber, "some_param_name"));
+    }
+
+    @Test
+    public void testNeosurfVoucherNumberValidationFailure() {
+        String voucherNumber = "1234*567890";
+        assertFalse(validator.isValidNeosurfVoucherNumber(voucherNumber, "some_param_name"));
+
+        voucherNumber = "ABCDE123456";
+        assertFalse(validator.isValidNeosurfVoucherNumber(voucherNumber, "some_param_name"));
+    }
+    
+    //Car Rental extra charges
+    @Test
+    public void testCarExtraChargesValidationSuccess() {
+        String carExtraCharges = "12345";
+        assertTrue(validator.isValidCarExtraCharge(carExtraCharges, "some_param_name"));
+
+        carExtraCharges = "";
+        assertTrue(validator.isValidCarExtraCharge(carExtraCharges, "some_param_name"));
+    }
+
+    @Test
+    public void testCarExtraChargesValidationFailure() {
+        String carExtraCharges = "1238";
+        assertFalse(validator.isValidCarExtraCharge(carExtraCharges, "some_param_name"));
+
+        carExtraCharges = "12311111";
+        assertFalse(validator.isValidCarExtraCharge(carExtraCharges, "some_param_name"));
+    }
+
+    //Hotel Rental extra charges
+    @Test
+    public void testHotelExtraChargesValidationSuccess() {
+        String hotelExtraCharges = "234567";
+        assertTrue(validator.isValidHotelExtraCharge(hotelExtraCharges, "some_param_name"));
+
+        hotelExtraCharges = "";
+        assertTrue(validator.isValidHotelExtraCharge(hotelExtraCharges, "some_param_name"));
+    }
+
+    @Test
+    public void testHotelExtraChargesValidationFailure() {
+        String hotelExtraCharges = "123";
+        assertFalse(validator.isValidHotelExtraCharge(hotelExtraCharges, "some_param_name"));
+
+        hotelExtraCharges = "234567777";
+        assertFalse(validator.isValidHotelExtraCharge(hotelExtraCharges, "some_param_name"));
+    }
 }
 

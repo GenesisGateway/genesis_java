@@ -22,7 +22,12 @@ package com.emerchantpay.gateway.api;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import com.emerchantpay.gateway.api.requests.financial.traveldata.AirlineItineraryLegRequest;
+import com.emerchantpay.gateway.api.requests.financial.traveldata.AirlineItineraryTaxRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 public abstract class RequestRoot {
@@ -96,6 +101,12 @@ public abstract class RequestRoot {
     //Business Attributes
     private RequestBuilder businessAttrRequestBuilder;
     private HashMap<String, String> businessAttrParamsMap;
+
+    //Travel Data Attributes
+    private HashMap<String, RequestBuilder> travelDataRequestBuildersMap;
+    private HashMap<String, HashMap<String, String>> travelDataAttrParamsMap;
+    private List<AirlineItineraryTaxRequest> airlineItineraryTaxes;
+    private List<AirlineItineraryLegRequest> airlineItineraryLegs;
 
     public GenesisValidator getValidator(){
         if( validator == null){
@@ -327,5 +338,33 @@ public abstract class RequestRoot {
         }
         return cryptoAttrParamsMap;
     }
+
+    public List<AirlineItineraryTaxRequest> getAirlineItineraryTaxes(){
+        if(airlineItineraryTaxes == null){
+            airlineItineraryTaxes = new ArrayList<AirlineItineraryTaxRequest>();
+        }
+        return airlineItineraryTaxes;
+    };
+
+    public List<AirlineItineraryLegRequest> getAirlineItineraryLegs(){
+        if(airlineItineraryLegs == null){
+            airlineItineraryLegs = new ArrayList<AirlineItineraryLegRequest>();
+        }
+        return airlineItineraryLegs;
+    };
+
+    public HashMap<String, RequestBuilder> getTravelDataRequestBuildersMap(){
+        if(travelDataRequestBuildersMap == null){
+            travelDataRequestBuildersMap = new HashMap<String, RequestBuilder>();
+        }
+        return travelDataRequestBuildersMap;
+    };
+
+    public HashMap<String, HashMap<String, String>> getTravelDataAttrParamsMap(){
+        if(travelDataAttrParamsMap == null){
+            travelDataAttrParamsMap = new HashMap<String, HashMap<String, String>>();
+        }
+        return travelDataAttrParamsMap;
+    };
 }
 
