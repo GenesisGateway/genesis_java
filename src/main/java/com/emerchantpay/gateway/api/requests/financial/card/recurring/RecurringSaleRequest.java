@@ -7,9 +7,11 @@ import java.util.Map;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.util.Currency;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,9 +42,15 @@ public class RecurringSaleRequest extends Request implements PaymentAttributes, 
     private BigDecimal amount;
     private String referenceId;
     private String currency;
+    private Boolean moto;
 
     public RecurringSaleRequest() {
         super();
+    }
+
+    public  RecurringSaleRequest setMoto(Boolean moto) {
+        this.moto = moto;
+        return this;
     }
 
     @Override
@@ -87,6 +95,30 @@ public class RecurringSaleRequest extends Request implements PaymentAttributes, 
         return buildRequest(root).toQueryString();
     }
 
+    @Override
+    public RequestBuilder buildPaymentParams() {
+
+        BigDecimal convertedAmount = null;
+
+        if (getAmount() != null && getCurrency() != null) {
+
+            Currency curr = new Currency();
+
+            curr.setAmountToExponent(getAmount(), getCurrency());
+            convertedAmount = curr.getAmount();
+        } else if (getAmount() != null) {
+            convertedAmount = getAmount();
+        }
+
+        if (getValidator().isValidAmount(convertedAmount)) {
+            getPaymentAttrRequestBuilder().addElement("amount", convertedAmount);
+        } else {
+            throw new RegexException(getValidator().getInvalidParams());
+        }
+
+        return getPaymentAttrRequestBuilder();
+    }
+
     protected RequestBuilder buildRequest(String root) {
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
@@ -94,6 +126,7 @@ public class RecurringSaleRequest extends Request implements PaymentAttributes, 
                 .addElement(buildPaymentParams().toXML())
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement("reference_id", referenceId)
+                .addElement("moto", moto)
                 .addElement("travel", buildTravelDataParams().toXML());
     }
 

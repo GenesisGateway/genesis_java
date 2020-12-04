@@ -30,6 +30,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     private String description;
     private URL cancelUrl;
+    private URL pendingUrl;
     private BigDecimal amount;
     private String currency;
     private Integer lifetime;
@@ -87,6 +88,14 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     public WPFCreateRequest setReturnCancelUrl(URL cancelUrl) {
         if (validator.isValidUrl("return_cancel_url", String.valueOf(cancelUrl))) {
             this.cancelUrl = cancelUrl;
+        }
+
+        return this;
+    }
+
+    public WPFCreateRequest setReturnPendingUrl(URL pendingUrl) {
+        if (validator.isValidUrl("return_pending_url", String.valueOf(pendingUrl))) {
+            this.pendingUrl = pendingUrl;
         }
 
         return this;
@@ -199,6 +208,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement("return_cancel_url", cancelUrl)
+                .addElement("return_pending_url", pendingUrl)
                 .addElement("lifetime", lifetime)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML())

@@ -114,6 +114,7 @@ public class WPFRequestsTest {
         when(wpfCreate.setReturnSuccessUrl(isA(URL.class))).thenReturn(wpfCreate);
         when(wpfCreate.setReturnFailureUrl(isA(URL.class))).thenReturn(wpfCreate);
         when(wpfCreate.setReturnCancelUrl(isA(URL.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setReturnPendingUrl(isA(URL.class))).thenReturn(wpfCreate);
         when(wpfCreate.setBillingPrimaryAddress(isA(String.class))).thenReturn(wpfCreate);
         when(wpfCreate.setBillingSecondaryAddress(isA(String.class))).thenReturn(wpfCreate);
         when(wpfCreate.setBillingFirstname(isA(String.class))).thenReturn(wpfCreate);
@@ -133,6 +134,7 @@ public class WPFRequestsTest {
                 .setReturnFailureUrl(new URL("https://www.example.com/failure")), wpfCreate);
         assertEquals(wpfCreate.setReturnCancelUrl(new URL("https://example.com/return_cancel"))
                 .setNotificationUrl(new URL("https://example.com/notification")), wpfCreate);
+        assertEquals(wpfCreate.setReturnPendingUrl(new URL("https://example.com/return_pending")), wpfCreate);
         assertEquals(wpfCreate.setBillingPrimaryAddress("Berlin")
                 .setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen")
@@ -152,6 +154,7 @@ public class WPFRequestsTest {
         verify(wpfCreate).setReturnSuccessUrl(new URL("https://www.example.com/success"));
         verify(wpfCreate).setReturnFailureUrl(new URL("https://www.example.com/failure"));
         verify(wpfCreate).setReturnCancelUrl(new URL("https://example.com/return_cancel"));
+        verify(wpfCreate).setReturnPendingUrl(new URL("https://example.com/return_pending"));
         verify(wpfCreate).setNotificationUrl(new URL("https://example.com/notification"));
         verify(wpfCreate).setBillingPrimaryAddress("Berlin");
         verify(wpfCreate).setBillingSecondaryAddress("Berlin");

@@ -33,6 +33,10 @@ public class TransactionGatewayTest {
 		when(gateway.getRequest()).thenReturn(result);
 		when(result.getTransaction()).thenReturn(transaction);
 		when(transaction.getStatus()).thenReturn("approved");
+        when(transaction.getRedirectUrl()).thenReturn("https://redirectURL.com");
+        when(transaction.getRedirectUrlType()).thenReturn("3ds_v2_challenge");
+        when(transaction.getThreedsMethodUrl()).thenReturn("https://staging.gate.emerchantpay.net/threeds/threeds_method");
+        when(transaction.getThreedsMethodContinueUrl()).thenReturn("https://staging.gate.emerchantpay.net/threeds/threeds_method/1234");
         Transaction paymentTransaction = mock(Transaction.class);
         LinkedList paymentTransactions = new LinkedList<>();
         paymentTransactions.add(paymentTransaction);
@@ -42,11 +46,19 @@ public class TransactionGatewayTest {
 		assertEquals(result.getTransaction(), transaction);
 		assertEquals(transaction.getStatus(), "approved");
         assertEquals(transaction.getPaymentTransactions(), paymentTransactions);
+        assertEquals(transaction.getRedirectUrl(), "https://redirectURL.com");
+        assertEquals(transaction.getRedirectUrlType(), "3ds_v2_challenge");
+        assertEquals(transaction.getThreedsMethodUrl(), "https://staging.gate.emerchantpay.net/threeds/threeds_method");
+        assertEquals(transaction.getThreedsMethodContinueUrl(), "https://staging.gate.emerchantpay.net/threeds/threeds_method/1234");
 
 		verify(gateway).getRequest();
 		verify(result).getTransaction();
 		verify(transaction).getStatus();
         verify(transaction).getPaymentTransactions();
+        verify(transaction).getRedirectUrl();
+        verify(transaction).getRedirectUrlType();
+        verify(transaction).getThreedsMethodUrl();
+        verify(transaction).getThreedsMethodContinueUrl();
 
 		verifyNoMoreInteractions(result);
 	}

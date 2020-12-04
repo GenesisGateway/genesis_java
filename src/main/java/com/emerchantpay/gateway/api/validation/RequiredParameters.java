@@ -112,6 +112,28 @@ public class RequiredParameters {
     public static String consumerReference = "consumer_reference";
     public static String nationalId = "national_id";
 
+    //3DSv2
+    public static String challengeWindowSize = "challenge_window_size";
+    public static String acceptHeader = "accept_header";
+    public static String javaEnabled = "java_enabled";
+    public static String language = "language";
+    public static String colorDepth = "color_depth";
+    public static String screenHeight = "screen_height";
+    public static String screenWidth = "screen_width";
+    public static String timeZoneOffset = "time_zone_offset";
+    public static String userAgent = "user_agent";
+    public static String threedsV2interface = "interface";
+    public static String uiType = "ui_type";
+    public static String applicationId = "application_id";
+    public static String encryptedData = "encrypted_data";
+    public static String ephemeralPublicKeyPair = "ephemeral_public_key_pair";
+    public static String maxTimeout = "max_timeout";
+    public static String referenceNumber = "reference_number";
+    public static String threedsAmount = "threeds_amount";
+    public static String threedsTimestamp = "threeds_timestamp";
+    public static String threedsUniqueId = "threeds_unique_id";
+    public static String threedsMethodContinueUrl = "threeds_method_continue_url";
+
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
 

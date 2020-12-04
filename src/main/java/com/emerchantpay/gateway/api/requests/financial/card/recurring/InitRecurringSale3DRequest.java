@@ -14,6 +14,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -43,7 +44,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
-        RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, TravelDataAttributes {
+        RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, TravelDataAttributes, ThreedsV2Attributes {
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
     private Boolean moto;
@@ -55,6 +56,10 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
+
+    //3DSv2 Attributes
+    private HashMap<String, RequestBuilder> threedsV2RequestBuildersMap;
+    private HashMap<String, HashMap<String, String>> threedsV2AttrParamsMap;
 
     public InitRecurringSale3DRequest() {
         super();
@@ -101,6 +106,22 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
         return buildRequest(root).toQueryString();
     }
 
+    @Override
+    public HashMap<String, RequestBuilder> getThreedsV2RequestBuildersMap() {
+        if(threedsV2RequestBuildersMap == null){
+            threedsV2RequestBuildersMap = new HashMap<String, RequestBuilder>();
+        }
+        return threedsV2RequestBuildersMap;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, String>> getThreedsV2AttrParamsMap() {
+        if(threedsV2AttrParamsMap == null){
+            threedsV2AttrParamsMap = new HashMap<String, HashMap<String, String>>();
+        }
+        return threedsV2AttrParamsMap;
+    }
+
     protected RequestBuilder buildRequest(String root) {
 
         // Set required params
@@ -133,7 +154,8 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
                 .addElement("sca_params", buildScaParams().toXML())
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
-                .addElement("travel", buildTravelDataParams().toXML());
+                .addElement("travel", buildTravelDataParams().toXML())
+                .addElement("threeds_v2_params", buildThreedsV2Params().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

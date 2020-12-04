@@ -58,17 +58,46 @@ public class RecurringSaleTest {
         when(recurringSale.setAmount(isA(BigDecimal.class))).thenReturn(recurringSale);
         when(recurringSale.setCurrency(isA(String.class))).thenReturn(recurringSale);
         when(recurringSale.setReferenceId(isA(String.class))).thenReturn(recurringSale);
+        when(recurringSale.setMoto(isA(Boolean.class))).thenReturn(recurringSale);
 
         assertEquals(recurringSale.setTransactionId(uniqueId).setUsage("TICKETS").setRemoteIp("192.168.0.1"),
                 recurringSale);
         assertEquals(recurringSale.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")),
                 recurringSale);
         assertEquals(recurringSale.setReferenceId("2ee4287e67971380ef7f97d5743bb523"), recurringSale);
+        assertEquals(recurringSale.setMoto(true), recurringSale);
 
         verify(recurringSale).setTransactionId(uniqueId);
         verify(recurringSale).setUsage("TICKETS");
         verify(recurringSale).setRemoteIp("192.168.0.1");
         verify(recurringSale).setCurrency(Currency.USD.getCurrency());
+        verify(recurringSale).setAmount(new BigDecimal("10.00"));
+        verify(recurringSale).setReferenceId("2ee4287e67971380ef7f97d5743bb523");
+        verify(recurringSale).setMoto(true);
+        verifyNoMoreInteractions(recurringSale);
+
+        verifyExecute();
+    }
+
+    @Test
+    public void testRecurringWithoutCurrency() {
+        // Recurring without currency
+        when(recurringSale.setTransactionId(isA(String.class))).thenReturn(recurringSale);
+        when(recurringSale.setUsage(isA(String.class))).thenReturn(recurringSale);
+        when(recurringSale.setRemoteIp(isA(String.class))).thenReturn(recurringSale);
+        when(recurringSale.setAmount(isA(BigDecimal.class))).thenReturn(recurringSale);
+        when(recurringSale.setCurrency(isA(String.class))).thenReturn(recurringSale);
+        when(recurringSale.setReferenceId(isA(String.class))).thenReturn(recurringSale);
+
+        assertEquals(recurringSale.setTransactionId(uniqueId).setUsage("TICKETS").setRemoteIp("192.168.0.1"),
+                recurringSale);
+        assertEquals(recurringSale.setAmount(new BigDecimal("10.00")),
+                recurringSale);
+        assertEquals(recurringSale.setReferenceId("2ee4287e67971380ef7f97d5743bb523"), recurringSale);
+
+        verify(recurringSale).setTransactionId(uniqueId);
+        verify(recurringSale).setUsage("TICKETS");
+        verify(recurringSale).setRemoteIp("192.168.0.1");
         verify(recurringSale).setAmount(new BigDecimal("10.00"));
         verify(recurringSale).setReferenceId("2ee4287e67971380ef7f97d5743bb523");
         verifyNoMoreInteractions(recurringSale);

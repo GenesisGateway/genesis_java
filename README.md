@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.12.0</version>
+        <version>1.13.0</version>
 </dependency>
 ```
 
@@ -370,6 +370,41 @@ scaCheckRequest.execute();
 System.out.println("Response: " + scaCheckRequest.getResponse().getDocument());
 ```
 
+```java
+// 3DS v2 example
+
+Sale3DRequest sale3dsV2Request = new Sale3DRequest();
+//Set Sale3D and 3DS v2 attributes. Please refer documentation for more details.
+
+GenesisClient client = new GenesisClient(configuration, sale3dsV2Request);
+client.debugMode(true);
+client.execute();
+//Retrieve Sale 3DS v2 transaction response
+Transaction sale3dsV2TrxResponse = client.getTransaction().getRequest().getTransaction();
+
+//Asynchronous 3 D Sv2 Frictionless
+System.out.println("Frictionless Response Status: " + sale3dsV2TrxResponse.getStatus());// status should be approved
+//Asynchronous 3 D Sv2 Challenge
+System.out.println("Challenge Response Status: " + sale3dsV2TrxResponse.getStatus());// status should be pending_async
+System.out.println("Challenge Response redirect URL: " + sale3dsV2TrxResponse.getRedirectUrl());//redirect URL should be present
+System.out.println("Challenge Response redirect URL type: " + sale3dsV2TrxResponse.getRedirectUrlType());//should be 3ds_v2_challenge
+//Asynchronous With 3 Ds Method
+System.out.println("With 3 Ds Method Response Status: " + sale3dsV2TrxResponse.getStatus());// status should be pending_async
+System.out.println("With 3 Ds Method Response threeds method URL: " + sale3dsV2TrxResponse.getThreedsMethodUrl());//three DS method URL should be present
+System.out.println("With 3 Ds Method Response threeds method continue URL: " + sale3dsV2TrxResponse.getThreedsMethodContinueUrl());//three DS method continue URL should be present
+
+//Continue request
+ThreedsV2ContinueRequest continue3dsV2Request = new ThreedsV2ContinueRequest(sale3dsV2TrxResponse, configuration);
+continue3dsV2Request.execute();
+//Retrieve continue response
+Transaction continue3dsV2Response = continue3dsV2Request.getTransactionResponse();
+//Frictionless With 3 Ds Method
+System.out.println("Continue Method Frictionless Response Status: " + continue3dsV2Response.getStatus());//status should be approved
+//Challenge With 3 Ds Method Request
+System.out.println("Continue Method with Challenge Response Status: " + continue3dsV2Response.getStatus());//status should be pending_async
+System.out.println("Continue Method with Challenge Response redirect URL: " + continue3dsV2Response.getRedirectUrl());//redirect URL should be present
+System.out.println("Continue Method with Challenge Response redirect URL type: " + continue3dsV2Response.getRedirectUrlType());//should be 3ds_v2_challenge
+```
 
 More information about each one of the request types can be found in the Genesis API Documentation and the Wiki
 

@@ -49,6 +49,7 @@ public class Configuration implements Serializable, Cloneable {
     private String consumerAPIVersion;
     private String fxAPIVersion;
     private String scaCheckerAPIVersion;
+    private QueryString queryParams;
 
     public Configuration clone() {
         try {
@@ -184,19 +185,36 @@ public class Configuration implements Serializable, Cloneable {
         return language;
     }
 
+    public Configuration addQueryParameter(String paramName, Object paramValue){
+        if(queryParams == null){
+            queryParams = new QueryString();
+        }
+        queryParams.append(paramName, paramValue);
+        return this;
+    }
+
+    public Configuration clearQueryParameters(){
+        queryParams = null;
+        return this;
+    }
+
     public String getBaseUrl() {
+        String queryParamStr = "";
+        if(queryParams != null){
+            queryParamStr = "?" + queryParams.toString();
+        }
 
         if (getTokenEnabled() == true) {
             return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator + getAction()
-                    + pathSeparator + token;
+                    + pathSeparator + token + queryParamStr;
         } else {
 
             if (getWpfEnabled() == true) {
                 return "https://" + environment.getEnvironmentName().replace("gate", "wpf") + "."
-                        + endpoint.getEndpointName() + pathSeparator + getAction();
+                        + endpoint.getEndpointName() + pathSeparator + getAction() + queryParamStr;
             } else {
                 return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator
-                        + getAction();
+                        + getAction() + queryParamStr;
             }
         }
     }

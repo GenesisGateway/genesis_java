@@ -109,6 +109,10 @@ public class Http implements Serializable {
         return httpRequestXML(RequestMethod.PUT, url, null);
     }
 
+    public NodeWrapper put(String url, String contentType) {
+        return httpRequestXML(RequestMethod.PUT, url, null, contentType);
+    }
+
     public NodeWrapper put(String url, Request request) {
         return httpRequestXML(RequestMethod.PUT, url, request.toXML());
     }
@@ -122,11 +126,15 @@ public class Http implements Serializable {
     }
 
     private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url, String postBody) {
+        return httpRequestXML(requestMethod, url, postBody, ContentTypes.XML);
+    }
+
+    private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url, String postBody, String contentType) {
         HttpURLConnection connection = null;
         NodeWrapper nodeWrapper = null;
 
         try {
-            connection = buildConnection(requestMethod, url, ContentTypes.XML);
+            connection = buildConnection(requestMethod, url, contentType, ContentTypes.XML);
 
             host = connection.getURL().getHost();
             port = connection.getURL().getDefaultPort();
@@ -308,6 +316,11 @@ public class Http implements Serializable {
     }
 
     private HttpURLConnection buildConnection(RequestMethod requestMethod, String urlString, String contentType)
+            throws IOException {
+        return buildConnection(requestMethod, urlString, contentType, contentType);
+    }
+
+    private HttpURLConnection buildConnection(RequestMethod requestMethod, String urlString, String contentType, String acceptHeader)
             throws java.io.IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection;
@@ -317,7 +330,7 @@ public class Http implements Serializable {
 
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod.toString());
-        connection.addRequestProperty("Accept", contentType);
+        connection.addRequestProperty("Accept", acceptHeader);
         connection.setRequestProperty("Content-Type",contentType);
         connection.addRequestProperty("Authorization", "Basic " + encoded);
         connection.setDoOutput(true);

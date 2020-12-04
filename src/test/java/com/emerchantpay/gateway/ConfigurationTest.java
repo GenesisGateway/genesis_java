@@ -75,4 +75,16 @@ public class ConfigurationTest {
         assertEquals(configurationConsumer.getConsumerVersion(), configurationClone.getConsumerVersion());
         assertEquals(configurationConsumer.getBaseUrl(), configurationClone.getBaseUrl());
     }
+
+    @Test
+    public void testConfigurationQueryParams(){
+        String urlWithoutQueryParams = configurationConsumer.getBaseUrl();
+        configurationConsumer.addQueryParameter("param1", "value1");
+        configurationConsumer.addQueryParameter("param2", "value2");
+        String urlWithParams = configurationConsumer.getBaseUrl();
+        String expectedQueryParam = "?param1=value1&param2=value2";
+        assertTrue(urlWithParams.contains(expectedQueryParam));
+        configurationConsumer.clearQueryParameters();
+        assertEquals(urlWithoutQueryParams, configurationConsumer.getBaseUrl());
+    }
 }

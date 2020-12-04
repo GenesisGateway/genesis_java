@@ -39,6 +39,9 @@ public class Endpoints implements Serializable {
     public static Endpoints SCA_CHECKER = new Endpoints("sca/checker");
     public static String SCA_CHECKER_API_VERSION = "v1";
 
+    //3DS continue method endpoint
+    public static Endpoints THREEDS_METHOD = new Endpoints("threeds/threeds_method");
+
     public Endpoints(String endpointName) {
         this.endpointName = endpointName;
     }

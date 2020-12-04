@@ -22,6 +22,7 @@ public class Transaction {
     private BigDecimal amount;
     private String currency;
     private String redirectUrl;
+    private String redirectUrlType;
     private String mode;
     private String timestamp;
     private Boolean sentToAcquirer;
@@ -44,6 +45,9 @@ public class Transaction {
     private Map<String, String> mapPaymentResponses;
     private List<Transaction> paymentTransactions;
     private Boolean isChildNode = false;
+    //3DS v2
+    private String threedsMethodUrl;
+    private String threedsMethodContinueUrl;
 
     public Transaction(NodeWrapper node) {
         this(node, false);
@@ -63,6 +67,7 @@ public class Transaction {
         this.amount = node.findBigDecimal("amount");
         this.currency = node.findString("currency");
         this.redirectUrl = node.findString("redirect_url");
+        this.redirectUrlType = node.findString("redirect_url_type");
         this.mode = node.findString("mode");
         this.timestamp = node.findString("timestamp");
         this.sentToAcquirer = node.findBoolean("sent_to_acquirer");
@@ -82,6 +87,8 @@ public class Transaction {
         this.splitPayment = node.findString("split_payment");
         this.leftoverAmount = node.findInteger("leftover_amount");
         this.mapPaymentResponses = node.getFormParameters();
+        this.threedsMethodUrl = node.findString("threeds_method_url");
+        this.threedsMethodContinueUrl = node.findString("threeds_method_continue_url");
 
         this.paymentTransactions = new LinkedList<>();
         for(NodeWrapper childNode : node.getChildNodes("payment_transaction")){
@@ -148,6 +155,10 @@ public class Transaction {
 
     public String getRedirectUrl() {
         return redirectUrl;
+    }
+
+    public String getRedirectUrlType(){
+        return redirectUrlType;
     }
 
     public String getMode() {
@@ -229,6 +240,14 @@ public class Transaction {
 
     public String getDocument() {
         return rawDocument;
+    }
+
+    public String getThreedsMethodUrl(){
+        return threedsMethodUrl;
+    }
+
+    public String getThreedsMethodContinueUrl(){
+        return threedsMethodContinueUrl;
     }
 
     public Map<String, String> getPaymentResponses() {
