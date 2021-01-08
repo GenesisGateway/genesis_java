@@ -24,10 +24,11 @@ package com.emerchantpay.gateway.api.interfaces.financial;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.CryptoWalletProviders;
 
 import java.util.HashMap;
 
-public interface CryptoAttributes  {
+public interface CryptoAttributes {
 
     default CryptoAttributes setCrypto(Boolean crypto) {
         getCryptoAttrParamsMap().put("crypto", String.valueOf(crypto));
@@ -39,8 +40,28 @@ public interface CryptoAttributes  {
         return getCryptoAttrParamsMap().get("crypto");
     }
 
+    default CryptoAttributes setCryptoAddress(String cryptoAddress) {
+        getCryptoAttrParamsMap().put("crypto_address", cryptoAddress);
+        getCryptoAttrRequestBuilder().addElement("crypto_address", cryptoAddress);
+        return this;
+    }
+
+    default String getCryptoAddress() {
+        return getCryptoAttrParamsMap().get("crypto_address");
+    }
+
+    default CryptoAttributes setCryptoWalletProvider(String cryptoWalletProvider) {
+        getCryptoAttrParamsMap().put("crypto_wallet_provider", CryptoWalletProviders.validate(cryptoWalletProvider));
+        getCryptoAttrRequestBuilder().addElement("crypto_wallet_provider", CryptoWalletProviders.validate(cryptoWalletProvider));
+        return this;
+    }
+
+    default String getCryptoWalletProvider() {
+        return getCryptoAttrParamsMap().get("crypto_wallet_provider");
+    }
+
     default RequestBuilder buildCryptoParams() {
-       return getCryptoAttrRequestBuilder();
+        return getCryptoAttrRequestBuilder();
     }
 
     RequestBuilder getCryptoAttrRequestBuilder();

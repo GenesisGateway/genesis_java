@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway.validation;
 
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -216,18 +217,42 @@ public class RegexValidatorUnitTest {
 
     // Virtual Payment Address(VPA)
     @Test
-    public void testVPAValidationSuccess() {
+    public void testVPAValidation_ShouldSuccess_WhenValidArguments() {
+        String param = "virtual_payment_address";
         String vpa = "someone@bank";
-        assertTrue(validator.isValidVirtualPaymentAddress(vpa));
+        boolean isRequiredTrue = true;
+        boolean isRequiredFalse = false;
+        assertTrue(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredTrue));
+        assertTrue(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredFalse));
     }
 
     @Test
-    public void testVPAValidationFailure() {
+    public void testVPAValidation_ShouldReturnTrueFalse_WhenValueInvalid() {
+        String param = "virtual_payment_address";
         String vpa = "johndoe.bank";
-        assertFalse(validator.isValidVirtualPaymentAddress(vpa));
+        boolean isRequiredTrue = true;
+        boolean isRequiredFalse = false;
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredTrue));
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredFalse));
 
         vpa = "";
-        assertFalse(validator.isValidVirtualPaymentAddress(vpa));
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredTrue));
+        assertTrue(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredFalse));
+    }
+
+    @Test(expected = InvalidParamException.class)
+    public void testVPAValidation_ShouldThrowException_WhenParamIsNotValid() {
+        String param = "";
+        String vpa = "johndoe.bank";
+        boolean isRequiredTrue = true;
+        boolean isRequiredFalse = false;
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredTrue));
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredFalse));
+
+        param = null;
+        vpa = "";
+        assertFalse(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredTrue));
+        assertTrue(validator.isValidVirtualPaymentAddress(param, vpa, isRequiredFalse));
     }
 
     //Neosurf voucher number
@@ -248,7 +273,7 @@ public class RegexValidatorUnitTest {
         voucherNumber = "ABCDE123456";
         assertFalse(validator.isValidNeosurfVoucherNumber(voucherNumber, "some_param_name"));
     }
-    
+
     //Car Rental extra charges
     @Test
     public void testCarExtraChargesValidationSuccess() {

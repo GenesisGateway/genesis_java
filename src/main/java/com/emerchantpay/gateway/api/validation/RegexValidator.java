@@ -1,5 +1,7 @@
 package com.emerchantpay.gateway.api.validation;
 
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,15 +196,20 @@ public class RegexValidator {
     }
 
     //Validate Virtual Payment Address
-    public Boolean isValidVirtualPaymentAddress(String virtualPaymentAddress) {
-        if (virtualPaymentAddress == null || virtualPaymentAddress.isEmpty()) {
-            invalidParamsList.add(RequiredParameters.virtualPaymentAddress);
+    public Boolean isValidVirtualPaymentAddress(String param, String virtualPaymentAddress, boolean isRequired) {
+        if (param == null || param.isEmpty()) {
+            throw new InvalidParamException("invalid param value");
+        } else if (isRequired && (virtualPaymentAddress == null || virtualPaymentAddress.isEmpty())) {
+            invalidParamsList.add(param);
             return false;
+        } else if (!isRequired && (virtualPaymentAddress == null || virtualPaymentAddress.isEmpty())) {
+            invalidParamsList.removeAll(Arrays.asList(param));
+            return true;
         } else if (VALID_VIRTUAL_PAYMENT_ADDRESS.matcher(virtualPaymentAddress).matches()) {
-            invalidParamsList.removeAll(Arrays.asList(RequiredParameters.virtualPaymentAddress));
+            invalidParamsList.removeAll(Arrays.asList(param));
             return true;
         } else {
-            invalidParamsList.add(RequiredParameters.virtualPaymentAddress);
+            invalidParamsList.add(param);
             return false;
         }
     }

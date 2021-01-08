@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UPIRequest extends Request implements  BaseAttributes, AsyncAttributes, PaymentAttributes, CustomerInfoAttributes, AddressAttributes {
+public class UPIRequest extends Request implements BaseAttributes, AsyncAttributes, PaymentAttributes, CustomerInfoAttributes, AddressAttributes {
 
     private String transactionType = TransactionTypes.UPI;
     private BigDecimal amount;
@@ -140,7 +140,7 @@ public class UPIRequest extends Request implements  BaseAttributes, AsyncAttribu
         // Validate request
         validator.isValidRequest(requiredParams);
 
-        if (!validator.isValidVirtualPaymentAddress(virtualPaymentAddress)) {
+        if (!validator.isValidVirtualPaymentAddress(RequiredParameters.virtualPaymentAddress, virtualPaymentAddress, true)) {
             ArrayList<String> invalidParams = new ArrayList<String>(validator.getInvalidParams());
             validator.clearInvalidParams();
             throw new RegexException(invalidParams);

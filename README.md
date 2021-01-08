@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.13.0</version>
+        <version>1.14.0</version>
 </dependency>
 ```
 
@@ -175,16 +175,18 @@ api.requests.financial.VoidRequest
 
 // Alternative Payment Methods transactions
 api.requests.financial.apm.CashURequest
+api.requests.financial.apm.crypto.BitPayPayoutRequest
+api.requests.financial.apm.crypto.BitPaySaleRequest
+api.requests.financial.apm.EarthportRequest
+api.requests.financial.apm.NeosurfRequest
 api.requests.financial.apm.P24Request
+api.requests.financial.apm.PayPalExpressRequest
 api.requests.financial.apm.PaySafeCardRequest
 api.requests.financial.apm.POLiRequest
 api.requests.financial.apm.PProRequest
 api.requests.financial.apm.SofortRequest
 api.requests.financial.apm.TrustlySaleRequest
 api.requests.financial.apm.TrustlyWithdrawalRequest
-api.requests.financial.apm.PayPalExpressRequest
-api.requests.financial.apm.EarthportRequest
-api.requests.financial.apm.NeosurfRequest
 api.requests.financial.card.TarjetaShoppingRequest
 
 // PayByVouchers transactions
@@ -194,6 +196,7 @@ api.requests.financial.pbv.PBVYeePayRequest
 // Credit Cards transactions
 api.requests.financial.card.AuthorizeRequest
 api.requests.financial.card.Authorize3DRequest
+api.requests.financial.card.BancontactRequest
 api.requests.financial.card.CreditRequest
 api.requests.financial.card.PayoutRequest
 api.requests.financial.card.SaleRequest
@@ -231,18 +234,21 @@ api.requests.financial.sdd.SDDRecurringSaleRequest
 //Online Banking Payments
 api.requests.financial.apm.CitadelPayInRequest
 api.requests.financial.apm.CitadelPayOutRequest
-api.requests.financial.oBeP.InstadebitPayInRequest
-api.requests.financial.oBeP.InstaDebitPayInRequest
+api.requests.financial.oBeP.AlipayRequest
+api.requests.financial.oBeP.IDealRequest
 api.requests.financial.oBeP.IDebitPayInRequest
 api.requests.financial.oBeP.IDebitPayOutRequest
-api.requests.financial.oBeP.AlipayRequest
-api.requests.financial.oBeP.WechatRequest
-api.requests.financial.oBeP.PaySecRequest
+api.requests.financial.oBeP.InstaDebitPayInRequest
+api.requests.financial.oBeP.MultibancoRequest
+api.requests.financial.oBeP.MyBankRequest
+api.requests.financial.oBeP.OnlineBankingRequest
 api.requests.financial.oBeP.PaySecPayoutRequest
-api.requests.financial.oBeP.RPNRequest
-api.requests.financial.oBeP.RPNPayoutRequest
-api.requests.financial.oBeP.UPIRequest
+api.requests.financial.oBeP.PaySecRequest
 api.requests.financial.oBeP.PayURequest
+api.requests.financial.oBeP.RPNPayoutRequest
+api.requests.financial.oBeP.RPNRequest
+api.requests.financial.oBeP.UPIRequest
+api.requests.financial.oBeP.WechatRequest
 
 // Electronic Wallets transactions
 api.requests.financial.wallets.eZeeWalletRequest

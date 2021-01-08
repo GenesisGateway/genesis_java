@@ -58,8 +58,9 @@ public class RequiredParameters {
     public static String bankAccountNumber = "bank_account_number";
     public static String bankName = "bank_name";
     public static String accountName = "account_name";
-
+    public static String bankCode = "bank_code";
     public static String paymentType = "payment_type";
+
     //Payment Token attributes
     public static String tokenVersion = "version";
     public static String tokenData = "data";
@@ -93,6 +94,7 @@ public class RequiredParameters {
 
     // Consumer API
     public static String consumerId = "consumer_id";
+    public static String documentId = "document_id";
     public static String email = "email";
 
     // FX Rates
@@ -133,6 +135,10 @@ public class RequiredParameters {
     public static String threedsTimestamp = "threeds_timestamp";
     public static String threedsUniqueId = "threeds_unique_id";
     public static String threedsMethodContinueUrl = "threeds_method_continue_url";
+
+    // crypto
+    public static String cryptoAddress = "crypto_address";
+    public static String cryptoWalletProvider = "crypto_wallet_provider";
 
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
