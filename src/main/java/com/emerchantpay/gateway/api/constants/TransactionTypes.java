@@ -26,147 +26,153 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TransactionTypes {
-	
-	// Account Verification
-	public static String ACCOUNT_VERIFICATION = "account_verification";
 
-	// Standard Authorization
-	public static String AUTHORIZE = "authorize";
+    // Account Verification
+    public static String ACCOUNT_VERIFICATION = "account_verification";
 
-	// 3D-Secure Authorization
-	public static String AUTHORIZE_3D = "authorize3d";
+    // Standard Authorization
+    public static String AUTHORIZE = "authorize";
 
-	// Standard Sale
-	public static String SALE = "sale";
+    // 3D-Secure Authorization
+    public static String AUTHORIZE_3D = "authorize3d";
 
-	// 3D-Secure Sale
-	public static String SALE_3D = "sale3d";
+    // Standard Sale
+    public static String SALE = "sale";
 
-	// Capture settles a transaction which has been authorized before
-	public static String CAPTURE = "capture";
+    // 3D-Secure Sale
+    public static String SALE_3D = "sale3d";
 
-	// Refunds allow to return already billed amounts to customers
-	public static String REFUND = "refund";
+    // Capture settles a transaction which has been authorized before
+    public static String CAPTURE = "capture";
 
-	// Void transactions undo previous transactions
-	public static String VOID = "void";
+    // Refunds allow to return already billed amounts to customers
+    public static String REFUND = "refund";
 
-	// Credits (also known as Credit Fund Transfer a.k.a. CFT)
-	public static String CREDIT = "credit";
+    // Void transactions undo previous transactions
+    public static String VOID = "void";
 
-	// Payouts transactions
-	public static String PAYOUT = "payout";
+    // Credits (also known as Credit Fund Transfer a.k.a. CFT)
+    public static String CREDIT = "credit";
 
-	// Standard initial recurring
-	public static String INIT_RECURRING_SALE = "init_recurring_sale";
+    // Payouts transactions
+    public static String PAYOUT = "payout";
 
-	// 3D-based initial recurring
-	public static String INIT_RECURRING_SALE_3D = "init_recurring_sale3d";
+    // Standard initial recurring
+    public static String INIT_RECURRING_SALE = "init_recurring_sale";
 
-	// RecurringSale transaction is a "repeated" transaction which follows and
-	// references an initial transaction
-	public static String RECURRING_SALE = "recurring_sale";
+    // 3D-based initial recurring
+    public static String INIT_RECURRING_SALE_3D = "init_recurring_sale3d";
 
-	// Bank transfer, popular in Netherlands (via ABN)
-	public static String ABNIDEAL = "abn_ideal";
+    // RecurringSale transaction is a "repeated" transaction which follows and
+    // references an initial transaction
+    public static String RECURRING_SALE = "recurring_sale";
 
-	// Voucher-based payment
-	public static String CASHU = "cashu";
+    // Bank transfer, popular in Netherlands (via ABN)
+    public static String ABNIDEAL = "abn_ideal";
 
-	// Wallet-based payment
-	public static String EZEEWALLET = "ezeewallet";
+    // APM used to process Mobile network operator payments (African Mobile Payout, otherwise known as Disbursement)
+    public static String AFRICAN_MOBILE_PAYOUT = "african_mobile_payout";
 
-	// Neteller
-	public static String NETELLER = "neteller";
+    // APM used to process Mobile network operator payments
+    public static String AFRICAN_MOBILE_SALE = "african_mobile_sale";
 
-	// POLi is Australia's most popular online real time debit payment system
-	public static String POLI = "poli";
+    // Voucher-based payment
+    public static String CASHU = "cashu";
 
-	// WebMoney is a global settlement system and environment for online
-	// business activities
-	public static String WEBMONEY = "webmoney";
+    // Wallet-based payment
+    public static String EZEEWALLET = "ezeewallet";
 
-	// PayByVouchers via oBeP
-	public static String PAYBYVOUCHER_YEEPAY = "paybyvoucher_yeepay";
+    // Neteller
+    public static String NETELLER = "neteller";
 
-	// PayByVouchers via Credit/Debit Cards
-	public static String PAYBYVOUCHER_SALE = "paybyvoucher_sale";
+    // POLi is Australia's most popular online real time debit payment system
+    public static String POLI = "poli";
 
-	// Voucher-based payment
-	public static String PAYSAFECARD = "paysafecard";
+    // WebMoney is a global settlement system and environment for online
+    // business activities
+    public static String WEBMONEY = "webmoney";
 
-	// Supports payments via EPS, TeleIngreso, SafetyPay, TrustPay, ELV,
-	// Przelewy24, QIWI, and GiroPay
-	public static String PPRO = "ppro";
+    // PayByVouchers via oBeP
+    public static String PAYBYVOUCHER_YEEPAY = "paybyvoucher_yeepay";
 
-	// Bank transfer payment, popular in Germany
-	public static String SOFORT = "sofort";
+    // PayByVouchers via Credit/Debit Cards
+    public static String PAYBYVOUCHER_SALE = "paybyvoucher_sale";
 
-	public static String INPAY = "inpay";
+    // Voucher-based payment
+    public static String PAYSAFECARD = "paysafecard";
 
-	public static String P24 = "P24";
+    // Supports payments via EPS, TeleIngreso, SafetyPay, TrustPay, ELV,
+    // Przelewy24, QIWI, and GiroPay
+    public static String PPRO = "ppro";
 
-	// Sepa Direct Debit
-	public static String SDD_SALE = "sdd_sale";
-	public static String SDD_INIT_RECURRING_SALE = "sdd_init_recurring_sale";
-	public static String SDD_RECURRING_SALE = "sdd_recurring_sale";
-	public static String SDD_REFUND = "sdd_refund";
-	public static String SCT_PAYOUT = "sct_payout";
+    // Bank transfer payment, popular in Germany
+    public static String SOFORT = "sofort";
 
-	//IDebit
-	public static String IDEBIT_PAYIN = "idebit_payin";
-	public static String IDEBIT_PAYOUT = "idebit_payout";
+    public static String INPAY = "inpay";
 
-	//InstaDebit
-	public static String INSTADEBIT_PAYIN = "insta_debit_payin";
-	public static String INSTADEBIT_PAYOUT = "insta_debit_payout";
-  
-	//Citadel
-	public static String CITADEL_PAYIN = "citadel_payin";
-	public static String CITADEL_PAYOUT = "citadel_payout";
+    public static String P24 = "P24";
 
-	// PayPal Express Checkout
-	public static String PAYPAL_EXPRESS_CHECKOUT = "paypal_express";
+    // Sepa Direct Debit
+    public static String SDD_SALE = "sdd_sale";
+    public static String SDD_INIT_RECURRING_SALE = "sdd_init_recurring_sale";
+    public static String SDD_RECURRING_SALE = "sdd_recurring_sale";
+    public static String SDD_REFUND = "sdd_refund";
+    public static String SCT_PAYOUT = "sct_payout";
 
-	// Trustly
-	public static String TRUSTLY_SALE = "trustly_sale";
-	public static String TRUSTLY_WITHDRAWAL = "trustly_withdrawal";
+    //IDebit
+    public static String IDEBIT_PAYIN = "idebit_payin";
+    public static String IDEBIT_PAYOUT = "idebit_payout";
 
-	// Earthport
-	public static String EARTHPORT = "earthport";
+    //InstaDebit
+    public static String INSTADEBIT_PAYIN = "insta_debit_payin";
+    public static String INSTADEBIT_PAYOUT = "insta_debit_payout";
 
-	// Alipay
-	public static String ALIPAY = "alipay";
+    //Citadel
+    public static String CITADEL_PAYIN = "citadel_payin";
+    public static String CITADEL_PAYOUT = "citadel_payout";
 
-	// Wechat
-	public static String WECHAT = "wechat";
+    // PayPal Express Checkout
+    public static String PAYPAL_EXPRESS_CHECKOUT = "paypal_express";
 
-	// PaySec
-	public static String PAYSEC = "paysec";
+    // Trustly
+    public static String TRUSTLY_SALE = "trustly_sale";
+    public static String TRUSTLY_WITHDRAWAL = "trustly_withdrawal";
 
-	// PaySec Payout
-	public static String PAYSEC_PAYOUT = "paysec_payout";
+    // Earthport
+    public static String EARTHPORT = "earthport";
 
-	// RPN
-	public static String RPN = "rpn_payment";
+    // Alipay
+    public static String ALIPAY = "alipay";
 
-	// RPN Payout
-	public static String RPN_PAYOUT = "rpn_payout";
+    // Wechat
+    public static String WECHAT = "wechat";
 
-	// Gift Cards
-	public static String FASHIONCHEQUE = "fashioncheque";
-	public static String INTERSOLVE = "intersolve";
-	public static String TCS = "container_store";
+    // PaySec
+    public static String PAYSEC = "paysec";
 
-	// Klarna
-	public static String KLARNA_AUTHORIZE = "klarna_authorize";
-	public static String KLARNA_CAPTURE = "klarna_capture";
-	public static String KLARNA_REFUND = "klarna refund";
+    // PaySec Payout
+    public static String PAYSEC_PAYOUT = "paysec_payout";
+
+    // RPN
+    public static String RPN = "rpn_payment";
+
+    // RPN Payout
+    public static String RPN_PAYOUT = "rpn_payout";
+
+    // Gift Cards
+    public static String FASHIONCHEQUE = "fashioncheque";
+    public static String INTERSOLVE = "intersolve";
+    public static String TCS = "container_store";
+
+    // Klarna
+    public static String KLARNA_AUTHORIZE = "klarna_authorize";
+    public static String KLARNA_CAPTURE = "klarna_capture";
+    public static String KLARNA_REFUND = "klarna refund";
 
     //Apple Pay
     public static String APPLE_PAY = "apple_pay";
 
-	  //UPI (Unified Payment Interface)
+    //UPI (Unified Payment Interface)
     public static String UPI = "upi";
 
     //PayU
@@ -185,7 +191,7 @@ public class TransactionTypes {
     public static String RAPI_PAGO = "rapi_pago";
     public static String SANTANDER = "santander";
     public static String WEBPAY = "webpay";
-    
+
     //South American Payments
     public static String TARJETA_SHOPPING = "tarjeta_shopping";
     public static String ARGENCARD = "argencard";
@@ -210,7 +216,6 @@ public class TransactionTypes {
     public static String BITPAY_PAYOUT = "bitpay_payout";
     public static String BITPAY_SALE = "bitpay_sale";
     public static String IDEAL = "ideal";
-    public static String INSTANT_TRANSFER = "instant_transfer";
     public static String MULTIBANCO = "multibanco";
     public static String MY_BANK = "my_bank";
     public static String ONLINE_BANKING = "online_banking";
@@ -250,7 +255,6 @@ public class TransactionTypes {
                 INIT_RECURRING_SALE_3D,
                 INPAY,
                 INSTADEBIT_PAYIN,
-                INSTANT_TRANSFER,
                 INTERSOLVE,
                 ITAU,
                 KLARNA_AUTHORIZE,

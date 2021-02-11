@@ -1,11 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.card.recurring;
 
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -18,6 +12,11 @@ import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Att
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -108,7 +107,7 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 
     @Override
     public HashMap<String, RequestBuilder> getThreedsV2RequestBuildersMap() {
-        if(threedsV2RequestBuildersMap == null){
+        if (threedsV2RequestBuildersMap == null) {
             threedsV2RequestBuildersMap = new HashMap<String, RequestBuilder>();
         }
         return threedsV2RequestBuildersMap;
@@ -116,7 +115,7 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
 
     @Override
     public HashMap<String, HashMap<String, String>> getThreedsV2AttrParamsMap() {
-        if(threedsV2AttrParamsMap == null){
+        if (threedsV2AttrParamsMap == null) {
             threedsV2AttrParamsMap = new HashMap<String, HashMap<String, String>>();
         }
         return threedsV2AttrParamsMap;
@@ -133,7 +132,6 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
         requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
         requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
         requiredParams.putAll(getMpiConditionalRequiredFields());
-        requiredParams.putAll(getScaConditionalRequiredFields());
 
         // Validate request
         validator.isValidRequest(requiredParams);

@@ -140,7 +140,6 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
         requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
         requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
         requiredParams.putAll(getMpiConditionalRequiredFields());
-        requiredParams.putAll(getScaConditionalRequiredFields());
 
         // Validate request
         validator.isValidRequest(requiredParams);

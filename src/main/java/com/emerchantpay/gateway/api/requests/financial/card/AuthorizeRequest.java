@@ -1,10 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -12,13 +7,15 @@ import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.CryptoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,7 +41,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes,
+        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes,
         CryptoAttributes, TravelDataAttributes {
 
     // Request Builder
@@ -128,6 +125,7 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement("shipping_address", buildShippingAddress().toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
+                .addElement("sca_params", buildScaParams().toXML())
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML());

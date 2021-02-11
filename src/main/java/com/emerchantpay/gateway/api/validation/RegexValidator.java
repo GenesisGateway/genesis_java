@@ -253,6 +253,17 @@ public class RegexValidator {
         }
     }
 
+    // Validate string size
+    public Boolean isValidStringSize(String string, int sizeLimit, String paramName) {
+        if (string != null && !string.isEmpty() && string.length() <= sizeLimit) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
     public void clearInvalidParams() {
         invalidParamsList.clear();
     }

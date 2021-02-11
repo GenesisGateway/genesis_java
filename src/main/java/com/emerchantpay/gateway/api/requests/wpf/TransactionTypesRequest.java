@@ -83,7 +83,7 @@ public class TransactionTypesRequest extends Request {
         if (TransactionTypes.getWPFTransactionTypes().contains(transactionType)) {
             return true;
         } else {
-            throw new TransactionTypeException("Invalid transaction type");
+            throw new TransactionTypeException("Invalid transaction type for WPF request [" + transactionType + "]");
         }
     }
 

@@ -140,6 +140,10 @@ public class RequiredParameters {
     public static String cryptoAddress = "crypto_address";
     public static String cryptoWalletProvider = "crypto_wallet_provider";
 
+    // Mobile
+    public static String operator = "operator";
+    public static String target = "target";
+
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();
 

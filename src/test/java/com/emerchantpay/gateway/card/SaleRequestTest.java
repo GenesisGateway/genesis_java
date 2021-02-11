@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
-public class SaleTest {
+public class SaleRequestTest {
 
     private String uniqueId;
 

@@ -311,5 +311,19 @@ public class RegexValidatorUnitTest {
         hotelExtraCharges = "234567777";
         assertFalse(validator.isValidHotelExtraCharge(hotelExtraCharges, "some_param_name"));
     }
+
+    @Test
+    public void testStringSize_ShouldReturnTrue_WhenValidArguments() {
+        String operator = "MOVITEL";
+        assertTrue(validator.isValidStringSize(operator, 7, "operator"));
+        assertTrue(validator.isValidStringSize(operator, 8, "operator"));
+    }
+
+    @Test
+    public void testStringSize_ShouldReturnFalse_WhenSizeIsNotValid() {
+        String operator = "MOVITEL";
+        assertFalse(validator.isValidStringSize(operator, 6, "operator"));
+    }
+
 }
 

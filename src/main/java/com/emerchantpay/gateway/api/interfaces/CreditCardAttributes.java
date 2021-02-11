@@ -1,5 +1,10 @@
 package com.emerchantpay.gateway.api.interfaces;
 
+import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+
+import java.util.HashMap;
+
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +26,6 @@ package com.emerchantpay.gateway.api.interfaces;
  *
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
-
-import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.validation.GenesisValidator;
-
-import java.util.HashMap;
 
 public interface CreditCardAttributes {
 

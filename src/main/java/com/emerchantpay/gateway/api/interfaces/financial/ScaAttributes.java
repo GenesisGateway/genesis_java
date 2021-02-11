@@ -2,9 +2,11 @@ package com.emerchantpay.gateway.api.interfaces.financial;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ScaExemptions;
-import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,19 +46,17 @@ public interface ScaAttributes {
         return this;
     }
 
-    default RequestBuilder buildScaParams() {
-        return getScaAttrRequestBuilder();
+    default String getScaExemption() {
+        return getScaAttrParamsMap().get("exemption");
     }
 
-    default HashMap<String, String> getScaConditionalRequiredFields() {
-        if (getScaAttrParamsMap().get("exemption") == ScaExemptions.EXEMPTION_TRUSTED_MERCHANT) {
-            return new HashMap<String, String>() {
-                {
-                    put(RequiredParameters.scaVisaMerchantId, getScaAttrParamsMap().get("visa_merchant_id"));
-                }
-            };
+    default RequestBuilder buildScaParams() {
+        List<String> allowedExemptions = Arrays.asList(ScaExemptions.getAll());
+        String exemption = getScaExemption();
+        if (exemption != null && !exemption.isEmpty() && !allowedExemptions.contains(exemption)) {
+            throw new InvalidParamException("exemption", exemption, allowedExemptions);
         } else {
-            return new HashMap<>();
+            return getScaAttrRequestBuilder();
         }
     }
 

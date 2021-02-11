@@ -39,10 +39,6 @@ public class PaymentMethods {
 	// PPRO transaction
 	public static String PRZELEWY24 = "przelewy24";
 
-	// QIWI
-	// PPRO transaction
-	public static String QIWI = "qiwi";
-
 	// SafetyPay
 	// PPRO transaction
 	public static String SAFETY_PAY = "safetypay";

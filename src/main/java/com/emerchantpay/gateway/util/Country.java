@@ -98,7 +98,7 @@ public class Country {
 	public static Country Gambia = new Country("GM", "Gambia");
 	public static Country Georgia = new Country("GE", "Georgia");
 	public static Country Germany = new Country("DE", "Germany");
-	public static Country Ghana = new Country("GH", "Gabon");
+	public static Country Ghana = new Country("GH", "Ghana");
 	public static Country Gibraltar = new Country("GI", "Gibraltar");
 	public static Country Greece = new Country("GR", "Greece");
 	public static Country Greenland = new Country("GL", "Greenland");

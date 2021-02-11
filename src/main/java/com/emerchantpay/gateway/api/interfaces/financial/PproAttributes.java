@@ -65,7 +65,7 @@ public interface PproAttributes {
     }
 
     default RequestBuilder buildPproParams() {
-        ArrayList<String> invalidParams = new ArrayList<String>(getValidator().getInvalidParams());
+        ArrayList<String> invalidParams = new ArrayList<>(getValidator().getInvalidParams());
         if (invalidParams.isEmpty()) {
             return getPproAttrRequestBuilder();
         } else {
