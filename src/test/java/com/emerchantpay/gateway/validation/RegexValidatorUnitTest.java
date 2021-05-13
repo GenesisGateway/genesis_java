@@ -6,9 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.regex.Matcher;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RegexValidatorUnitTest {
 
@@ -46,6 +46,10 @@ public class RegexValidatorUnitTest {
 
         amount = new BigDecimal("0.99");
         assertTrue(validator.isValidAmount(amount));
+
+        //Verify zero amount support
+        amount = new BigDecimal("0.00");
+        assertTrue(validator.isValidAmount(amount, true));
     }
 
     @Test
@@ -215,6 +219,29 @@ public class RegexValidatorUnitTest {
         assertFalse(validator.isValidDate(dateStr, "some_date_param"));
     }
 
+    // Date in format MMDD. Leading zeros required
+    @Test
+    public void test_isValidMonthDate_ShouldReturnTrue_WhenValidArguments() {
+        String dateStr = "0207";
+        assertTrue(validator.isValidMonthDate(dateStr, "some_date_param"));
+    }
+
+    // Date in format MMDD. Leading zeros required
+    @Test
+    public void test_isValidMonthDate_ShouldReturnFalse_WhenInValidDate() {
+        String dateStr = "1307";
+        assertFalse(validator.isValidMonthDate(dateStr, "some_date_param"));
+
+        dateStr = "0233";
+        assertFalse(validator.isValidMonthDate(dateStr, "some_date_param"));
+
+        dateStr = "023";
+        assertFalse(validator.isValidMonthDate(dateStr, "some_date_param"));
+
+        dateStr = "02335";
+        assertFalse(validator.isValidMonthDate(dateStr, "some_date_param"));
+    }
+
     // Virtual Payment Address(VPA)
     @Test
     public void testVPAValidation_ShouldSuccess_WhenValidArguments() {
@@ -326,4 +353,3 @@ public class RegexValidatorUnitTest {
     }
 
 }
-

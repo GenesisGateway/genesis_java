@@ -220,6 +220,10 @@ public class TransactionTypes {
     public static String MY_BANK = "my_bank";
     public static String ONLINE_BANKING = "online_banking";
 
+    //Preauthorizations
+    public static String INCREMENTAL_AUTHORIZE = "incremental_authorize";
+    public static String PARTIAL_REVERSAL = "partial_reversal";
+
     public static ArrayList<String> getWPFTransactionTypes() {
         ArrayList<String> transactionTypes = new ArrayList<String>();
 
@@ -268,7 +272,6 @@ public class TransactionTypes {
                 OXXO,
                 P24,
                 PAGO_FACIL,
-                PAYBYVOUCHER_SALE,
                 PAYBYVOUCHER_YEEPAY,
                 PAYPAL_EXPRESS_CHECKOUT,
                 PAYSAFECARD,
@@ -289,7 +292,6 @@ public class TransactionTypes {
                 TARJETA_SHOPPING,
                 TCS,
                 TRUSTLY_SALE,
-                TRUSTLY_WITHDRAWAL,
                 UPI,
                 WEBMONEY,
                 WEBPAY,

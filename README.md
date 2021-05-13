@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.15.0</version>
+        <version>1.16.0</version>
 </dependency>
 ```
 
@@ -186,11 +186,9 @@ api.requests.financial.apm.POLiRequest
 api.requests.financial.apm.PProRequest
 api.requests.financial.apm.SofortRequest
 api.requests.financial.apm.TrustlySaleRequest
-api.requests.financial.apm.TrustlyWithdrawalRequest
 api.requests.financial.card.TarjetaShoppingRequest
 
 // PayByVouchers transactions
-api.requests.financial.pbv.PBVSaleRequest
 api.requests.financial.pbv.PBVYeePayRequest
 
 // Credit Cards transactions
@@ -303,6 +301,9 @@ api.requests.financial.oBeP.southamerican.RapiPagoRequest
 api.requests.financial.oBeP.southamerican.SantanderRequest
 api.requests.financial.oBeP.southamerican.WebpayRequest
 
+//Preauthorizations requests
+api.requests.financial.preauthorization.IncrementalAuthorizeRequest
+api.requests.financial.preauthorization.PartialReversalRequest
 
 // Consumer API
 api.requests.nonfinancial.consumer.CreateConsumerRequest

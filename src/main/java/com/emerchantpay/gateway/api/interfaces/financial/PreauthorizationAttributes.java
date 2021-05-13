@@ -24,50 +24,33 @@ package com.emerchantpay.gateway.api.interfaces.financial;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.exceptions.RegexException;
-import com.emerchantpay.gateway.api.validation.GenesisValidator;
-import com.emerchantpay.gateway.util.Currency;
 
-import java.math.BigDecimal;
+import java.util.HashMap;
 
-public interface PaymentAttributes {
+public interface PreauthorizationAttributes {
 
-    // Payment Params
-    PaymentAttributes setAmount(BigDecimal amount);
+    String preauthorizationParamName = "preauthorization";
 
-    BigDecimal getAmount();
-
-    PaymentAttributes setCurrency(String currency);
-
-    String getCurrency();
-
-    default Boolean getZeroAmountSupport(){
-        return false;
+    default PreauthorizationAttributes setPreauthorization(Boolean preauthorization) {
+        getPreauthAttrParamsMap().put(preauthorizationParamName, String.valueOf(preauthorization));
+        getPreauthAttrRequestBuilder().addElement(preauthorizationParamName, preauthorization);
+        return this;
     }
 
-    default RequestBuilder buildPaymentParams() {
-
-        BigDecimal convertedAmount = null;
-
-        if (getAmount() != null && getCurrency() != null) {
-
-            Currency curr = new Currency();
-
-            curr.setAmountToExponent(getAmount(), getCurrency());
-            convertedAmount = curr.getAmount();
+    default Boolean getPreauthorization() {
+        String preauthorizationStr = getPreauthAttrParamsMap().get(preauthorizationParamName);
+        if(preauthorizationStr != null){
+            return Boolean.parseBoolean(preauthorizationStr);
+        } else{
+            return false;
         }
-        
-        if (getValidator().isValidAmount(convertedAmount, getZeroAmountSupport())) {
-            getPaymentAttrRequestBuilder().addElement("amount", convertedAmount)
-                    .addElement("currency", getCurrency());
-        } else {
-            throw new RegexException(getValidator().getInvalidParams());
-        }
-
-        return getPaymentAttrRequestBuilder();
     }
 
-    RequestBuilder getPaymentAttrRequestBuilder();
+    default RequestBuilder buildPreauthorizationParams() {
+        return getPreauthAttrRequestBuilder();
+    }
 
-    GenesisValidator getValidator();
+    RequestBuilder getPreauthAttrRequestBuilder();
+
+    HashMap<String, String> getPreauthAttrParamsMap();
 }

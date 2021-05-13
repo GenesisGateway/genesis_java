@@ -1,17 +1,13 @@
 package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.exceptions.DeprecatedMethodException;
+import com.emerchantpay.gateway.api.constants.DeprecatedTransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.LimitsException;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,7 +71,7 @@ public class GenesisClient extends Request {
 
         super();
         checkRequestsCount(requestWithConfigurationMap.size());
-        for(Request request : requestWithConfigurationMap.keySet()){
+        for (Request request : requestWithConfigurationMap.keySet()) {
             this.configurationMap.put(request.getTransactionId(), requestWithConfigurationMap.get(request));
             this.requestList.add(request);
         }
@@ -95,11 +91,11 @@ public class GenesisClient extends Request {
     }
 
     public GenesisClient debugMode(Boolean enabled) {
-        if(configuration != null){
+        if (configuration != null) {
             configuration.setDebugMode(enabled);
         }
 
-        for(String transactionId : configurationMap.keySet()){
+        for (String transactionId : configurationMap.keySet()) {
             configurationMap.get(transactionId).setDebugMode(enabled);
         }
         return this;
@@ -141,20 +137,20 @@ public class GenesisClient extends Request {
     }
 
     public Request execute() {
-        if(asyncExecute){
+        if (asyncExecute) {
             executeAsync();
-        }else{
-            for(Request request : requestList){
+        } else {
+            for (Request request : requestList) {
                 execute(request, getConfiguration(request.getTransactionId()));
             }
         }
         return this;
     }
 
-    private void executeAsync(){
+    private void executeAsync() {
 
         ArrayList<CompletableFuture> requestFutures = new ArrayList<CompletableFuture>();
-        for(int requestIndex = 0; requestIndex < requestList.size(); requestIndex++){
+        for (int requestIndex = 0; requestIndex < requestList.size(); requestIndex++) {
             Request request = requestList.get(requestIndex);
             //Clone configuration for each request so asynchronous execution doesn't throw errors
             Configuration requestConfig = getConfiguration(request.getTransactionId()).clone();
@@ -164,8 +160,8 @@ public class GenesisClient extends Request {
             });
             requestFutures.add(futureRequest);
             //Execute CompletableFutures at the end of each chunk or end of the array
-            if(((requestIndex + 1)%asyncRequestsChunkSize == 0) ||
-                    requestIndex == requestList.size() - 1){
+            if (((requestIndex + 1) % asyncRequestsChunkSize == 0) ||
+                    requestIndex == requestList.size() - 1) {
                 // Create a combined Future and wait until all are completed
                 CompletableFuture.allOf(requestFutures.toArray(new CompletableFuture[requestFutures.size()]))
                         .join();
@@ -238,18 +234,14 @@ public class GenesisClient extends Request {
                 configuration.setTokenEnabled(false);
                 configuration.setAction("retrieval_requests/by_date");
                 break;
-            case "avs":
-                throw new DeprecatedMethodException("AVS");
-            case "abn_ideal":
-                throw  new DeprecatedMethodException("ABNiDEAL");
-            case "inpay":
-                throw new DeprecatedMethodException("InPay");
             default:
                 configuration.setWpfEnabled(false);
                 configuration.setTokenEnabled(true);
                 configuration.setAction("process");
                 break;
         }
+
+        DeprecatedTransactionTypes.validate(request.getTransactionType());
 
         if (request.isConsumer()) {
             configuration.setWpfEnabled(false);
@@ -265,9 +257,9 @@ public class GenesisClient extends Request {
     public NodeWrapper getResponse() {
         //Return first element. Map isn't ordered but it's for compatibility when working with single request.
         Iterator<NodeWrapper> iterator = responseMap.values().iterator();
-        if(iterator.hasNext()){
+        if (iterator.hasNext()) {
             return iterator.next();
-        } else{
+        } else {
             return null;
         }
     }
@@ -276,12 +268,12 @@ public class GenesisClient extends Request {
         return responseMap.get(transactionId);
     }
 
-    private Configuration getConfiguration(){
+    private Configuration getConfiguration() {
         Iterator<Configuration> iterator = configurationMap.values().iterator();
 
-        if(configuration != null){
+        if (configuration != null) {
             return configuration;
-        } else if(iterator.hasNext()){
+        } else if (iterator.hasNext()) {
             //Return first element. Map isn't ordered but it's for compatibility when working with single request.
             return iterator.next();
         } else {
@@ -289,15 +281,15 @@ public class GenesisClient extends Request {
         }
     }
 
-    private Configuration getConfiguration(String transactionId){
-        if(configurationMap.containsKey(transactionId)){
+    private Configuration getConfiguration(String transactionId) {
+        if (configurationMap.containsKey(transactionId)) {
             return configurationMap.get(transactionId);
-        } else{
+        } else {
             return configuration;
         }
     }
 
-    private void checkRequestsCount(int requestsCount){
+    private void checkRequestsCount(int requestsCount) {
         if (requestsCount > maxRequestNumber) {
             throw new LimitsException("Maximum requests number reached. Limit is: "
                     + maxRequestNumber);

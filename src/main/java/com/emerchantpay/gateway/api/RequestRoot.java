@@ -22,13 +22,13 @@ package com.emerchantpay.gateway.api;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.emerchantpay.gateway.api.requests.financial.traveldata.AirlineItineraryLegRequest;
 import com.emerchantpay.gateway.api.requests.financial.traveldata.AirlineItineraryTaxRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class RequestRoot {
 
@@ -108,211 +108,223 @@ public abstract class RequestRoot {
     private List<AirlineItineraryTaxRequest> airlineItineraryTaxes;
     private List<AirlineItineraryLegRequest> airlineItineraryLegs;
 
-    public GenesisValidator getValidator(){
-        if( validator == null){
+    // Credential On File Attributes
+    private RequestBuilder credentialOnFileAttrRequestBuilder;
+    private HashMap<String, String> credentialOnFileAttrParamsMap;
+
+    // Ucof Attributes
+    private RequestBuilder ucofAttrRequestBuilder;
+    private HashMap<String, String> ucofAttrParamsMap;
+
+    //Preauthorization Attributes
+    private RequestBuilder preauthAttrRequestBuilder;
+    private HashMap<String, String> preauthAttrParamsMap;
+
+    public GenesisValidator getValidator() {
+        if (validator == null) {
             validator = new GenesisValidator();
         }
         return validator;
     }
 
-    public RequestBuilder getBaseAttrRequestBuilder(){
-        if(baseAttrRequestBuilder == null){
+    public RequestBuilder getBaseAttrRequestBuilder() {
+        if (baseAttrRequestBuilder == null) {
             baseAttrRequestBuilder = new RequestBuilder("");
         }
         return baseAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getBaseAttrParamsMap(){
-        if(baseAttrParamsMap == null){
+    public HashMap<String, String> getBaseAttrParamsMap() {
+        if (baseAttrParamsMap == null) {
             baseAttrParamsMap = new HashMap<String, String>();
         }
         return baseAttrParamsMap;
     }
 
-    public RequestBuilder getBillAddrAttrRequestBuilder(){
-        if(billAddrAttrRequestBuilder == null){
+    public RequestBuilder getBillAddrAttrRequestBuilder() {
+        if (billAddrAttrRequestBuilder == null) {
             billAddrAttrRequestBuilder = new RequestBuilder("");
         }
         return billAddrAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getBillAddrAttrParamsMap(){
-        if(billAddrAttrParamsMap == null){
+    public HashMap<String, String> getBillAddrAttrParamsMap() {
+        if (billAddrAttrParamsMap == null) {
             billAddrAttrParamsMap = new HashMap<String, String>();
         }
         return billAddrAttrParamsMap;
     }
 
-    public RequestBuilder getShipAddrAttrRequestBuilder(){
-        if(shipAddrAttrRequestBuilder == null){
+    public RequestBuilder getShipAddrAttrRequestBuilder() {
+        if (shipAddrAttrRequestBuilder == null) {
             shipAddrAttrRequestBuilder = new RequestBuilder("");
         }
         return shipAddrAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getShipAddrAttrParamsMap(){
-        if(shipAddrAttrParamsMap == null){
+    public HashMap<String, String> getShipAddrAttrParamsMap() {
+        if (shipAddrAttrParamsMap == null) {
             shipAddrAttrParamsMap = new HashMap<String, String>();
         }
         return shipAddrAttrParamsMap;
     }
 
-    public RequestBuilder getCustomerInfoAttrRequestBuilder(){
-        if(customerInfoAttrRequestBuilder == null){
+    public RequestBuilder getCustomerInfoAttrRequestBuilder() {
+        if (customerInfoAttrRequestBuilder == null) {
             customerInfoAttrRequestBuilder = new RequestBuilder("");
         }
         return customerInfoAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getCustomerInfoAttrParamsMap(){
-        if(customerInfoAttrParamsMap == null){
+    public HashMap<String, String> getCustomerInfoAttrParamsMap() {
+        if (customerInfoAttrParamsMap == null) {
             customerInfoAttrParamsMap = new HashMap<String, String>();
         }
         return customerInfoAttrParamsMap;
     }
 
-    public RequestBuilder getPaymentAttrRequestBuilder(){
-        if(paymentAttrRequestBuilder == null){
+    public RequestBuilder getPaymentAttrRequestBuilder() {
+        if (paymentAttrRequestBuilder == null) {
             paymentAttrRequestBuilder = new RequestBuilder("");
         }
         return paymentAttrRequestBuilder;
     }
 
-    public RequestBuilder getDescriptorAttrRequestBuilder(){
-        if(descriptorAttrRequestBuilder == null){
+    public RequestBuilder getDescriptorAttrRequestBuilder() {
+        if (descriptorAttrRequestBuilder == null) {
             descriptorAttrRequestBuilder = new RequestBuilder("");
         }
         return descriptorAttrRequestBuilder;
     }
 
-    public RequestBuilder getNotificationAttrRequestBuilder(){
-        if(notificationAttrRequestBuilder == null){
+    public RequestBuilder getNotificationAttrRequestBuilder() {
+        if (notificationAttrRequestBuilder == null) {
             notificationAttrRequestBuilder = new RequestBuilder("");
         }
         return notificationAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getNotificationAttrParamsMap(){
-        if(notificationAttrParamsMap == null){
+    public HashMap<String, String> getNotificationAttrParamsMap() {
+        if (notificationAttrParamsMap == null) {
             notificationAttrParamsMap = new HashMap<String, String>();
         }
         return notificationAttrParamsMap;
     }
 
-    public RequestBuilder getAsyncAttrRequestBuilder(){
-        if(asyncAttrRequestBuilder == null){
+    public RequestBuilder getAsyncAttrRequestBuilder() {
+        if (asyncAttrRequestBuilder == null) {
             asyncAttrRequestBuilder = new RequestBuilder("");
         }
         return asyncAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getAsyncAttrParamsMap(){
-        if(asyncAttrParamsMap == null){
+    public HashMap<String, String> getAsyncAttrParamsMap() {
+        if (asyncAttrParamsMap == null) {
             asyncAttrParamsMap = new HashMap<String, String>();
         }
         return asyncAttrParamsMap;
     }
 
-    public RequestBuilder getRiskParamsAttrRequestBuilder(){
-        if(riskParamsAttrRequestBuilder == null){
+    public RequestBuilder getRiskParamsAttrRequestBuilder() {
+        if (riskParamsAttrRequestBuilder == null) {
             riskParamsAttrRequestBuilder = new RequestBuilder("");
         }
         return riskParamsAttrRequestBuilder;
     }
 
-    public RequestBuilder getMpiAttrRequest3DSv1Builder(){
-        if(mpiAttrRequest3DSv1Builder == null){
+    public RequestBuilder getMpiAttrRequest3DSv1Builder() {
+        if (mpiAttrRequest3DSv1Builder == null) {
             mpiAttrRequest3DSv1Builder = new RequestBuilder("");
         }
         return mpiAttrRequest3DSv1Builder;
     }
 
-    public RequestBuilder getMpiAttrRequest3DSv2Builder(){
-        if(mpiAttrRequest3DSv2Builder == null){
+    public RequestBuilder getMpiAttrRequest3DSv2Builder() {
+        if (mpiAttrRequest3DSv2Builder == null) {
             mpiAttrRequest3DSv2Builder = new RequestBuilder("");
         }
         return mpiAttrRequest3DSv2Builder;
     }
 
-    public RequestBuilder getFXAttrRequestBuilder(){
-        if(fXAttrRequestBuilder == null){
+    public RequestBuilder getFXAttrRequestBuilder() {
+        if (fXAttrRequestBuilder == null) {
             fXAttrRequestBuilder = new RequestBuilder("");
         }
         return fXAttrRequestBuilder;
     }
 
-    public RequestBuilder getPBVAttrRequestBuilder(){
-        if(pbvAttrRequestBuilder == null){
+    public RequestBuilder getPBVAttrRequestBuilder() {
+        if (pbvAttrRequestBuilder == null) {
             pbvAttrRequestBuilder = new RequestBuilder("");
         }
         return pbvAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getPBVAttrParamsMap(){
-        if(pbvAttrParamsMap == null){
+    public HashMap<String, String> getPBVAttrParamsMap() {
+        if (pbvAttrParamsMap == null) {
             pbvAttrParamsMap = new HashMap<String, String>();
         }
         return pbvAttrParamsMap;
     }
 
-    public RequestBuilder getScaAttrRequestBuilder(){
-        if(scaAttrRequestBuilder == null){
+    public RequestBuilder getScaAttrRequestBuilder() {
+        if (scaAttrRequestBuilder == null) {
             scaAttrRequestBuilder = new RequestBuilder("");
         }
         return scaAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getScaAttrParamsMap(){
-        if(scaAttrParamsMap == null){
+    public HashMap<String, String> getScaAttrParamsMap() {
+        if (scaAttrParamsMap == null) {
             scaAttrParamsMap = new HashMap<String, String>();
         }
         return scaAttrParamsMap;
     }
 
-    public RequestBuilder getSDDAttrRequestBuilder(){
-        if(sddAttrRequestBuilder == null){
+    public RequestBuilder getSDDAttrRequestBuilder() {
+        if (sddAttrRequestBuilder == null) {
             sddAttrRequestBuilder = new RequestBuilder("");
         }
         return sddAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getSDDAttrParamsMap(){
-        if(sddAttrParamsMap == null){
+    public HashMap<String, String> getSDDAttrParamsMap() {
+        if (sddAttrParamsMap == null) {
             sddAttrParamsMap = new HashMap<String, String>();
         }
         return sddAttrParamsMap;
     }
 
-    public RequestBuilder getCreditCardAttrRequestBuilder(){
-        if(creditCardAttrRequestBuilder == null){
+    public RequestBuilder getCreditCardAttrRequestBuilder() {
+        if (creditCardAttrRequestBuilder == null) {
             creditCardAttrRequestBuilder = new RequestBuilder("");
         }
         return creditCardAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getCreditCardAttrParamsMap(){
-        if(creditCardAttrParamsMap == null){
+    public HashMap<String, String> getCreditCardAttrParamsMap() {
+        if (creditCardAttrParamsMap == null) {
             creditCardAttrParamsMap = new HashMap<String, String>();
         }
         return creditCardAttrParamsMap;
     }
 
-    public RequestBuilder getReminderAttrRequestBuilder(){
-        if(reminderAttrRequestBuilder == null){
+    public RequestBuilder getReminderAttrRequestBuilder() {
+        if (reminderAttrRequestBuilder == null) {
             reminderAttrRequestBuilder = new RequestBuilder("");
         }
         return reminderAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getReminderAttrParamsMap(){
-        if(reminderAttrParamsMap == null){
+    public HashMap<String, String> getReminderAttrParamsMap() {
+        if (reminderAttrParamsMap == null) {
             reminderAttrParamsMap = new HashMap<String, String>();
         }
         return reminderAttrParamsMap;
     }
 
-    public RequestBuilder getBusinessParamsAttrRequestBuilder(){
-        if(businessAttrRequestBuilder == null){
+    public RequestBuilder getBusinessParamsAttrRequestBuilder() {
+        if (businessAttrRequestBuilder == null) {
             businessAttrRequestBuilder = new RequestBuilder("");
         }
         return businessAttrRequestBuilder;
@@ -325,46 +337,87 @@ public abstract class RequestRoot {
         return businessAttrParamsMap;
     }
 
-    public RequestBuilder getCryptoAttrRequestBuilder(){
-        if(cryptoAttrRequestBuilder == null){
+    public RequestBuilder getCryptoAttrRequestBuilder() {
+        if (cryptoAttrRequestBuilder == null) {
             cryptoAttrRequestBuilder = new RequestBuilder("");
         }
         return cryptoAttrRequestBuilder;
     }
 
-    public HashMap<String, String> getCryptoAttrParamsMap(){
-        if(cryptoAttrParamsMap == null){
+    public HashMap<String, String> getCryptoAttrParamsMap() {
+        if (cryptoAttrParamsMap == null) {
             cryptoAttrParamsMap = new HashMap<String, String>();
         }
         return cryptoAttrParamsMap;
     }
 
-    public List<AirlineItineraryTaxRequest> getAirlineItineraryTaxes(){
-        if(airlineItineraryTaxes == null){
+    public List<AirlineItineraryTaxRequest> getAirlineItineraryTaxes() {
+        if (airlineItineraryTaxes == null) {
             airlineItineraryTaxes = new ArrayList<AirlineItineraryTaxRequest>();
         }
         return airlineItineraryTaxes;
-    };
+    }
 
-    public List<AirlineItineraryLegRequest> getAirlineItineraryLegs(){
-        if(airlineItineraryLegs == null){
+    public List<AirlineItineraryLegRequest> getAirlineItineraryLegs() {
+        if (airlineItineraryLegs == null) {
             airlineItineraryLegs = new ArrayList<AirlineItineraryLegRequest>();
         }
         return airlineItineraryLegs;
-    };
+    }
 
-    public HashMap<String, RequestBuilder> getTravelDataRequestBuildersMap(){
-        if(travelDataRequestBuildersMap == null){
+    public HashMap<String, RequestBuilder> getTravelDataRequestBuildersMap() {
+        if (travelDataRequestBuildersMap == null) {
             travelDataRequestBuildersMap = new HashMap<String, RequestBuilder>();
         }
         return travelDataRequestBuildersMap;
-    };
+    }
 
-    public HashMap<String, HashMap<String, String>> getTravelDataAttrParamsMap(){
-        if(travelDataAttrParamsMap == null){
+    public HashMap<String, HashMap<String, String>> getTravelDataAttrParamsMap() {
+        if (travelDataAttrParamsMap == null) {
             travelDataAttrParamsMap = new HashMap<String, HashMap<String, String>>();
         }
         return travelDataAttrParamsMap;
-    };
-}
+    }
 
+    public RequestBuilder getCredentialOnFileAttrRequestBuilder() {
+        if (credentialOnFileAttrRequestBuilder == null) {
+            credentialOnFileAttrRequestBuilder = new RequestBuilder("");
+        }
+        return credentialOnFileAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getCredentialOnFileAttrParamsMap() {
+        if (credentialOnFileAttrParamsMap == null) {
+            credentialOnFileAttrParamsMap = new HashMap<String, String>();
+        }
+        return credentialOnFileAttrParamsMap;
+    }
+
+    public RequestBuilder getUcofAttrRequestBuilder() {
+        if (ucofAttrRequestBuilder == null) {
+            ucofAttrRequestBuilder = new RequestBuilder("");
+        }
+        return ucofAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getUcofAttrParamsMap() {
+        if (ucofAttrParamsMap == null) {
+            ucofAttrParamsMap = new HashMap<String, String>();
+        }
+        return ucofAttrParamsMap;
+    }
+
+    public RequestBuilder getPreauthAttrRequestBuilder() {
+        if (preauthAttrRequestBuilder == null) {
+            preauthAttrRequestBuilder = new RequestBuilder("");
+        }
+        return preauthAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getPreauthAttrParamsMap() {
+        if (preauthAttrParamsMap == null) {
+            preauthAttrParamsMap = new HashMap<String, String>();
+        }
+        return preauthAttrParamsMap;
+    }
+}

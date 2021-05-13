@@ -27,7 +27,7 @@ import java.util.HashMap;
  * @license     http://opensource.org/licenses/MIT The MIT License
  */
 
-public interface CreditCardAttributes {
+public interface CreditCardAttributes extends CredentialOnFileAttributes {
 
     // Credit Card params
     default CreditCardAttributes setCardHolder(String cardholder) {
@@ -99,7 +99,9 @@ public interface CreditCardAttributes {
 
 
     default RequestBuilder buildCreditCardParams() {
-        return getCreditCardAttrRequestBuilder();
+        RequestBuilder requestBuilder = getCreditCardAttrRequestBuilder();
+        requestBuilder.addElement(buildCredentialOnFileParam().toXML());
+        return requestBuilder;
     }
 
     RequestBuilder getCreditCardAttrRequestBuilder();

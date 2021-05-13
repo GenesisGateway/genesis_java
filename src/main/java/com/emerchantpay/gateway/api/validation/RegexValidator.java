@@ -35,6 +35,9 @@ public class RegexValidator {
     //Date in format dd-mm-yyyy. Leading zeros required
     public static final Pattern VALID_DATE = Pattern.compile("(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}");
 
+    // Date in format "MMDD". Leading zeros required
+    public static final Pattern VALID_MONTH_DATE = Pattern.compile("^(0[1-9]|1[012])(0[1-9]|[12]\\d|3[01])$");
+
     //Virtual Payment Address (VPA) of the customer, format: someone@bank
     public static final Pattern VALID_VIRTUAL_PAYMENT_ADDRESS = Pattern.compile(".+@.+");
 
@@ -52,8 +55,12 @@ public class RegexValidator {
     private ArrayList<String> invalidParamsList = new ArrayList<String>();
 
     // Validate amount
-    public Boolean isValidAmount(BigDecimal amount) {
-        if (amount.doubleValue() > 0 && amount != null) {
+    public Boolean isValidAmount(BigDecimal amount){
+        return isValidAmount(amount, false);
+    }
+
+    public Boolean isValidAmount(BigDecimal amount, Boolean zeroAmountSupport) {
+        if (amount != null && (amount.doubleValue() > 0 || (amount.doubleValue() == 0 && zeroAmountSupport))) {
             invalidParamsList.removeAll(Arrays.asList("amount"));
             return true;
         } else {
@@ -187,6 +194,17 @@ public class RegexValidator {
         if (date == null || date.isEmpty()) {
             return true;
         } else if (VALID_DATE.matcher(date).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
+    //Validate 'MMDD' format date
+    public Boolean isValidMonthDate(String date, String paramName) {
+        if (date == null || date.isEmpty() || VALID_MONTH_DATE.matcher(date).matches()) {
             invalidParamsList.removeAll(Arrays.asList(paramName));
             return true;
         } else {

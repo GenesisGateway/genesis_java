@@ -3,9 +3,7 @@ package com.emerchantpay.gateway.api.requests.financial.card;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
-import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.*;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
@@ -43,7 +41,8 @@ import java.util.Map;
 
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
         MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
-        FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, ThreedsV2Attributes {
+        FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes,
+        ThreedsV2Attributes {
 
     private String transactionType = TransactionTypes.SALE_3D;
     private Boolean moto;
@@ -120,16 +119,16 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 
     @Override
     public HashMap<String, RequestBuilder> getThreedsV2RequestBuildersMap() {
-        if (threedsV2RequestBuildersMap == null) {
-            threedsV2RequestBuildersMap = new HashMap<String, RequestBuilder>();
+        if(threedsV2RequestBuildersMap == null){
+            threedsV2RequestBuildersMap = new HashMap<>();
         }
         return threedsV2RequestBuildersMap;
     }
 
     @Override
     public HashMap<String, HashMap<String, String>> getThreedsV2AttrParamsMap() {
-        if (threedsV2AttrParamsMap == null) {
-            threedsV2AttrParamsMap = new HashMap<String, HashMap<String, String>>();
+        if(threedsV2AttrParamsMap == null){
+            threedsV2AttrParamsMap = new HashMap<>();
         }
         return threedsV2AttrParamsMap;
     }

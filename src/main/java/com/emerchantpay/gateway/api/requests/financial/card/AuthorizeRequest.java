@@ -3,9 +3,7 @@ package com.emerchantpay.gateway.api.requests.financial.card;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
-import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.*;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
@@ -41,8 +39,8 @@ import java.util.Map;
  */
 
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes,
-        CryptoAttributes, TravelDataAttributes {
+        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes,
+        BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
@@ -58,6 +56,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
+
+
 
     public AuthorizeRequest() {
         super();
@@ -113,7 +113,19 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
     protected RequestBuilder buildRequest(String root) {
 
-        requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
+        // Set required params
+        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
+        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+
+        // Validate request
+        validator.isValidRequest(requiredParams);
+
+        return requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCreditCardParams().toXML())
@@ -128,21 +140,9 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement("sca_params", buildScaParams().toXML())
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
-                .addElement("travel", buildTravelDataParams().toXML());
-
-        // Set required params
-        requiredParams.put(RequiredParameters.transactionId, getTransactionId());
-        requiredParams.put(RequiredParameters.amount, getAmount().toString());
-        requiredParams.put(RequiredParameters.currency, getCurrency());
-        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
-
-        // Validate request
-        validator.isValidRequest(requiredParams);
-
-        return requestBuilder;
+                .addElement("travel", buildTravelDataParams().toXML())
+                .addElement(buildUcofParams(getCredentialOnFile()).toXML())
+                .addElement(buildPreauthorizationParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

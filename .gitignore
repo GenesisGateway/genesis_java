@@ -1,16 +1,24 @@
+#bin
 /target/
+.java-version
+
+# Eclipse
 .classpath
 .project
 .settings
 .settings/*
-.DC_Store
-/*.jar
-/*.gz
-.metadata/
+
+# intellij
+/.idea
+*.iml
+
+# build/test
 /classes
 /test-classes
 /META_INF
-/.idea
-*.iml
-*.jks
 /out
+/*.jar
+/*.gz
+.metadata/
+.DC_Store
+*.jks
