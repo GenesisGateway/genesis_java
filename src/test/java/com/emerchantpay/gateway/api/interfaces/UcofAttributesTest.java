@@ -86,22 +86,15 @@ public class UcofAttributesTest {
     }
 
     @Test
-    public void testGetUcofConditionalRequiredFields_ShouldSuccess_WhenMerchantUnscheduledCOF() {
+    public void testGetUcofConditionalFields_ShouldSuccess_WhenMerchantUnscheduledCOF() {
         prepareObject();
 
-        assertEquals(TRANSACTION_IDENTIFIER, cofAdditionalAttributes.getUcofConditionalRequiredFields("merchant_unscheduled")
-                .get("credential_on_file_transaction_identifier"));
-        assertEquals(VALID_SETT_DATE, cofAdditionalAttributes.getUcofConditionalRequiredFields("merchant_unscheduled")
-                .get("credential_on_file_settlement_date"));
+        assertEquals(requestBuilder, cofAdditionalAttributes.buildUcofParams("merchant_unscheduled"));
+
+        cofAdditionalAttributes.setUcofTransactionIdentifier(TRANSACTION_IDENTIFIER);
+        cofAdditionalAttributes.setUcofSettlementDate(VALID_SETT_DATE);
+        assertEquals(TRANSACTION_IDENTIFIER, cofAdditionalAttributes.getUcofTransactionIdentifier());
+        assertEquals(VALID_SETT_DATE, cofAdditionalAttributes.getUcofSettlementDate());
     }
 
-    @Test
-    public void testGetUcofConditionalRequiredFields_ShouldReturnNull_WhenNotMerchantUnscheduledCOF() {
-        prepareObject();
-
-        assertNull(cofAdditionalAttributes.getUcofConditionalRequiredFields("initial_customer_initiated")
-                .get("credential_on_file_transaction_identifier"));
-        assertNull(cofAdditionalAttributes.getUcofConditionalRequiredFields("initial_customer_initiated")
-                .get("credential_on_file_settlement_date"));
-    }
 }

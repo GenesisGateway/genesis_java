@@ -55,24 +55,7 @@ public interface UcofAttributes {
         return getUcofAttrParamsMap().get("credential_on_file_settlement_date");
     }
 
-    default HashMap<String, String> getUcofConditionalRequiredFields(String credentialOnFile) {
-        if ("merchant_unscheduled".equalsIgnoreCase(credentialOnFile)) {
-            return new HashMap<String, String>() {
-                {
-                    put("credential_on_file_transaction_identifier", getUcofTransactionIdentifier());
-                    put("credential_on_file_settlement_date", getUcofSettlementDate());
-                }
-            };
-        } else {
-            return new HashMap<>();
-        }
-    }
-
     default RequestBuilder buildUcofParams(String credentialOnFile) {
-        HashMap<String, String> requiredParams = new HashMap<>();
-        requiredParams.putAll(getUcofConditionalRequiredFields(credentialOnFile));
-        getValidator().isValidRequest(requiredParams);
-
         if (getValidator().isValidMonthDate(getUcofSettlementDate(), "credential_on_file_settlement_date")) {
             return getUcofAttrRequestBuilder();
         } else {
