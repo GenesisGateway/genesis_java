@@ -70,6 +70,11 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
     }
 
     @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
+    @Override
     public BigDecimal getAmount() {
         return amount;
     }

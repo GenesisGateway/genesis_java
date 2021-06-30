@@ -1,8 +1,10 @@
 package com.emerchantpay.gateway.card;
 
 import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.Sale3DRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -15,8 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -142,5 +143,22 @@ public class Sale3DTest {
         verifyNoMoreInteractions(sale3d);
 
         verifyExecute();
+    }
+
+    @Test(expected = RegexException.class)
+    public void testNegativeAmountError(){
+        Sale3DRequest sale3D = new Sale3DRequest();
+        sale3D.setCurrency(Currency.USD.getCurrency());
+        sale3D.setAmount(new BigDecimal("-22.00"));
+        sale3D.buildPaymentParams();
+    }
+
+    public void testZeroAmount(){
+        Sale3DRequest sale3D = new Sale3DRequest();
+        sale3D.setCurrency(Currency.USD.getCurrency());
+        BigDecimal amount = new BigDecimal("0.00");
+        sale3D.setAmount(new BigDecimal("0.00"));
+        assertEquals(amount, sale3D.getAmount());
+        assertTrue(sale3D.buildPaymentParams() instanceof RequestBuilder);
     }
 }

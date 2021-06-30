@@ -2,7 +2,9 @@ package com.emerchantpay.gateway.apm;
 
 import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.constants.P24BankCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.requests.financial.apm.P24Request;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -13,8 +15,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -117,4 +118,23 @@ public class P24Test {
 
 		verifyExecute();
 	}
+
+    @Test(expected = InvalidParamException.class)
+    public void testP24BankCodeError() {
+        P24Request p24Request = new P24Request();
+        p24Request.setBankCode(1);
+        p24Request.setCurrency(Currency.EUR.getCurrency());
+        p24Request.setAmount(new BigDecimal("2.00"));
+        p24Request.toXML();
+    }
+
+    @Test
+    public void testP24WithBankCode() {
+        P24Request p24Request = new P24Request();
+        p24Request.setBankCode(P24BankCodes.BLIK_PSP);
+        p24Request.setCurrency(Currency.EUR.getCurrency());
+        p24Request.setAmount(new BigDecimal("2.00"));
+        assertEquals(P24BankCodes.BLIK_PSP, p24Request.getBankCode());
+        assertTrue(p24Request.toXML() instanceof String);
+    }
 }

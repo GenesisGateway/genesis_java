@@ -66,6 +66,11 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
     }
 
     @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
+    @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;

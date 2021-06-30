@@ -9,6 +9,7 @@ import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
@@ -17,7 +18,8 @@ import com.emerchantpay.gateway.util.Currency;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class MyBankRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, BillingAddressAttributes, ShippingAddressAttributes {
+public class MyBankRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes,
+        BillingAddressAttributes, ShippingAddressAttributes, PendingPaymentAttributes {
 
     private static final String transactionType = TransactionTypes.MY_BANK;
     private String currency = Currency.EUR.getCurrency();
@@ -105,6 +107,7 @@ public class MyBankRequest extends Request implements PaymentAttributes, Custome
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildPendingPaymentParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
     }

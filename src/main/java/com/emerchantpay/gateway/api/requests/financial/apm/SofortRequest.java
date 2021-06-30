@@ -13,6 +13,7 @@ import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
@@ -40,7 +41,7 @@ import com.emerchantpay.gateway.util.Country;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SofortRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class SofortRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, PendingPaymentAttributes {
 
 	private String transactionType = TransactionTypes.SOFORT;
 	private BigDecimal amount;
@@ -123,6 +124,7 @@ public class SofortRequest extends Request implements PaymentAttributes, Custome
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
 				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML()).addElement(buildAsyncParams().toXML())
+                .addElement(buildPendingPaymentParams().toXML())
 				.addElement("customer_bank_id", customerBankId)
 				.addElement("ban_account_number", bankAccountNumber)
 				.addElement("billing_address", buildBillingAddress().toXML())

@@ -124,6 +124,8 @@ public class WPFRequestsTest {
         when(wpfCreate.setBillingZipCode(isA(String.class))).thenReturn(wpfCreate);
         when(wpfCreate.setBillingState(isA(String.class))).thenReturn(wpfCreate);
         when(wpfCreate.setLifetime(isA(Integer.class))).thenReturn(wpfCreate);
+        when(wpfCreate.setScaPreference(isA(Boolean.class))).thenCallRealMethod();
+        when(wpfCreate.getScaPreference()).thenCallRealMethod();
 
         assertEquals(wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS"), wpfCreate);
         assertEquals(wpfCreate.setDescription("TEST Description"), wpfCreate);
@@ -143,6 +145,8 @@ public class WPFRequestsTest {
                 .setBillingZipCode("M4B1B3")
                 .setBillingState("BE"), wpfCreate);
         assertEquals(wpfCreate.setLifetime(60), wpfCreate);
+        assertEquals(wpfCreate, wpfCreate.setScaPreference(true));
+        assertEquals(true, wpfCreate.getScaPreference());
 
         verify(wpfCreate).setTransactionId(uidWpf);
         verify(wpfCreate).setUsage("TICKETS");
@@ -165,6 +169,8 @@ public class WPFRequestsTest {
         verify(wpfCreate).setBillingZipCode("M4B1B3");
         verify(wpfCreate).setBillingState("BE");
         verify(wpfCreate).setLifetime(60);
+        verify(wpfCreate).setScaPreference(true);
+        verify(wpfCreate).getScaPreference();
         verifyNoMoreInteractions(wpfCreate);
 
         verifyWPFExecute();

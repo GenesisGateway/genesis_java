@@ -60,6 +60,11 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
     }
 
     @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
+    @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;

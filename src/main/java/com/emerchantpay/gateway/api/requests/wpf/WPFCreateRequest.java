@@ -13,24 +13,20 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
-        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes {
+        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
 
     private String description;
     private URL cancelUrl;
-    private URL pendingUrl;
     private BigDecimal amount;
     private String currency;
     private Integer lifetime;
@@ -39,6 +35,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     private Boolean payLater = false;
     private String consumerId;
     private Boolean rememberCard = false;
+    private Boolean scaPreference;
 
     private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
 
@@ -94,10 +91,8 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     }
 
     public WPFCreateRequest setReturnPendingUrl(URL pendingUrl) {
-        if (validator.isValidUrl("return_pending_url", String.valueOf(pendingUrl))) {
-            this.pendingUrl = pendingUrl;
-        }
-
+        //Keep method for compatibility but redirect to PendingPaymentAttributes interface method
+        setReturnPendingUrl(String.valueOf(pendingUrl));
         return this;
     }
 
@@ -143,13 +138,22 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return rememberCard;
     }
 
+    public Boolean getScaPreference() {
+        return scaPreference;
+    }
+
+    public WPFCreateRequest setScaPreference(Boolean scaPreference) {
+        this.scaPreference = scaPreference;
+        return this;
+    }
+
     public TransactionTypesRequest addTransactionType(String transactionType) {
-        transactionTypes.addTransaction(transactionType);
+        transactionTypes.addTransaction(transactionType.toLowerCase());
         return transactionTypes;
     }
 
     public TransactionTypesRequest addTransactionType(String transactionType, ArrayList<HashMap<String, String>> params) {
-        transactionTypes.addTransaction(transactionType);
+        transactionTypes.addTransaction(transactionType.toLowerCase());
 
         for (HashMap<String, String> map : params) {
             for (Map.Entry<String, String> mapEntry : map.entrySet()) {
@@ -178,7 +182,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     public TransactionTypesRequest addTransactionTypes(ArrayList<String> transactions) {
 
         for (String t : transactions) {
-            transactionTypes.addTransaction(t);
+            transactionTypes.addTransaction(t.toLowerCase());
         }
 
         return transactionTypes;
@@ -208,7 +212,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement("return_cancel_url", cancelUrl)
-                .addElement("return_pending_url", pendingUrl)
+                .addElement(buildPendingPaymentParams().toXML())
                 .addElement("lifetime", lifetime)
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML())
@@ -216,7 +220,8 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("pay_later", payLater)
-                .addElement("remember_card", rememberCard);
+                .addElement("remember_card", rememberCard)
+                .addElement("sca_preference", scaPreference);
 
         // Klarna payment method
         if (klarnaItemsRequest != null

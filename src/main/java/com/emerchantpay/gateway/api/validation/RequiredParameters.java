@@ -16,6 +16,7 @@ public class RequiredParameters {
     public static String returnFailureUrl = "return_failure_url";
     public static String returnCancelUrl = "return_cancel_url";
     public static String returnUrl = "return_url";
+    public static String returnPendingUrl = "return_pending_url";
     public static String customerEmail = "customer_email";
     public static String customerPhone = "customer_phone";
     public static String customerName = "customer_name";

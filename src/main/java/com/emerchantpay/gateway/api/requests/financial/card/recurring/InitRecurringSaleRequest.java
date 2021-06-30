@@ -61,6 +61,11 @@ public class InitRecurringSaleRequest extends Request implements PaymentAttribut
     }
 
     @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
+    @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;

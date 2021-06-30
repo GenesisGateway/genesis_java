@@ -1,8 +1,10 @@
 package com.emerchantpay.gateway.card;
 
 import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -12,8 +14,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
@@ -122,5 +123,22 @@ public class AuthorizeRequestTest {
         verifyNoMoreInteractions(authorize);
 
         verifyExecute();
+    }
+
+    @Test(expected = RegexException.class)
+    public void testNegativeAmountError(){
+        AuthorizeRequest authorize = new AuthorizeRequest();
+        authorize.setCurrency(Currency.USD.getCurrency());
+        authorize.setAmount(new BigDecimal("-22.00"));
+        authorize.buildPaymentParams();
+    }
+
+    public void testZeroAmount(){
+        AuthorizeRequest authorize = new AuthorizeRequest();
+        authorize.setCurrency(Currency.USD.getCurrency());
+        BigDecimal amount = new BigDecimal("0.00");
+        authorize.setAmount(new BigDecimal("0.00"));
+        assertEquals(amount, authorize.getAmount());
+        assertTrue(authorize.buildPaymentParams() instanceof RequestBuilder);
     }
 }

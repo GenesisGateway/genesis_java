@@ -74,6 +74,11 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
     }
 
     @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
+    @Override
     public PaymentAttributes setAmount(BigDecimal amount) {
         this.amount = amount;
         return this;

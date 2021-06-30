@@ -9,6 +9,7 @@ import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
@@ -19,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IDealRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, BillingAddressAttributes, ShippingAddressAttributes {
+public class IDealRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes,
+        BillingAddressAttributes, ShippingAddressAttributes, PendingPaymentAttributes {
 
     private static final String transactionType = TransactionTypes.IDEAL;
     private String currency = Currency.EUR.getCurrency();
@@ -114,6 +116,7 @@ public class IDealRequest extends Request implements PaymentAttributes, Customer
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildPendingPaymentParams().toXML())
                 .addElement("bic", getBic())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());

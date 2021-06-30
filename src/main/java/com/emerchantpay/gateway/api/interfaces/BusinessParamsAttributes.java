@@ -24,13 +24,21 @@ package com.emerchantpay.gateway.api.interfaces;
  */
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public interface BusinessParamsAttributes  {
+
+    String PAYMENT_METHOD_DEPOSIT = "deposit";
+    String PAYMENT_METHOD_BALANCE = "balance";
+
+    //Restricted payment types
+    ArrayList<String> allowedPaymentTypes = new ArrayList<String>(Arrays.asList(PAYMENT_METHOD_DEPOSIT, PAYMENT_METHOD_BALANCE));
 
     // Business params
     default BusinessParamsAttributes setBusinessEventStartDate(String eventStartDate) {
@@ -111,7 +119,22 @@ public interface BusinessParamsAttributes  {
         return getBusinessAttrParamsMap().get("name_of_the_supplier");
     }
 
+    default BusinessParamsAttributes setBusinessPaymentType(String paymentType) {
+        getBusinessAttrParamsMap().put("payment_type", paymentType);
+        getBusinessParamsAttrRequestBuilder().addElement("payment_type", paymentType);
+        return this;
+    }
+
+    default String getBusinessPaymentType() {
+        return getBusinessAttrParamsMap().get("payment_type");
+    }
+
     default RequestBuilder buildBusinessParams() {
+
+        if (getBusinessPaymentType() != null && !allowedPaymentTypes.contains(getBusinessPaymentType())) {
+            throw new InvalidParamException("payment type", allowedPaymentTypes);
+        }
+
         ArrayList<String> invalidParams = new ArrayList<String>(getValidator().getInvalidParams());
         if (invalidParams.isEmpty()) {
             return getBusinessParamsAttrRequestBuilder();

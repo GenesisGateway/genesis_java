@@ -32,6 +32,7 @@ import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PayURequest extends Request implements BaseAttributes, PaymentAttributes, AsyncAttributes,
-        CustomerInfoAttributes, AddressAttributes {
+        CustomerInfoAttributes, AddressAttributes, PendingPaymentAttributes {
 
 
     private String transactionType = TransactionTypes.PAYU;
@@ -135,6 +136,7 @@ public class PayURequest extends Request implements BaseAttributes, PaymentAttri
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement(buildAsyncParams().toXML())
+                .addElement(buildPendingPaymentParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
     }

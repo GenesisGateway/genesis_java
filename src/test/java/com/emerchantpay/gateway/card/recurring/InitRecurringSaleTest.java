@@ -1,8 +1,10 @@
 package com.emerchantpay.gateway.card.recurring;
 
 import com.emerchantpay.gateway.GenesisClient;
+import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSaleRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -11,8 +13,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -132,5 +133,22 @@ public class InitRecurringSaleTest {
         verifyNoMoreInteractions(initRecurring);
 
         verifyExecute();
+    }
+
+    @Test(expected = RegexException.class)
+    public void testNegativeAmountError(){
+        InitRecurringSaleRequest initRecurringSale = new InitRecurringSaleRequest();
+        initRecurringSale.setCurrency(Currency.USD.getCurrency());
+        initRecurringSale.setAmount(new BigDecimal("-22.00"));
+        initRecurringSale.buildPaymentParams();
+    }
+
+    public void testZeroAmount(){
+        InitRecurringSaleRequest initRecurringSale = new InitRecurringSaleRequest();
+        initRecurringSale.setCurrency(Currency.USD.getCurrency());
+        BigDecimal amount = new BigDecimal("0.00");
+        initRecurringSale.setAmount(new BigDecimal("0.00"));
+        assertEquals(amount, initRecurringSale.getAmount());
+        assertTrue(initRecurringSale.buildPaymentParams() instanceof RequestBuilder);
     }
 }

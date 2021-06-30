@@ -120,6 +120,10 @@ public abstract class RequestRoot {
     private RequestBuilder preauthAttrRequestBuilder;
     private HashMap<String, String> preauthAttrParamsMap;
 
+    //Pending Payment Attributes
+    private RequestBuilder pendingPaymentAttrRequestBuilder;
+    private HashMap<String, String> pendingPaymentAttrParamsMap;
+
     public GenesisValidator getValidator() {
         if (validator == null) {
             validator = new GenesisValidator();
@@ -419,5 +423,19 @@ public abstract class RequestRoot {
             preauthAttrParamsMap = new HashMap<String, String>();
         }
         return preauthAttrParamsMap;
+    }
+
+    public RequestBuilder getPendingPaymentAttrRequestBuilder() {
+        if (pendingPaymentAttrRequestBuilder == null) {
+            pendingPaymentAttrRequestBuilder = new RequestBuilder("");
+        }
+        return pendingPaymentAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getPendingPaymentAttrParamsMap() {
+        if (pendingPaymentAttrParamsMap == null) {
+            pendingPaymentAttrParamsMap = new HashMap<String, String>();
+        }
+        return pendingPaymentAttrParamsMap;
     }
 }

@@ -31,6 +31,7 @@ import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PproAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class SouthAmericanPaymentRequest extends Request implements BaseAttributes, PaymentAttributes, AsyncAttributes,
-        CustomerInfoAttributes, AddressAttributes, PproAttributes {
+        CustomerInfoAttributes, AddressAttributes, PproAttributes, PendingPaymentAttributes {
 
     private BigDecimal amount;
     private String currency;
@@ -141,6 +142,7 @@ public abstract class SouthAmericanPaymentRequest extends Request implements Bas
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement(buildPproParams().toXML())
+                .addElement(buildPendingPaymentParams().toXML())
                 .addElement("billing_address", buildBillingAddress().toXML())
                 .addElement("shipping_address", buildShippingAddress().toXML());
     }
