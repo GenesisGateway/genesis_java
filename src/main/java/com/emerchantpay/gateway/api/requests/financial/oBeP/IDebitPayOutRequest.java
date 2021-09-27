@@ -41,7 +41,6 @@ import java.util.Map;
 public class IDebitPayOutRequest extends Request implements PaymentAttributes {
 
     private String transactionType = TransactionTypes.IDEBIT_PAYOUT;
-    private String transactionId;
     private String referenceId;
     private BigDecimal amount;
     private String currency;
@@ -57,7 +56,7 @@ public class IDebitPayOutRequest extends Request implements PaymentAttributes {
     }
 
     public IDebitPayOutRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+        super.setTransactionId(transactionId);
         return this;
     }
 
@@ -116,10 +115,11 @@ public class IDebitPayOutRequest extends Request implements PaymentAttributes {
         // Validate request
         validator.isValidRequest(requiredParams);
 
-        return new RequestBuilder(root).addElement("transaction_id", transactionId)
+        return new RequestBuilder(root)
                 .addElement("transaction_type", transactionType)
                 .addElement("reference_id", referenceId)
-                .addElement(buildPaymentParams().toXML());
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildBaseParams().toXML());
     }
 
     protected void setRequiredCurrencies() {

@@ -161,6 +161,19 @@ public class InstaDebitTest {
         verifyPayoutExecute();
     }
 
+    @Test
+    public void testInstaDebitPayOutParameters() {
+        InstaDebitPayOutRequest instadebitPayOut =  new InstaDebitPayOutRequest();
+        instadebitPayOut.setTransactionId(uidPayOut);
+        assertEquals(uidPayOut, instadebitPayOut.getTransactionId());
+        instadebitPayOut.setCurrency(Currency.CAD.getCurrency());
+        assertEquals(Currency.CAD.getCurrency(), instadebitPayOut.getCurrency());
+        BigDecimal amount = new BigDecimal(10);
+        instadebitPayOut.setAmount(amount);
+        assertEquals(amount, instadebitPayOut.getAmount());
+        verifyPayoutExecute();
+    }
+
     @Test(expected = ApiException.class)
     public void testIDebitPayOutWithMissingParams() {
         clearRequiredParams();

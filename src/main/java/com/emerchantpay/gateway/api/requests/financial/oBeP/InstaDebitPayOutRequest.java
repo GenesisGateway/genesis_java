@@ -36,7 +36,6 @@ import java.util.Map;
 public class InstaDebitPayOutRequest extends Request implements PaymentAttributes {
 
     private String transactionType = TransactionTypes.INSTADEBIT_PAYOUT;
-    private String transactionId;
     private String referenceId;
     private BigDecimal amount;
     private String currency;
@@ -46,7 +45,7 @@ public class InstaDebitPayOutRequest extends Request implements PaymentAttribute
     }
 
     public InstaDebitPayOutRequest setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+        super.setTransactionId(transactionId);
         return this;
     }
 
@@ -94,10 +93,11 @@ public class InstaDebitPayOutRequest extends Request implements PaymentAttribute
 
     protected RequestBuilder buildRequest(String root) {
 
-        return new RequestBuilder(root).addElement("transaction_id", transactionId)
+        return new RequestBuilder(root)
                 .addElement("transaction_type", transactionType)
                 .addElement("reference_id", referenceId)
-                .addElement(buildPaymentParams().toXML());
+                .addElement(buildPaymentParams().toXML())
+                .addElement(buildBaseParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

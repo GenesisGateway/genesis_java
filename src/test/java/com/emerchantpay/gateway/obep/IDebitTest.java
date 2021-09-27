@@ -161,6 +161,20 @@ public class IDebitTest {
         verifyPayoutExecute();
     }
 
+    @Test
+    public void testIDebitPayOutParameters() {
+        IDebitPayOutRequest idebitPayOut = new IDebitPayOutRequest();
+        idebitPayOut.setTransactionId(uidPayOut);
+        assertEquals(uidPayOut, idebitPayOut.getTransactionId());
+        idebitPayOut.setCurrency(Currency.CAD.getCurrency());
+        assertEquals(Currency.CAD.getCurrency(), idebitPayOut.getCurrency());
+        BigDecimal amount = new BigDecimal(10);
+        idebitPayOut.setAmount(amount);
+        assertEquals(amount, idebitPayOut.getAmount());
+
+        verifyPayoutExecute();
+    }
+
     @Test(expected = ApiException.class)
     public void testIDebitPayOutWithMissingParams() {
         clearRequiredParams();

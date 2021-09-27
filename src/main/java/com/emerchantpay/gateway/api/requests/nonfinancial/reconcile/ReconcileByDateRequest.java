@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Configuration;
@@ -46,7 +47,7 @@ public class ReconcileByDateRequest extends Request {
 
     @Override
     public String getTransactionType() {
-        return "reconcile_by_date";
+        return TransactionTypes.RECONCILE_BY_DATE;
     }
 
     @Override

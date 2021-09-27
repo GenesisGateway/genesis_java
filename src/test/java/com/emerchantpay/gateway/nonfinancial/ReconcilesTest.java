@@ -65,6 +65,14 @@ public class ReconcilesTest {
     }
 
     @Test
+    public void testSingleReconcileTransactionId() {
+        ReconcileRequest reconcileRequest = new ReconcileRequest();
+        reconcileRequest.setTransactionId(uniqueId);
+        assertEquals(uniqueId, reconcileRequest.getTransactionId());
+        verifySingleExecute();
+    }
+
+    @Test
     public void testByDate() {
         // By Date
         when(reconcileByDate.setStartDate(isA(String.class))).thenReturn(reconcileByDate);

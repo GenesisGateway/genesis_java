@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.api.requests.wpf;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
@@ -53,7 +54,7 @@ public class WPFReconcileRequest extends Request {
 
 	@Override
 	public String getTransactionType() {
-		return "wpf_reconcile";
+		return TransactionTypes.WPF_RECONCILE;
 	}
 
 

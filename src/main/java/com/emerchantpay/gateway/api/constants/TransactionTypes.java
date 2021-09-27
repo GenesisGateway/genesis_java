@@ -231,6 +231,11 @@ public class TransactionTypes {
     public static final String INCREMENTAL_AUTHORIZE = "incremental_authorize";
     public static final String PARTIAL_REVERSAL = "partial_reversal";
 
+    //Reconcile
+    public static final String RECONCILE = "reconcile";
+    public static final String RECONCILE_BY_DATE = "reconcile_by_date";
+    public static final String WPF_RECONCILE = "wpf_reconcile";
+
     public static ArrayList<String> getWPFTransactionTypes() {
         ArrayList<String> transactionTypes = new ArrayList<String>();
 

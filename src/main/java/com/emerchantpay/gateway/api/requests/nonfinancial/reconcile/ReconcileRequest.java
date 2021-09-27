@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.reconcile;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ public class ReconcileRequest extends Request {
 
 	private String uniqueId;
 	private String arn;
-	private String transactionId;
 
 	public ReconcileRequest() {
 		super();
@@ -50,13 +50,13 @@ public class ReconcileRequest extends Request {
 	}
 
 	public ReconcileRequest setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
+		super.setTransactionId(transactionId);
 		return this;
 	}
 
 	@Override
 	public String getTransactionType() {
-		return "reconcile";
+		return TransactionTypes.RECONCILE;
 	}
 
 	@Override
@@ -71,7 +71,8 @@ public class ReconcileRequest extends Request {
 
 	protected RequestBuilder buildRequest(String root) {
 		return new RequestBuilder(root).addElement("unique_id", uniqueId)
-				.addElement("transaction_id", transactionId).addElement("arn", arn);
+				.addElement("arn", arn)
+                .addElement(buildBaseParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {
