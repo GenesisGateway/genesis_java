@@ -97,8 +97,7 @@ public class NotificationGateway implements Serializable {
 
 		if (isWPFNotification() == true) {
 			wpfReconcileRequest = new WPFReconcileRequest();
-			reconcilationRequest = new ReconcileRequest();
-			reconcilationRequest.setUniqueId(uniqueId);
+			wpfReconcileRequest.setUniqueId(uniqueId);
 
 			client = new GenesisClient(configuration, wpfReconcileRequest);
 			client.execute();
