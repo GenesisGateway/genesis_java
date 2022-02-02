@@ -57,6 +57,10 @@ public class WPFReconcileRequest extends Request {
 		return TransactionTypes.WPF_RECONCILE;
 	}
 
+	@Override
+	public String getUniqueId() {
+		return uniqueId;
+	}
 
 	@Override
 	public String toXML() {

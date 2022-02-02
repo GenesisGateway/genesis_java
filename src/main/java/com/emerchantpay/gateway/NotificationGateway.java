@@ -89,7 +89,7 @@ public class NotificationGateway implements Serializable {
 		// Init Reconciliation request
 		if (isApiNotification() == true) {
 			reconcilationRequest = new ReconcileRequest();
-			reconcilationRequest.setUniqueId(notificationParams.get("unique_id"));
+			reconcilationRequest.setUniqueId(notification.getUniqueId());
 
 			client = new GenesisClient(configuration, reconcilationRequest);
 			client.execute();
@@ -97,8 +97,8 @@ public class NotificationGateway implements Serializable {
 
 		if (isWPFNotification() == true) {
 			wpfReconcileRequest = new WPFReconcileRequest();
-			reconcilationRequest = new ReconcileRequest();
-			reconcilationRequest.setUniqueId(uniqueId);
+			wpfReconcileRequest.setUniqueId(notification.getWpfUniqueId());
+
 
 			client = new GenesisClient(configuration, wpfReconcileRequest);
 			client.execute();

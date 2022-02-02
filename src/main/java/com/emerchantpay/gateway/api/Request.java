@@ -68,6 +68,10 @@ public abstract class Request extends RequestRoot implements BaseAttributes, Add
 		return null;
 	}
 
+	public String getUniqueId() {
+		return null;
+	}
+
 	public Boolean isConsumer() {
 		return false;
 	}

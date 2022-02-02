@@ -3,12 +3,19 @@ package com.emerchantpay.gateway;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.Endpoints;
+import com.emerchantpay.gateway.api.constants.Environments;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
 import com.emerchantpay.gateway.model.Notification;
+import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.util.SHA1Hasher;
+import com.emerchantpay.gateway.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +34,8 @@ public class NotificationTest {
 
     private NotificationGateway notificationGtw;
     private Notification notification;
+    private Configuration configuration;
+    private Map<String, String> notificationParams;
 
     private RequestBuilder expectedResponse;
 
@@ -40,6 +49,22 @@ public class NotificationTest {
         doNothing().when(notificationGtw).parseNotification(isA(Map.class));
         doNothing().when(notificationGtw).initReconciliation();
         doNothing().when(notificationGtw).generateResponse();
+
+        //Create test configuration
+        configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
+        configuration.setUsername("test");
+        configuration.setPassword("test");
+        configuration.setToken("test");
+
+        //Create test notification params
+        notificationParams = new HashMap<String, String>();
+        notificationParams.put("transaction_type", TransactionTypes.SALE_3D);
+        notificationParams.put("terminal_token", configuration.getToken());
+        notificationParams.put("status", "approved");
+        notificationParams.put("amount", "10");
+        notificationParams.put("eci", "05");
+        notificationParams.put("avs_response_code", "5I");
+        notificationParams.put("avs_response_text", "Response+provided+by+issuer+processor%3B+ Address+information+not+verified");
     }
 
     @Test
@@ -63,6 +88,20 @@ public class NotificationTest {
     }
 
     @Test
+    public void testAPINotificationParams() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        String uniqueId = new StringUtils().generateUID();;
+        String transactionId = new StringUtils().generateUID();
+        notificationParams.put("unique_id", uniqueId);
+        notificationParams.put("signature", SHA1Hasher.SHA1(uniqueId + configuration.getPassword()));
+
+        NotificationGateway notification = new NotificationGateway(configuration, notificationParams);
+
+        assertTrue(notification.isAuthentic());
+        assertTrue(notification.isApiNotification());
+    }
+
+    @Test
     public void testWPFNotification() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         when(notificationGtw.getNotification()).thenReturn(notification);
         when(notificationGtw.isAuthentic()).thenReturn(true);
@@ -82,6 +121,26 @@ public class NotificationTest {
         verify(notificationGtw).isWPFNotification();
         verify(notificationGtw).getResponse();
         verifyNoMoreInteractions(notificationGtw);
+    }
+
+    @Test
+    public void testWPFNotificationParams() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        String uniqueId = new StringUtils().generateUID();;
+        String transactionId = new StringUtils().generateUID();
+        notificationParams.put("wpf_unique_id", uniqueId);
+        notificationParams.put("signature", SHA1Hasher.SHA1(uniqueId + configuration.getPassword()));
+
+        NotificationGateway notification = new NotificationGateway(configuration, notificationParams);
+
+        assertTrue(notification.isAuthentic());
+        assertTrue(notification.isWPFNotification());
+    }
+
+    @Test(expected = GenesisException.class)
+    public void testNonAuthenticNotification() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+
+        NotificationGateway notification = new NotificationGateway(configuration, notificationParams);
     }
 
     @Test(expected = GenesisException.class)

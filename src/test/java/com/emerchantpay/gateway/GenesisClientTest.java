@@ -13,6 +13,7 @@ import com.emerchantpay.gateway.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class GenesisClientTest {
     private GenesisClient client;
     private TransactionGateway transaction;
     private NodeWrapper response;
+    private List<NodeWrapper> responsesList;
     private ConsumerGateway consumer;
     private Configuration configuration;
     private String uid = new StringUtils().generateUID();
@@ -41,6 +43,8 @@ public class GenesisClientTest {
         client = mock(GenesisClient.class);
         transaction = mock(TransactionGateway.class);
         response = mock(NodeWrapper.class);
+        responsesList = new ArrayList<NodeWrapper>();
+        responsesList.add(response);
         consumer = mock(ConsumerGateway.class);
         configuration = mock(Configuration.class);
     }
@@ -63,6 +67,7 @@ public class GenesisClientTest {
         when(client.getTransaction(isA(String.class))).thenReturn(transaction);
         when(client.getConsumer(isA(String.class))).thenReturn(consumer);
         when(client.getResponse(isA(String.class))).thenReturn(response);
+        when(client.getAllResponses()).thenReturn(responsesList);
 
         assertEquals(client.debugMode(true), client);
         assertEquals(client.changeRequest(sale), client);
@@ -79,6 +84,7 @@ public class GenesisClientTest {
         assertEquals(transaction, client.getTransaction(uid));
         assertEquals(consumer, client.getConsumer(uid));
         assertEquals(response, client.getResponse(uid));
+        assertEquals(client.getAllResponses(), responsesList);
 
         verify(client).debugMode(true);
         verify(client).changeRequest(sale);
@@ -95,6 +101,7 @@ public class GenesisClientTest {
         verify(client).getTransaction(uid);
         verify(client).getConsumer(uid);
         verify(client).getResponse(uid);
+        verify(client).getAllResponses();
 
         verifyNoMoreInteractions(client);
     }

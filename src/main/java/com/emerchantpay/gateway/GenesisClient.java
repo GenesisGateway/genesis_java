@@ -251,7 +251,9 @@ public class GenesisClient extends Request {
 
         http = new Http(configuration);
         NodeWrapper response = http.postXML(configuration.getBaseUrl(), request);
-        responseMap.put(request.getTransactionId(), response);
+
+        String requestIdentifier = getRequestIdentifier(request);
+        responseMap.put(requestIdentifier, response);
     }
 
     public NodeWrapper getResponse() {
@@ -266,6 +268,10 @@ public class GenesisClient extends Request {
 
     public NodeWrapper getResponse(String transactionId) {
         return responseMap.get(transactionId);
+    }
+
+    public List<NodeWrapper> getAllResponses() {
+        return new ArrayList<NodeWrapper>(responseMap.values());
     }
 
     private Configuration getConfiguration() {
@@ -294,5 +300,18 @@ public class GenesisClient extends Request {
             throw new LimitsException("Maximum requests number reached. Limit is: "
                     + maxRequestNumber);
         }
+    }
+
+    private String getRequestIdentifier(Request request) {
+        //Match request by its transaction id/unique id, if present, otherwise use internally generated id so execution is not blocked.
+        String requestIdentifier;
+        if (request.getTransactionId() != null) {
+            requestIdentifier = request.getTransactionId();
+        } else if (request.getUniqueId() != null) {
+            requestIdentifier = request.getUniqueId();
+        } else {
+            requestIdentifier = UUID.randomUUID().toString();
+        }
+        return requestIdentifier;
     }
 }

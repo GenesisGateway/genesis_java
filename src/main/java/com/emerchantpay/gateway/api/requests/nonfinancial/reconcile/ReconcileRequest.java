@@ -60,6 +60,11 @@ public class ReconcileRequest extends Request {
 	}
 
 	@Override
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	@Override
 	public String toXML() {
 		return buildRequest("reconcile").toXML();
 	}

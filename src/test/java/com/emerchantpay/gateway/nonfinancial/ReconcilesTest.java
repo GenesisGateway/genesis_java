@@ -73,6 +73,14 @@ public class ReconcilesTest {
     }
 
     @Test
+    public void testSingleReconcileUniqueId() {
+        ReconcileRequest reconcileRequest = new ReconcileRequest();
+        reconcileRequest.setUniqueId(uniqueId);
+        assertEquals(uniqueId, reconcileRequest.getUniqueId());
+        verifySingleExecute();
+    }
+
+    @Test
     public void testByDate() {
         // By Date
         when(reconcileByDate.setStartDate(isA(String.class))).thenReturn(reconcileByDate);
