@@ -4,7 +4,7 @@ import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.mobile.ApplePayRequest;
-import com.emerchantpay.gateway.api.requests.financial.mobile.PaymentTokenRequest;
+import com.emerchantpay.gateway.api.requests.financial.mobile.ApplePayPaymentTokenRequest;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
 import com.emerchantpay.gateway.util.Currency;
@@ -53,7 +53,7 @@ public class ApplePayTest {
         applePayRequest.setCrypto(true);
 
         //Payment token
-        PaymentTokenRequest paymentToken = applePayRequest.getPaymentTokenRequest();
+        ApplePayPaymentTokenRequest paymentToken = applePayRequest.getPaymentTokenRequest();
         paymentToken.setTokenVersion("TokenVersion");
         paymentToken.setTokenData("TokenData");
         paymentToken.setTokenSignature("TokenSignature");
@@ -103,8 +103,8 @@ public class ApplePayTest {
     }
 
     @Test
-    public void testUPI() {
-        PaymentTokenRequest paymentToken = mock(PaymentTokenRequest.class);
+    public void testApplePay() {
+        ApplePayPaymentTokenRequest paymentToken = mock(ApplePayPaymentTokenRequest.class);
 
         when(applePayRequest.setTransactionId(isA(String.class))).thenReturn(applePayRequest);
         when(applePayRequest.setPaymentType(isA(String.class))).thenReturn(applePayRequest);
@@ -267,21 +267,21 @@ public class ApplePayTest {
     @Test (expected = RequiredParamsException.class)
     public void testMissingTokenData(){
         applePayRequest = stubApplePay();
-        applePayRequest.getPaymentTokenRequest().setTokenData(null);
+        applePayRequest.getPaymentTokenRequest().setTokenData("");
         applePayRequest.toXML();
     }
 
     @Test (expected = IOException.class)
     public void testSetPaymentTokenInvalidJson() throws IOException {
         applePayRequest = stubApplePay();
-        applePayRequest.getPaymentTokenRequest().setPaymentToken("Invalid JSON");
+        applePayRequest.getPaymentTokenRequest().setPaymentTokenJson("Invalid JSON");
         applePayRequest.toXML();
     }
 
     @Test
     public void testSetPaymentToken() throws IOException {
         applePayRequest = stubApplePay();
-        PaymentTokenRequest paymentToken = applePayRequest.getPaymentTokenRequest();
+        ApplePayPaymentTokenRequest paymentToken = applePayRequest.getPaymentTokenRequest();
 
 
         HashMap<String, String> paymentDataHeaderMap = new HashMap<String, String>();
@@ -307,7 +307,7 @@ public class ApplePayTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String testPaymentTokenJson = mapper.writeValueAsString(paymentTokenMap);
-        paymentToken.setPaymentToken(testPaymentTokenJson);
+        paymentToken.setPaymentTokenJson(testPaymentTokenJson);
 
         //Compare using object mapper readTree to ignore order
         assertEquals(mapper.readTree(testPaymentTokenJson), mapper.readTree(paymentToken.toJSON()));

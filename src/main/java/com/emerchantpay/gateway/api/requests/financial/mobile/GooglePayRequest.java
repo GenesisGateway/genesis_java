@@ -9,7 +9,6 @@ import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.CryptoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -42,16 +41,23 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class ApplePayRequest extends Request implements BaseAttributes, PaymentAttributes, CustomerInfoAttributes,
-        AddressAttributes, BusinessParamsAttributes, CryptoAttributes {
+public class GooglePayRequest extends Request implements BaseAttributes, PaymentAttributes, CustomerInfoAttributes,
+        AddressAttributes, BusinessParamsAttributes {
 
-    private String transactionType = TransactionTypes.APPLE_PAY;
+    private String transactionType = TransactionTypes.GOOGLE_PAY;
     private BigDecimal amount;
     private String currency;
-    private String paymentType;
+    private String paymentSubType;
     private String documentId;
     private String birthDate;
-    private ApplePayPaymentTokenRequest applePayPaymentTokenRequest = new ApplePayPaymentTokenRequest();
+    private GooglePayPaymentTokenRequest googlePayPaymentTokenRequest = new GooglePayPaymentTokenRequest();
+
+
+    /**
+     * Used in Google token for signatures array
+     */
+    private static final String GOOGLE_PAY_TOKEN_KEY_SIGNATURES = "<signatures>";
+
 
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -59,12 +65,12 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
 
-    public ApplePayRequest() {
+    public GooglePayRequest() {
         super();
     }
 
-    public ApplePayPaymentTokenRequest getPaymentTokenRequest() {
-        return applePayPaymentTokenRequest;
+    public GooglePayPaymentTokenRequest getPaymentTokenRequest() {
+        return googlePayPaymentTokenRequest;
     }
 
     @Override
@@ -94,14 +100,14 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
         return transactionType;
     }
 
-    public ApplePayRequest setPaymentType(String paymentType) {
-        this.paymentType = paymentType;
+    public GooglePayRequest setPaymentSubType(String paymentSubType) {
+        this.paymentSubType = paymentSubType;
         return this;
     }
 
-    public String getPaymentType(){ return paymentType; }
+    public String getPaymentSubType(){ return paymentSubType; }
 
-    public ApplePayRequest setDocumentId(String documentId) {
+    public GooglePayRequest setDocumentId(String documentId) {
         this.documentId = documentId;
         return this;
     }
@@ -110,7 +116,7 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
         return documentId;
     }
 
-    public ApplePayRequest setBirthDate(String birthDate) {
+    public GooglePayRequest setBirthDate(String birthDate) {
         this.birthDate = birthDate;
         return this;
     }
@@ -123,11 +129,11 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
     public String toXML() {
 
         String xmlRequest = buildRequest("payment_transaction").toXML();
-        int paymentTokenOpenTagPos = xmlRequest.indexOf("<payment_token>");
-        int paymentTokenTagPos = paymentTokenOpenTagPos + "<payment_token>".length();
+        int paymentTokenOpenTagPos = xmlRequest.indexOf(GOOGLE_PAY_TOKEN_KEY_SIGNATURES);
+        int paymentTokenTagPos = paymentTokenOpenTagPos + GOOGLE_PAY_TOKEN_KEY_SIGNATURES.length();
         //Add unescaped payment token
         if(paymentTokenOpenTagPos > 0){
-            String paymentTokenJson = applePayPaymentTokenRequest.toJSON();
+            String paymentTokenJson = googlePayPaymentTokenRequest.toJSON();
             xmlRequest = xmlRequest.substring(0, paymentTokenTagPos) + paymentTokenJson + xmlRequest.substring(paymentTokenTagPos);
         }
         return xmlRequest;
@@ -143,7 +149,7 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
         requiredParams.put(RequiredParameters.amount, amount.toString());
         requiredParams.put(RequiredParameters.currency, currency);
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
-        requiredParams.put(RequiredParameters.paymentSubType, paymentType);
+        requiredParams.put(RequiredParameters.paymentSubType, paymentSubType);
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -155,7 +161,7 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
         requiredPaymentTypes.add("init_recurring_sale");
         requiredPaymentTypes.add("sale");
 
-        if (!requiredPaymentTypes.contains(paymentType)) {
+        if (!requiredPaymentTypes.contains(paymentSubType)) {
             throw new RequiredParamsException("Invalid payment type. Allowed payment types are: "
                     + requiredPaymentTypes);
         }
@@ -165,18 +171,16 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
             validator.clearInvalidParams();
             throw new RegexException(invalidParams);
         }
-
         String paymentToken;
         if (getPaymentTokenRequest().getPaymentToken() != null)
             paymentToken = getPaymentTokenRequest().getPaymentToken();
         else paymentToken = getPaymentTokenRequest().toJSON();
-
+            
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
-                .addElement("payment_subtype", paymentType)
+                .addElement("payment_subtype", paymentSubType)
                 .addElement("payment_token", paymentToken)
                 .addElement("document_id", documentId)
                 .addElement("birth_date", birthDate)
-                .addElement(buildCryptoParams().toXML())
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())

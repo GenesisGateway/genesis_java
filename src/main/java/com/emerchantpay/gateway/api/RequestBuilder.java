@@ -136,8 +136,13 @@ public class RequestBuilder {
             return wrapInXMLTag(name, xml.toString(), "array");
         } else {
 
-            return String.format("<%s>%s</%s>", xmlEscape(name), element == null ? "" : xmlEscape(element.toString()),
-                    xmlEscape(name));
+            if (name == "payment_token") {
+                return String.format("<%s>%s</%s>", xmlEscape(name), element == null ? "" : jsonEscape(element.toString()),
+                        xmlEscape(name));
+            } else {
+                return String.format("<%s>%s</%s>", xmlEscape(name), element == null ? "" : xmlEscape(element.toString()),
+                        xmlEscape(name));
+            }
         }
     }
 
@@ -179,6 +184,10 @@ public class RequestBuilder {
 
     protected static String xmlEscape(String input) {
         return StringUtils.replaceXMLEscapeCharacters(input);
+    }
+
+    public static String jsonEscape(String input) {
+        return StringUtils.replaceJSONEscapeCharacters(input);
     }
 
     public List<Map.Entry<String, Object>> getElements() {

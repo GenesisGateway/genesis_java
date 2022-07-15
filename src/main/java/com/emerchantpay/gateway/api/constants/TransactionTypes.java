@@ -176,8 +176,11 @@ public class TransactionTypes {
     public static final String KLARNA_CAPTURE = "klarna_capture";
     public static final String KLARNA_REFUND = "klarna refund";
 
-    //Apple Pay
+    // Apple Pay
     public static final String APPLE_PAY = "apple_pay";
+
+    // Google Pay
+    public static final String GOOGLE_PAY = "google_pay";
 
     //UPI (Unified Payment Interface)
     public static final String UPI = "upi";
@@ -312,7 +315,9 @@ public class TransactionTypes {
                 UPI,
                 WEBMONEY,
                 WEBPAY,
-                WECHAT
+                WECHAT,
+                APPLE_PAY,
+                GOOGLE_PAY
         }));
 
         return transactionTypes;

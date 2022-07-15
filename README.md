@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.16.4</version>
+        <version>1.17.0</version>
 </dependency>
 ```
 
@@ -287,6 +287,7 @@ api.requests.financial.giftcards.TCSRequest
 
 //Mobile Payments
 api.requests.financial.mobile.ApplePayRequest
+api.requests.financial.mobile.GooglePayRequest
 api.requests.financial.mobile.AfricanMobilePayoutRequest
 api.requests.financial.mobile.AfricanMobileSaleRequest
 

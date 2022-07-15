@@ -35,7 +35,7 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PaymentTokenRequest extends Request {
+public class ApplePayPaymentTokenRequest extends Request {
 
     private static final String PAYMENT_METHOD = "paymentMethod";
     private static final String PAYMENT_DATA = "paymentData";
@@ -63,13 +63,15 @@ public class PaymentTokenRequest extends Request {
     //A unique identifier for this payment.
     private String tokenTransactionIdentifier;
 
+    private String paymentToken;
+
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
 
-    public PaymentTokenRequest() {
+    public ApplePayPaymentTokenRequest() {
         super();
     }
 
@@ -77,7 +79,7 @@ public class PaymentTokenRequest extends Request {
         return tokenVersion;
     }
 
-    public PaymentTokenRequest setTokenVersion(String tokenVersion) {
+    public ApplePayPaymentTokenRequest setTokenVersion(String tokenVersion) {
         this.tokenVersion = tokenVersion;
         return this;
     }
@@ -86,7 +88,7 @@ public class PaymentTokenRequest extends Request {
         return tokenData;
     }
 
-    public PaymentTokenRequest setTokenData(String tokenData) {
+    public ApplePayPaymentTokenRequest setTokenData(String tokenData) {
         this.tokenData = tokenData;
         return this;
     }
@@ -95,7 +97,7 @@ public class PaymentTokenRequest extends Request {
         return tokenSignature;
     }
 
-    public PaymentTokenRequest setTokenSignature(String tokenSignature) {
+    public ApplePayPaymentTokenRequest setTokenSignature(String tokenSignature) {
         this.tokenSignature = tokenSignature;
         return this;
     }
@@ -104,7 +106,7 @@ public class PaymentTokenRequest extends Request {
         return tokenEphemeralPublicKey;
     }
 
-    public PaymentTokenRequest setTokenEphemeralPublicKey(String tokenEphemeralPublicKey) {
+    public ApplePayPaymentTokenRequest setTokenEphemeralPublicKey(String tokenEphemeralPublicKey) {
         this.tokenEphemeralPublicKey = tokenEphemeralPublicKey;
         return this;
     }
@@ -113,7 +115,7 @@ public class PaymentTokenRequest extends Request {
         return tokenPublicKeyHash;
     }
 
-    public PaymentTokenRequest setTokenPublicKeyHash(String tokenPublicKeyHash) {
+    public ApplePayPaymentTokenRequest setTokenPublicKeyHash(String tokenPublicKeyHash) {
         this.tokenPublicKeyHash = tokenPublicKeyHash;
         return this;
     }
@@ -122,7 +124,7 @@ public class PaymentTokenRequest extends Request {
         return tokenTransactionId;
     }
 
-    public PaymentTokenRequest setTokenTransactionId(String tokenTransactionId) {
+    public ApplePayPaymentTokenRequest setTokenTransactionId(String tokenTransactionId) {
         this.tokenTransactionId = tokenTransactionId;
         return this;
     }
@@ -131,7 +133,7 @@ public class PaymentTokenRequest extends Request {
         return tokenDisplayName;
     }
 
-    public PaymentTokenRequest setTokenDisplayName(String tokenDisplayName) {
+    public ApplePayPaymentTokenRequest setTokenDisplayName(String tokenDisplayName) {
         this.tokenDisplayName = tokenDisplayName;
         return this;
     }
@@ -140,7 +142,7 @@ public class PaymentTokenRequest extends Request {
         return tokenNetwork;
     }
 
-    public PaymentTokenRequest setTokenNetwork(String tokenNetwork) {
+    public ApplePayPaymentTokenRequest setTokenNetwork(String tokenNetwork) {
         this.tokenNetwork = tokenNetwork;
         return this;
     }
@@ -149,7 +151,7 @@ public class PaymentTokenRequest extends Request {
         return tokenType;
     }
 
-    public PaymentTokenRequest setTokenType(String tokenType) {
+    public ApplePayPaymentTokenRequest setTokenType(String tokenType) {
         this.tokenType = tokenType;
         return this;
     }
@@ -158,12 +160,12 @@ public class PaymentTokenRequest extends Request {
         return tokenTransactionIdentifier;
     }
 
-    public PaymentTokenRequest setTokenTransactionIdentifier(String tokenTransactionIdentifier) {
+    public ApplePayPaymentTokenRequest setTokenTransactionIdentifier(String tokenTransactionIdentifier) {
         this.tokenTransactionIdentifier = tokenTransactionIdentifier;
         return this;
     }
 
-    public PaymentTokenRequest setPaymentToken(String paymentTokenJson) throws IOException {
+    public ApplePayPaymentTokenRequest setPaymentTokenJson(String paymentTokenJson) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         //IOException will be thrown if invalid JSON
@@ -195,6 +197,15 @@ public class PaymentTokenRequest extends Request {
         return this;
     }
 
+    public ApplePayPaymentTokenRequest setPaymentToken(String paymentToken) {
+        this.paymentToken = paymentToken;
+        return this;
+    }
+
+    public String getPaymentToken() {
+        return this.paymentToken;
+    }
+
     @Override
     public String toXML() {
         return buildRequest("payment_token").toXML();
@@ -212,16 +223,20 @@ public class PaymentTokenRequest extends Request {
 
     public RequestBuilder buildRequest(String root) {
         // Set required params
-        requiredParams.put(RequiredParameters.tokenVersion, tokenVersion);
-        requiredParams.put(RequiredParameters.tokenData, tokenData);
-        requiredParams.put(RequiredParameters.tokenSignature, tokenSignature);
-        requiredParams.put(RequiredParameters.tokenEphemeralPublicKey, tokenEphemeralPublicKey);
-        requiredParams.put(RequiredParameters.tokenPublicKeyHash, tokenPublicKeyHash);
-        requiredParams.put(RequiredParameters.tokenTransactionId, tokenTransactionId);
-        requiredParams.put(RequiredParameters.tokenDisplayName, tokenDisplayName);
-        requiredParams.put(RequiredParameters.tokenNetwork, tokenNetwork);
-        requiredParams.put(RequiredParameters.tokenType, tokenType);
-        requiredParams.put(RequiredParameters.tokenTransactionIdentifier, tokenTransactionIdentifier);
+        if (getPaymentToken() != null) {
+            requiredParams.put(RequiredParameters.paymentToken, paymentToken);
+        } else {
+            requiredParams.put(RequiredParameters.tokenVersion, tokenVersion);
+            requiredParams.put(RequiredParameters.tokenData, tokenData);
+            requiredParams.put(RequiredParameters.tokenSignature, tokenSignature);
+            requiredParams.put(RequiredParameters.tokenEphemeralPublicKey, tokenEphemeralPublicKey);
+            requiredParams.put(RequiredParameters.tokenPublicKeyHash, tokenPublicKeyHash);
+            requiredParams.put(RequiredParameters.tokenTransactionId, tokenTransactionId);
+            requiredParams.put(RequiredParameters.tokenDisplayName, tokenDisplayName);
+            requiredParams.put(RequiredParameters.tokenNetwork, tokenNetwork);
+            requiredParams.put(RequiredParameters.tokenType, tokenType);
+            requiredParams.put(RequiredParameters.tokenTransactionIdentifier, tokenTransactionIdentifier);
+        }
 
 
         // Validate request

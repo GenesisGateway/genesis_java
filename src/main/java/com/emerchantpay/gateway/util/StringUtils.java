@@ -47,14 +47,22 @@ public class StringUtils {
 				put("</>", "");
 			}});
 
+	public static Map<String, String> replaceJsonEscapeMap =
+			Collections.unmodifiableMap(new HashMap<String, String>() {{
+				put("&", "&amp;");
+				put("amp;amp;", "amp;");
+				put("&lt;", "");
+				put("&gt;", "");
+				put("&quot;", "\"");
+			}});
+
 	public static Map<String, String> replaceXMLEscapeMap =
 			Collections.unmodifiableMap(new HashMap<String, String>() {{
 				put("&", "&amp;");
 				put("amp;amp;", "amp;");
-				put("<", "&lt;");
-				put(">", "&gt;");
-				put("'", "&apos;");
-				put("\"", "&quot;");
+				put("&lt;", "");
+				put("&gt;", "");
+				put("&quot;", "\"");
 			}});
 
 	public static String dasherize(String str) {
@@ -183,15 +191,22 @@ public class StringUtils {
 	}
 
 	public static String replaceAllSpecialCharacters(String input) {
-		for(String key: replaceAllCharactersMap.keySet()) {
+		for (String key : replaceAllCharactersMap.keySet()) {
 			input = input.replace(key, replaceAllCharactersMap.get(key));
 		}
 		return input;
 	}
 
 	public static String replaceXMLEscapeCharacters(String input) {
-		for(String key: replaceXMLEscapeMap.keySet()) {
-			input = input.replace(key, replaceXMLEscapeMap.get(key));
+		for (String key : replaceXMLEscapeMap.keySet()) {
+			input = input.replace(key, replaceXMLEscapeMap.get(key));	
+		}
+		return input;
+	}
+
+	public static String replaceJSONEscapeCharacters(String input) {
+		for (String key : replaceJsonEscapeMap.keySet()) {
+			input = input.replace(key, replaceJsonEscapeMap.get(key));
 		}
 		return input;
 	}

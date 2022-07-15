@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.validation;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
 
 import java.util.HashMap;
@@ -60,7 +59,10 @@ public class RequiredParameters {
     public static String bankName = "bank_name";
     public static String accountName = "account_name";
     public static String bankCode = "bank_code";
-    public static String paymentType = "payment_type";
+
+    public static String paymentToken = "payment_token";
+
+    public static String paymentSubType = "payment_subtype";
 
     //Payment Token attributes
     public static String tokenVersion = "version";
@@ -73,6 +75,14 @@ public class RequiredParameters {
     public static String tokenNetwork = "network";
     public static String tokenType = "type";
     public static String tokenTransactionIdentifier = "transactionIdentifier";
+
+    public static String tokenSignatures = "token_signatures";
+
+    public static String tokenSignedKey = "token_signed_key";
+
+    public static String tokenSignedMessage = "token_signed_message";
+
+    public static String tokenProtocolVersion = "token_protocol_version";
 
     public static String virtualPaymentAddress = "virtual_payment_address";
 
