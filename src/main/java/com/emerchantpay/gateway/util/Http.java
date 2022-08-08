@@ -28,7 +28,6 @@ import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
 import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.xalan.xsltc.trax.TransformerFactoryImpl;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -296,7 +295,7 @@ public class Http implements Serializable {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = new TransformerFactoryImpl();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));

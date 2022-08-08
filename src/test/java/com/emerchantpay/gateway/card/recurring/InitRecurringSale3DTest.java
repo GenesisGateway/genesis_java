@@ -152,6 +152,7 @@ public class InitRecurringSale3DTest {
         initRecurringSale3D.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         InitRecurringSale3DRequest initRecurringSale3D = new InitRecurringSale3DRequest();
         initRecurringSale3D.setCurrency(Currency.USD.getCurrency());

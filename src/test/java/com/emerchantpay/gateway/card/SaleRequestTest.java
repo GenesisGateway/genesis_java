@@ -139,6 +139,7 @@ public class SaleRequestTest {
         sale.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         SaleRequest sale = new SaleRequest();
         sale.setCurrency(Currency.USD.getCurrency());

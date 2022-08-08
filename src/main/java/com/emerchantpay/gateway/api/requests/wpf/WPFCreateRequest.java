@@ -203,6 +203,11 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return buildRequest(root).toQueryString();
     }
 
+    @Override
+    public Boolean getZeroAmountSupport(){
+        return true;
+    }
+
     protected RequestBuilder buildRequest(String root) {
 
         requestBuilder = new RequestBuilder(root).addElement(buildBaseParams().toXML())

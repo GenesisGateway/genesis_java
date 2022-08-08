@@ -153,6 +153,7 @@ public class Sale3DTest {
         sale3D.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         Sale3DRequest sale3D = new Sale3DRequest();
         sale3D.setCurrency(Currency.USD.getCurrency());

@@ -144,6 +144,7 @@ public class Authorize3DRequestTest {
         authorize3D.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         Authorize3DRequest authorize3D = new Authorize3DRequest();
         authorize3D.setCurrency(Currency.USD.getCurrency());

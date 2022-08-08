@@ -143,6 +143,7 @@ public class InitRecurringSaleTest {
         initRecurringSale.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         InitRecurringSaleRequest initRecurringSale = new InitRecurringSaleRequest();
         initRecurringSale.setCurrency(Currency.USD.getCurrency());

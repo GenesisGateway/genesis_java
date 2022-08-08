@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway;
 
+import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -310,5 +311,23 @@ public class WPFRequestsTest {
         assertNotEquals(wpfCreateRequest1.toXML(), wpfCreateRequest2.toXML());
         assertNotEquals(wpfCreateRequest1.getCustomerEmail(), wpfCreateRequest2.getCustomerEmail());
         assertNotEquals(wpfCreateRequest1.getRequest(), wpfCreateRequest2.getRequest());
+    }
+
+    @Test(expected = RegexException.class)
+    public void testNegativeAmountError() throws MalformedURLException {
+        WPFCreateRequest wpfCreateRequest = stubWPF();
+        wpfCreateRequest.setCurrency(Currency.USD.getCurrency());
+        wpfCreateRequest.setAmount(new BigDecimal("-22.00"));
+        wpfCreateRequest.buildPaymentParams();
+    }
+
+    @Test
+    public void testZeroAmount() throws MalformedURLException {
+        WPFCreateRequest wpfCreateRequest = stubWPF();
+        wpfCreateRequest.setCurrency(Currency.USD.getCurrency());
+        BigDecimal amount = new BigDecimal("0.00");
+        wpfCreateRequest.setAmount(new BigDecimal("0.00"));
+        assertEquals(amount, wpfCreateRequest.getAmount());
+        assertTrue(wpfCreateRequest.buildPaymentParams() instanceof RequestBuilder);
     }
 }

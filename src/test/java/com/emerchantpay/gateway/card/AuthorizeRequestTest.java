@@ -133,6 +133,7 @@ public class AuthorizeRequestTest {
         authorize.buildPaymentParams();
     }
 
+    @Test
     public void testZeroAmount(){
         AuthorizeRequest authorize = new AuthorizeRequest();
         authorize.setCurrency(Currency.USD.getCurrency());
