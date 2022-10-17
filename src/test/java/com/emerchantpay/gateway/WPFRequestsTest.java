@@ -20,7 +20,10 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
@@ -39,12 +42,21 @@ public class WPFRequestsTest {
     private String uidWpf;
     private String uidReconcile;
 
+    private Random random;
+    private LocalDate today;
+    private DateTimeFormatter formatter;
+    private static final int MAX_BOUND = 19;
+
     @Before
     public void createWPF() throws MalformedURLException {
         uidWpf = new StringUtils().generateUID();
 
         client = mock(GenesisClient.class);
         wpfCreate = mock(WPFCreateRequest.class);
+
+        random = new Random();
+        today = LocalDate.now();
+        formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
 
     @Before
@@ -329,5 +341,121 @@ public class WPFRequestsTest {
         wpfCreateRequest.setAmount(new BigDecimal("0.00"));
         assertEquals(amount, wpfCreateRequest.getAmount());
         assertTrue(wpfCreateRequest.buildPaymentParams() instanceof RequestBuilder);
+    }
+
+    @Test
+    public void buildThreedsV2Attributes() {
+        wpfCreate = new WPFCreateRequest();
+
+        //Control attributes
+        String challengeWindowSize = "390x400";
+        wpfCreate.set3dsV2ControlChallengeWindowSize(challengeWindowSize);
+        assertEquals(challengeWindowSize, wpfCreate.get3dsV2ControlChallengeWindowSize());
+
+        String challengeIndicator = "preference";
+        wpfCreate.set3dsV2ControlChallengeIndicator(challengeIndicator);
+        assertEquals(challengeIndicator, wpfCreate.get3dsV2ControlChallengeIndicator());
+
+        //Card holder account attributes
+        String creationDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2CardHolderAccountCreationDate(creationDate);
+        assertEquals(creationDate, wpfCreate.get3dsV2CardHolderAccountCreationDate());
+
+        String lastChangeDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2CardHolderAccountLastChangeDate(lastChangeDate);
+        assertEquals(lastChangeDate, wpfCreate.get3dsV2CardHolderAccountLastChangeDate());
+
+        String passwordChangeDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2CardHolderAccountPasswordChangeDate(passwordChangeDate);
+        assertEquals(passwordChangeDate, wpfCreate.get3dsV2CardHolderAccountPasswordChangeDate());
+
+        String shippingAddressFirstUsedDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2CardHolderAccountShippingAddressDateFirstUsed(shippingAddressFirstUsedDate);
+        assertEquals(shippingAddressFirstUsedDate, wpfCreate.get3dsV2CardHolderAccountShippingAddressDateFirstUsed());
+
+        String registrationDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2CardHolderAccountRegistrationDate(registrationDate);
+        assertEquals(registrationDate, wpfCreate.get3dsV2CardHolderAccountRegistrationDate());
+
+        String updateIndicator = "current_transaction";
+        wpfCreate.set3dsV2CardHolderAccountUpdateIndicator(updateIndicator);
+        assertEquals(updateIndicator, wpfCreate.get3dsV2CardHolderAccountUpdateIndicator());
+
+        String passwordChangeIndicator = "30_to_60_days";
+        wpfCreate.set3dsV2CardHolderAccountPasswordChangeIndicator(passwordChangeIndicator);
+        assertEquals(passwordChangeIndicator, wpfCreate.get3dsV2CardHolderAccountPasswordChangeIndicator());
+
+        String shippingAddressUsageIndicator = "more_than_60days";
+        wpfCreate.set3dsV2CardHolderAccountShippingAddressUsageIndicator(shippingAddressUsageIndicator);
+        assertEquals(shippingAddressUsageIndicator, wpfCreate.get3dsV2CardHolderAccountShippingAddressUsageIndicator());
+
+        String suspiciousActivityIndicator = "suspicious_observed";
+        wpfCreate.set3dsV2CardHolderAccountSuspiciousActivityIndicator(suspiciousActivityIndicator);
+        assertEquals(suspiciousActivityIndicator, wpfCreate.get3dsV2CardHolderAccountSuspiciousActivityIndicator());
+
+        String registrationIndicator = "guest_checkout";
+        wpfCreate.set3dsV2CardHolderAccountRegistrationIndicator(registrationIndicator);
+        assertEquals(registrationIndicator, wpfCreate.get3dsV2CardHolderAccountRegistrationIndicator());
+
+        Integer trxActivityLast24Hours = random.nextInt(MAX_BOUND);
+        wpfCreate.set3dsV2CardHolderAccountTransactionsActivityLast24Hours(trxActivityLast24Hours);
+        assertEquals(trxActivityLast24Hours, wpfCreate.get3dsV2CardHolderAccountTransactionsActivityLast24Hours());
+
+        Integer trxActivityPreviousYear = random.nextInt(MAX_BOUND);
+        wpfCreate.set3dsV2CardHolderAccountTransactionsActivityPreviousYear(trxActivityPreviousYear);
+        assertEquals(trxActivityPreviousYear, wpfCreate.get3dsV2CardHolderAccountTransactionsActivityPreviousYear());
+
+        Integer provisionAttemptsLast24Hours = random.nextInt(MAX_BOUND);
+        wpfCreate.set3dsV2CardHolderAccountProvisionAttemptsLast24Hours(provisionAttemptsLast24Hours);
+        assertEquals(provisionAttemptsLast24Hours, wpfCreate.get3dsV2CardHolderAccountProvisionAttemptsLast24Hours());
+
+        Integer purchaseCountLast6Months = random.nextInt(MAX_BOUND);
+        wpfCreate.set3dsV2CardHolderAccountPurchasesCountLast6Months(purchaseCountLast6Months);
+        assertEquals(purchaseCountLast6Months, wpfCreate.get3dsV2CardHolderAccountPurchasesCountLast6Months());
+
+        //Merchant risk attributes
+        String shippingIndicator = "digital_goods";
+        wpfCreate.set3dsV2MerchantRiskShippingIndicator(shippingIndicator);
+        assertEquals(shippingIndicator, wpfCreate.get3dsV2MerchantRiskShippingIndicator());
+
+        String deliveryTimeframe = "electronic";
+        wpfCreate.set3dsV2MerchantRiskDeliveryTimeframe(deliveryTimeframe);
+        assertEquals(deliveryTimeframe, wpfCreate.get3dsV2MerchantRiskDeliveryTimeframe());
+
+        String reorderItemIndicator = "first_time";
+        wpfCreate.set3dsV2MerchantRiskReorderItemsIndicator(reorderItemIndicator);
+        assertEquals(reorderItemIndicator, wpfCreate.get3dsV2MerchantRiskReorderItemsIndicator());
+
+        String preorderPurchaseIndicator = "merchandise_available";
+        wpfCreate.set3dsV2MerchantRiskPreOrderPurchaseIndicator(preorderPurchaseIndicator);
+        assertEquals(preorderPurchaseIndicator, wpfCreate.get3dsV2MerchantRiskPreOrderPurchaseIndicator());
+
+        String preorderDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2MerchantRiskPreOrderDate(preorderDate);
+        assertEquals(preorderDate, wpfCreate.get3dsV2MerchantRiskPreOrderDate());
+
+        wpfCreate.set3dsV2MerchantRiskGiftCard(true);
+        assertEquals(true, wpfCreate.get3dsV2MerchantRiskGiftCard());
+
+        Integer giftCardCount = random.nextInt(MAX_BOUND);
+        wpfCreate.set3dsV2MerchantRiskGiftCardCount(giftCardCount);
+        assertEquals(giftCardCount, wpfCreate.get3dsV2MerchantRiskGiftCardCount());
+
+        //Purchase attributes
+        String category = "prepaid_activation";
+        wpfCreate.set3dsV2PurchaseCategory(category);
+        assertEquals(category, wpfCreate.get3dsV2PurchaseCategory());
+        assertTrue(wpfCreate.build3DSv2PurchaseParams() instanceof RequestBuilder);
+
+        //Recurring attributes
+        String expirationDate = today.plusDays(random.nextInt(365)).format(formatter);
+        wpfCreate.set3dsV2RecurringExpirationDate(expirationDate);
+        assertEquals(expirationDate, wpfCreate.get3dsV2RecurringExpirationDate());
+
+        Integer frequency = random.nextInt(MAX_BOUND) + 1;
+        wpfCreate.set3dsV2RecurringFrequency(frequency);
+        assertEquals(frequency, wpfCreate.get3dsV2RecurringFrequency());
+
+        assertTrue(wpfCreate.buildThreedsV2Params() instanceof RequestBuilder);
     }
 }

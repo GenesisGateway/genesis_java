@@ -14,13 +14,14 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2CommonAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
-        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes {
+        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes, ThreedsV2CommonAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
@@ -38,6 +39,10 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     private Boolean scaPreference;
 
     private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
+
+    //3DSv2 Attributes
+    private HashMap<String, RequestBuilder> threedsV2RequestBuildersMap;
+    private HashMap<String, HashMap<String, String>> threedsV2AttrParamsMap;
 
     // Reminders
     private RemindersRequest reminders = new RemindersRequest(this);
@@ -75,6 +80,22 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     @Override
     public String getCurrency() {
         return currency;
+    }
+
+    @Override
+    public HashMap<String, RequestBuilder> getThreedsV2RequestBuildersMap() {
+        if(threedsV2RequestBuildersMap == null){
+            threedsV2RequestBuildersMap = new HashMap<String, RequestBuilder>();
+        }
+        return threedsV2RequestBuildersMap;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, String>> getThreedsV2AttrParamsMap() {
+        if(threedsV2AttrParamsMap == null){
+            threedsV2AttrParamsMap = new HashMap<String, HashMap<String, String>>();
+        }
+        return threedsV2AttrParamsMap;
     }
 
     public WPFCreateRequest setDescription(String description) {
@@ -226,7 +247,8 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("pay_later", payLater)
                 .addElement("remember_card", rememberCard)
-                .addElement("sca_preference", scaPreference);
+                .addElement("sca_preference", scaPreference)
+                .addElement("threeds_v2_params", buildThreedsV2Params().toXML());
 
         // Klarna payment method
         if (klarnaItemsRequest != null

@@ -28,8 +28,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.util.HashMap;
 
-public interface ThreedsV2Attributes extends MethodAttributes, BrowserAttributes, CardHolderAccountAttributes,
-        ControlAttributes, MerchantRiskAttributes, PurchaseAttributes, RecurringAttributes, SdkAttributes{
+public interface ThreedsV2Attributes extends ThreedsV2CommonAttributes, MethodAttributes, BrowserAttributes, SdkAttributes{
 
     default RequestBuilder get3DSv2MethodAttrRequestBuilder(){
         RequestBuilder methodAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("method");
@@ -65,96 +64,6 @@ public interface ThreedsV2Attributes extends MethodAttributes, BrowserAttributes
             getThreedsV2AttrParamsMap().put("browser", browserAttrParamsMap);
         }
         return browserAttrParamsMap;
-    };
-
-    default RequestBuilder get3DSv2CardHolderAttrRequestBuilder(){
-        RequestBuilder cardHolderAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("cardHolderAccount");
-        if(cardHolderAttrRequestBuilder == null){
-            cardHolderAttrRequestBuilder = new RequestBuilder("");
-            getThreedsV2RequestBuildersMap().put("cardHolderAccount", cardHolderAttrRequestBuilder);
-        }
-        return cardHolderAttrRequestBuilder;
-    };
-
-    default HashMap<String, String> get3DSv2CardHolderAttrParamsMap(){
-        HashMap<String, String> cardHolderAttrParamsMap = getThreedsV2AttrParamsMap().get("cardHolderAccount");
-        if(cardHolderAttrParamsMap == null){
-            cardHolderAttrParamsMap = new HashMap<String, String>();
-            getThreedsV2AttrParamsMap().put("cardHolderAccount", cardHolderAttrParamsMap);
-        }
-        return cardHolderAttrParamsMap;
-    };
-
-    default RequestBuilder get3DSv2ControlAttrRequestBuilder(){
-        RequestBuilder controlAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("control");
-        if(controlAttrRequestBuilder == null){
-            controlAttrRequestBuilder = new RequestBuilder("");
-            getThreedsV2RequestBuildersMap().put("control", controlAttrRequestBuilder);
-        }
-        return controlAttrRequestBuilder;
-    };
-
-    default HashMap<String, String> get3DSv2ControlAttrParamsMap(){
-        HashMap<String, String> controlAttrParamsMap = getThreedsV2AttrParamsMap().get("control");
-        if(controlAttrParamsMap == null){
-            controlAttrParamsMap = new HashMap<String, String>();
-            getThreedsV2AttrParamsMap().put("control", controlAttrParamsMap);
-        }
-        return controlAttrParamsMap;
-    };
-
-    default RequestBuilder get3DSv2MerchantRiskAttrRequestBuilder(){
-        RequestBuilder merchantRiskAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("merchantRisk");
-        if(merchantRiskAttrRequestBuilder == null){
-            merchantRiskAttrRequestBuilder = new RequestBuilder("");
-            getThreedsV2RequestBuildersMap().put("merchantRisk", merchantRiskAttrRequestBuilder);
-        }
-        return merchantRiskAttrRequestBuilder;
-    };
-
-    default HashMap<String, String> get3DSv2MerchantRiskAttrParamsMap(){
-        HashMap<String, String> merchantRiskAttrParamsMap = getThreedsV2AttrParamsMap().get("merchantRisk");
-        if(merchantRiskAttrParamsMap == null){
-            merchantRiskAttrParamsMap = new HashMap<String, String>();
-            getThreedsV2AttrParamsMap().put("merchantRisk", merchantRiskAttrParamsMap);
-        }
-        return merchantRiskAttrParamsMap;
-    };
-
-    default RequestBuilder get3DSv2PurchaseAttrRequestBuilder(){
-        RequestBuilder purchaseAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("purchase");
-        if(purchaseAttrRequestBuilder == null){
-            purchaseAttrRequestBuilder = new RequestBuilder("");
-            getThreedsV2RequestBuildersMap().put("purchase", purchaseAttrRequestBuilder);
-        }
-        return purchaseAttrRequestBuilder;
-    };
-
-    default HashMap<String, String> get3DSv2PurchaseAttrParamsMap(){
-        HashMap<String, String> purchaseAttrParamsMap = getThreedsV2AttrParamsMap().get("purchase");
-        if(purchaseAttrParamsMap == null){
-            purchaseAttrParamsMap = new HashMap<String, String>();
-            getThreedsV2AttrParamsMap().put("purchase", purchaseAttrParamsMap);
-        }
-        return purchaseAttrParamsMap;
-    };
-
-    default RequestBuilder get3DSv2RecurringAttrRequestBuilder(){
-        RequestBuilder recurringAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("recurring");
-        if(recurringAttrRequestBuilder == null){
-            recurringAttrRequestBuilder = new RequestBuilder("");
-            getThreedsV2RequestBuildersMap().put("recurring", recurringAttrRequestBuilder);
-        }
-        return recurringAttrRequestBuilder;
-    };
-
-    default HashMap<String, String> get3DSv2RecurringAttrParamsMap(){
-        HashMap<String, String> recurringAttrParamsMap = getThreedsV2AttrParamsMap().get("recurring");
-        if(recurringAttrParamsMap == null){
-            recurringAttrParamsMap = new HashMap<String, String>();
-            getThreedsV2AttrParamsMap().put("recurring", recurringAttrParamsMap);
-        }
-        return recurringAttrParamsMap;
     };
 
     default RequestBuilder get3DSv2SdkAttrRequestBuilder(){
@@ -206,20 +115,11 @@ public interface ThreedsV2Attributes extends MethodAttributes, BrowserAttributes
         // Validate request
         getValidator().isValidRequest(requiredParams);
 
-        RequestBuilder threedsV2AttrRequestBuilder = new RequestBuilder("");
-        threedsV2AttrRequestBuilder.addElement("threeds_method", build3DSv2MethodParams())
-                .addElement("control", build3DSv2ControlParams().toXML())
-                .addElement("purchase", build3DSv2PurchaseParams().toXML())
-                .addElement("merchant_risk", build3DSv2MerchantRiskParams().toXML())
-                .addElement("card_holder_account", build3DSv2CardHolderParams().toXML())
+        RequestBuilder threedsV2AttrRequestBuilder = ThreedsV2CommonAttributes.super.buildThreedsV2Params();
+        threedsV2AttrRequestBuilder.addElement("threeds_method", build3DSv2MethodParams().toXML())
                 .addElement("browser", build3DSv2BrowserParams().toXML())
-                .addElement("sdk", build3DSv2SdkParams().toXML())
-                .addElement("recurring", build3DSv2RecurringParams().toXML());
+                .addElement("sdk", build3DSv2SdkParams().toXML());
 
         return threedsV2AttrRequestBuilder;
     }
-
-    HashMap<String, RequestBuilder> getThreedsV2RequestBuildersMap();
-
-    HashMap<String, HashMap<String, String>> getThreedsV2AttrParamsMap();
 }
