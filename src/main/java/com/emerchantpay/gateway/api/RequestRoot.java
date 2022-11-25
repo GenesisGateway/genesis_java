@@ -120,6 +120,10 @@ public abstract class RequestRoot {
     private RequestBuilder preauthAttrRequestBuilder;
     private HashMap<String, String> preauthAttrParamsMap;
 
+    //Tokenization Attributes
+    private RequestBuilder tokenizationAttrRequestBuilder;
+    private HashMap<String, String> tokenizationAttrParamsMap;
+
     //Pending Payment Attributes
     private RequestBuilder pendingPaymentAttrRequestBuilder;
     private HashMap<String, String> pendingPaymentAttrParamsMap;
@@ -423,6 +427,20 @@ public abstract class RequestRoot {
             preauthAttrParamsMap = new HashMap<String, String>();
         }
         return preauthAttrParamsMap;
+    }
+
+    public RequestBuilder getTokenizationAttrRequestBuilder() {
+        if (tokenizationAttrRequestBuilder == null) {
+            tokenizationAttrRequestBuilder = new RequestBuilder("");
+        }
+        return tokenizationAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getTokenizationAttrParamsMap() {
+        if (tokenizationAttrParamsMap == null) {
+            tokenizationAttrParamsMap = new HashMap<String, String>();
+        }
+        return tokenizationAttrParamsMap;
     }
 
     public RequestBuilder getPendingPaymentAttrRequestBuilder() {

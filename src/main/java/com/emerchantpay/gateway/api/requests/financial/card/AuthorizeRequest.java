@@ -40,7 +40,8 @@ import java.util.Map;
 
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes,
-        BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes {
+        BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes,
+        TokenizationAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
@@ -123,9 +124,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -138,8 +138,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement("moto", moto)
                 .addElement(buildCryptoParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("sca_params", buildScaParams().toXML())
@@ -147,7 +147,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement(buildUcofParams(getCredentialOnFile()).toXML())
-                .addElement(buildPreauthorizationParams().toXML());
+                .addElement(buildPreauthorizationParams().toXML())
+                .addElement(buildTokenizationParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

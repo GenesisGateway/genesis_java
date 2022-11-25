@@ -122,10 +122,23 @@ public interface ShippingAddressAttributes {
     }
 
     default RequestBuilder buildShippingAddress() {
-        if (isShippingAddressValid()) {
-            return getShipAddrAttrRequestBuilder();
-        } else {
+        return buildShippingAddress(true, "");
+    }
+
+    default RequestBuilder buildShippingAddress(Boolean includeEmptyTags) {
+        return buildShippingAddress(includeEmptyTags, "shipping_address");
+    }
+
+    default RequestBuilder buildShippingAddress(Boolean includeEmptyTags, String parent) {
+        if (!isShippingAddressValid()) {
             return null;
+        }
+        String shippingAddressXML = getShipAddrAttrRequestBuilder().toXML();
+        if(!includeEmptyTags && shippingAddressXML.isEmpty()){
+            //No empty tags included
+            return new RequestBuilder("");
+        } else {
+            return new RequestBuilder(parent).addElement(shippingAddressXML);
         }
     }
 

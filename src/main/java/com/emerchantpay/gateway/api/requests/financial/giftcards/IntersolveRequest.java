@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.interfaces.financial.TokenizationAttributes;
 import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
 
 /*
@@ -27,7 +28,7 @@ import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class IntersolveRequest extends GiftCardRequest {
+public class IntersolveRequest extends GiftCardRequest implements TokenizationAttributes {
 
 	private String transactionType = TransactionTypes.INTERSOLVE;
 
@@ -53,6 +54,7 @@ public class IntersolveRequest extends GiftCardRequest {
 	protected RequestBuilder buildRequest(String root) {
 
 		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildGiftcardParams().toXML());
+				.addElement(buildGiftcardParams().toXML())
+				.addElement(buildTokenizationParams().toXML());
 	}
 }

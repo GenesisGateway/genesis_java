@@ -42,7 +42,7 @@ import java.util.Map;
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
         MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
         FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes,
-        ThreedsV2Attributes {
+        ThreedsV2Attributes, TokenizationAttributes {
 
     private String transactionType = TransactionTypes.SALE_3D;
     private Boolean moto;
@@ -145,9 +145,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
         requiredParams.putAll(getMpiConditionalRequiredFields());
 
         // Validate request
@@ -164,8 +163,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("mpi_params", buildMpiParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
@@ -173,7 +172,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())
-                .addElement("threeds_v2_params", buildThreedsV2Params().toXML());
+                .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
+                .addElement(buildTokenizationParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

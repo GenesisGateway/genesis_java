@@ -2,10 +2,7 @@ package com.emerchantpay.gateway;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
 import org.junit.Before;
@@ -39,6 +36,8 @@ public class AddressTest {
 		assertEquals(addresses.setBillingZipCode("16000"), addresses);
 		assertEquals(addresses.setBillingCountry("US"), addresses);
 		assertEquals(addresses.buildBillingAddress(), addresses.getBillingAddress());
+		assertEquals(addresses.buildBillingAddress(true), addresses.getBillingAddress());
+		assertEquals(addresses.buildBillingAddress(true, ""), addresses.getBillingAddress());
 
 		verify(addresses).setBillingFirstname("John");
 		verify(addresses).setBillingLastname("Doe");
@@ -48,7 +47,9 @@ public class AddressTest {
 		verify(addresses).setBillingZipCode("16000");
 		verify(addresses).setBillingCountry("US");
 		verify(addresses).buildBillingAddress();
-		verify(addresses).getBillingAddress();
+		verify(addresses).buildBillingAddress(true);
+		verify(addresses).buildBillingAddress(true, "");
+		verify(addresses, times(3)).getBillingAddress();
 
 		// Shipping address
 		when(addresses.setShippingFirstname(isA(String.class))).thenReturn(addresses);
@@ -67,6 +68,8 @@ public class AddressTest {
 		assertEquals(addresses.setShippingZipCode("16000"), addresses);
 		assertEquals(addresses.setShippingCountry("US"), addresses);
 		assertEquals(addresses.buildShippingAddress(), addresses.getShippingAddress());
+		assertEquals(addresses.buildShippingAddress(true), addresses.getShippingAddress());
+		assertEquals(addresses.buildShippingAddress(true, ""), addresses.getShippingAddress());
 
 		verify(addresses).setShippingFirstname("John");
 		verify(addresses).setShippingLastname("Doe");
@@ -76,7 +79,9 @@ public class AddressTest {
 		verify(addresses).setShippingZipCode("16000");
 		verify(addresses).setShippingCountry("US");
 		verify(addresses).buildShippingAddress();
-		verify(addresses).getShippingAddress();
+		verify(addresses).buildShippingAddress(true);
+		verify(addresses).buildShippingAddress(true, "");
+		verify(addresses, times(3)).getShippingAddress();
 
 		verifyNoMoreInteractions(addresses);
 	}

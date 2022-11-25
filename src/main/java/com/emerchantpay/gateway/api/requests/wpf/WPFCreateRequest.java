@@ -21,7 +21,8 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
-        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes, ThreedsV2CommonAttributes {
+        DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes,
+        ThreedsV2CommonAttributes, TokenizationAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
@@ -34,8 +35,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     private String customerGender;
     private BigDecimal orderTaxAmount;
     private Boolean payLater = false;
-    private String consumerId;
-    private Boolean rememberCard = false;
     private Boolean scaPreference;
 
     private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
@@ -141,24 +140,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return payLater;
     }
 
-    public WPFCreateRequest setConsumerId(String consumerId) {
-        this.consumerId = consumerId;
-        return this;
-    }
-
-    public String getConsumerId() {
-        return consumerId;
-    }
-
-    public WPFCreateRequest setRememberCard(Boolean rememberCard) {
-        this.rememberCard = rememberCard;
-        return this;
-    }
-
-    public Boolean getRememberCard() {
-        return rememberCard;
-    }
-
     public Boolean getScaPreference() {
         return scaPreference;
     }
@@ -240,15 +221,15 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("return_cancel_url", cancelUrl)
                 .addElement(buildPendingPaymentParams().toXML())
                 .addElement("lifetime", lifetime)
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML())
                 .addElement("transaction_types", transactionTypes)
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("pay_later", payLater)
-                .addElement("remember_card", rememberCard)
                 .addElement("sca_preference", scaPreference)
-                .addElement("threeds_v2_params", buildThreedsV2Params().toXML());
+                .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
+                .addElement(buildTokenizationParams().toXML());
 
         // Klarna payment method
         if (klarnaItemsRequest != null
@@ -266,10 +247,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
             requestBuilder.addElement("reminders", reminders);
         }
 
-        if (consumerId != null && !consumerId.isEmpty() && validator.isValidConsumerId(consumerId)) {
-            requestBuilder.addElement("consumer_id", consumerId);
-        }
-
         // Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
@@ -280,7 +257,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
         requiredParams.put(RequiredParameters.returnCancelUrl, String.valueOf(cancelUrl));
         requiredParams.put(RequiredParameters.transactionTypes, transactionTypes.toXML());
-        if ((consumerId != null && !consumerId.isEmpty()) || rememberCard == true) {
+        if ((getConsumerId() != null && !getConsumerId().isEmpty()) || getRememberCard() == true) {
             requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
         }
 

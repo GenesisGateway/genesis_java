@@ -12,6 +12,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.TokenizationAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
@@ -39,7 +40,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class PayoutRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
-        FXAttributes {
+        FXAttributes, TokenizationAttributes {
 
 	private String transactionType = TransactionTypes.PAYOUT;
 	private BigDecimal amount;
@@ -99,9 +100,8 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 		requiredParams.put(RequiredParameters.amount, getAmount().toString());
 		requiredParams.put(RequiredParameters.currency, getCurrency());
 		requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-		requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-		requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-		requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+		requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
+		requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
 
 		// Validate request
 		validator.isValidRequest(requiredParams);
@@ -111,9 +111,10 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 				.addElement(buildPaymentParams().toXML())
 				.addElement(buildCreditCardParams().toXML())
 				.addElement(buildCustomerInfoParams().toXML())
-				.addElement("billing_address", buildBillingAddress().toXML())
-				.addElement("shipping_address", buildShippingAddress().toXML())
-                .addElement(buildFXParams().toXML());
+				.addElement(buildBillingAddress(false).toXML())
+				.addElement(buildShippingAddress(false).toXML())
+				.addElement(buildFXParams().toXML())
+				.addElement(buildTokenizationParams().toXML());
 	}
 
 	public List<Map.Entry<String, Object>> getElements() {

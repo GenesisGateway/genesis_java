@@ -2,6 +2,7 @@ package com.emerchantpay.gateway.api.interfaces;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.util.HashMap;
 
@@ -102,6 +103,15 @@ public interface CreditCardAttributes extends CredentialOnFileAttributes {
         RequestBuilder requestBuilder = getCreditCardAttrRequestBuilder();
         requestBuilder.addElement(buildCredentialOnFileParam().toXML());
         return requestBuilder;
+    }
+
+    default HashMap<String, String> getCreditCardConditionalRequiredParams(String token){
+        HashMap<String, String> requiredParams = new HashMap<String, String>();
+        if(getCardNumber() != null && !getCardNumber().isEmpty()){
+            requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
+            requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        }
+        return requiredParams;
     }
 
     RequestBuilder getCreditCardAttrRequestBuilder();

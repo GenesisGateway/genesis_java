@@ -42,7 +42,7 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
         MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
-        TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes {
+        TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes, TokenizationAttributes {
 
     private String transactionType = TransactionTypes.AUTHORIZE_3D;
     private BigDecimal amount;
@@ -139,9 +139,8 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
         requiredParams.putAll(getMpiConditionalRequiredFields());
 
         // Validate request
@@ -157,8 +156,8 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("mpi_params", buildMpiParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
@@ -167,7 +166,8 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
-                .addElement(buildPreauthorizationParams().toXML());
+                .addElement(buildPreauthorizationParams().toXML())
+                .addElement(buildTokenizationParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

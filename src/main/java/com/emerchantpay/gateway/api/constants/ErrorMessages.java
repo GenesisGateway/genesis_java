@@ -8,4 +8,6 @@ public class ErrorMessages {
     public static String INVALID_CONSUMER_API_VERSION = "Invalid Consumer API version, available versions are: ";
     public static String INVALID_FX_API_VERSION = "Invalid FX API version, available versions are: ";
     public static String INVALID_SCA_API_VERSION = "Invalid SCA API version, available versions are: ";
+    public static String ONLY_ONE_PARAMETER_ALLOWED = "Only one of following parameters is allowed: ";
+    public static String AT_LEAST_ONE_PARAMETER_REQUIRED = "At least one of following parameters must be provided: ";
 }

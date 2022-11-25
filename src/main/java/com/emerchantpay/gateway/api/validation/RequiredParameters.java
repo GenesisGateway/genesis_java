@@ -107,6 +107,7 @@ public class RequiredParameters {
     public static String consumerId = "consumer_id";
     public static String documentId = "document_id";
     public static String email = "email";
+    public static String token = "token";
 
     // FX Rates
     public static String sourceCurrency = "source_currency";

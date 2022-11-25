@@ -15,6 +15,7 @@ import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttribut
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.TokenizationAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -43,7 +44,8 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  */
 
 public class InitRecurringSaleRequest extends Request implements PaymentAttributes, CreditCardAttributes,
-        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes, TravelDataAttributes {
+        CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes,
+        TravelDataAttributes, TokenizationAttributes {
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE;
     private Boolean moto;
@@ -114,9 +116,8 @@ public class InitRecurringSaleRequest extends Request implements PaymentAttribut
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
-        requiredParams.put(RequiredParameters.cardNumber, getCardNumber());
-        requiredParams.put(RequiredParameters.expirationMonth, getExpirationMonth());
-        requiredParams.put(RequiredParameters.expirationYear, getExpirationYear());
+        requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -127,13 +128,14 @@ public class InitRecurringSaleRequest extends Request implements PaymentAttribut
                 .addElement(buildCreditCardParams().toXML())
                 .addElement("moto", moto)
                 .addElement(buildCustomerInfoParams().toXML())
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML())
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
-                .addElement("travel", buildTravelDataParams().toXML());
+                .addElement("travel", buildTravelDataParams().toXML())
+                .addElement(buildTokenizationParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

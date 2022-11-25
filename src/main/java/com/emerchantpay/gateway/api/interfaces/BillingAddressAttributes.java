@@ -122,10 +122,23 @@ public interface BillingAddressAttributes {
     }
 
     default RequestBuilder buildBillingAddress() {
-        if (isBillingAddressValid()) {
-            return getBillAddrAttrRequestBuilder();
-        } else {
+        return buildBillingAddress(true, "");
+    }
+
+    default RequestBuilder buildBillingAddress(Boolean includeEmptyTags) {
+        return buildBillingAddress(includeEmptyTags, "billing_address");
+    }
+
+    default RequestBuilder buildBillingAddress(Boolean includeEmptyTags, String parent) {
+        if (!isBillingAddressValid()) {
             return null;
+        }
+        String billingAddressXML = getBillAddrAttrRequestBuilder().toXML();
+        if(!includeEmptyTags && billingAddressXML.isEmpty()){
+            //No empty tags included
+            return new RequestBuilder("");
+        } else {
+            return new RequestBuilder(parent).addElement(billingAddressXML);
         }
     }
 

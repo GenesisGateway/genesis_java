@@ -103,8 +103,8 @@ public abstract class GiftCardRequest extends Request implements PaymentAttribut
                 .addElement("cvv", cvv)
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
-                .addElement("billing_address", buildBillingAddress().toXML())
-                .addElement("shipping_address", buildShippingAddress().toXML());
+                .addElement(buildBillingAddress(false).toXML())
+                .addElement(buildShippingAddress(false).toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {
