@@ -12,10 +12,7 @@ import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.TokenizationAttributes;
+import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -43,9 +40,14 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
+/**
+ * @deprecated Init Recurring Sale transaction will be soon deprecated. Please start using Sale or Authorize transaction
+ * with initial recurring type instead.
+ */
+@Deprecated
 public class InitRecurringSaleRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, BusinessParamsAttributes,
-        TravelDataAttributes, TokenizationAttributes {
+        TravelDataAttributes, TokenizationAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE;
     private Boolean moto;
@@ -128,6 +130,8 @@ public class InitRecurringSaleRequest extends Request implements PaymentAttribut
                 .addElement(buildCreditCardParams().toXML())
                 .addElement("moto", moto)
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

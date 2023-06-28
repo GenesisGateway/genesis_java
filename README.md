@@ -2,7 +2,7 @@ Genesis Java
 ===========
 
 [![Build Status](https://img.shields.io/travis/GenesisGateway/genesis_java.svg?style=flat)](https://travis-ci.org/GenesisGateway/genesis_java)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.emerchantpay.gateway/genesis-java/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.emerchantpay.gateway/genesis-java/)
+[![Maven Central](https://central.sonatype.com/artifact/com.emerchantpay.gateway/genesis-java/)](https://central.sonatype.com/artifact/com.emerchantpay.gateway/genesis-java/)
 [![Software License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE)
 
 Overview
@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.17.4</version>
+        <version>1.17.5</version>
 </dependency>
 ```
 
@@ -185,6 +185,7 @@ api.requests.financial.apm.PaySafeCardRequest
 api.requests.financial.apm.POLiRequest
 api.requests.financial.apm.PProRequest
 api.requests.financial.apm.SofortRequest
+api.requests.financial.apm.TransferToPayoutRequest
 api.requests.financial.apm.TrustlySaleRequest
 api.requests.financial.card.TarjetaShoppingRequest
 
@@ -230,6 +231,7 @@ api.requests.financial.sdd.SDDInitRecurringSaleRequest
 api.requests.financial.sdd.SDDRecurringSaleRequest
 
 //Online Banking Payments
+api.requests.financial.apm.BankPayoutRequest
 api.requests.financial.apm.CitadelPayInRequest
 api.requests.financial.apm.CitadelPayOutRequest
 api.requests.financial.oBeP.AlipayRequest

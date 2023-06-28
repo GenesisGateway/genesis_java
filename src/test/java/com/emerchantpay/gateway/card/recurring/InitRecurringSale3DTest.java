@@ -17,10 +17,7 @@ import java.net.URL;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 public class InitRecurringSale3DTest {
 
@@ -61,6 +58,7 @@ public class InitRecurringSale3DTest {
         when(initrecsale3d.setMoto(isA(Boolean.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setCurrency(isA(String.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setAmount(isA(BigDecimal.class))).thenReturn(initrecsale3d);
+        when(initrecsale3d.setRecurringCategory(isA(String.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setCardNumber(isA(String.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setCardHolder(isA(String.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setCvv(isA(String.class))).thenReturn(initrecsale3d);
@@ -87,6 +85,7 @@ public class InitRecurringSale3DTest {
         assertEquals(initrecsale3d.setMoto(true), initrecsale3d);
         assertEquals(initrecsale3d.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency()),
                 initrecsale3d);
+        assertEquals(initrecsale3d.setRecurringCategory("subscription"), initrecsale3d);
         assertEquals(initrecsale3d.setCardHolder("PLAMEN PETROV").setCardNumber("4200000000000000").setExpirationMonth("02")
                 .setExpirationYear("2020").setCvv("123"), initrecsale3d);
         assertEquals(initrecsale3d.setCustomerEmail("john@example.com").setCustomerPhone("+5555555555"), initrecsale3d);
@@ -109,6 +108,7 @@ public class InitRecurringSale3DTest {
         verify(initrecsale3d).setUsage("TICKETS");
         verify(initrecsale3d).setMoto(true);
         verify(initrecsale3d).setAmount(new BigDecimal("22.00"));
+        verify(initrecsale3d).setRecurringCategory("subscription");
         verify(initrecsale3d).setCurrency(Currency.USD.getCurrency());
         verify(initrecsale3d).setCardNumber("4200000000000000");
         verify(initrecsale3d).setCardHolder("PLAMEN PETROV");
@@ -161,4 +161,5 @@ public class InitRecurringSale3DTest {
         assertEquals(amount, initRecurringSale3D.getAmount());
         assertTrue(initRecurringSale3D.buildPaymentParams() instanceof RequestBuilder);
     }
+
 }

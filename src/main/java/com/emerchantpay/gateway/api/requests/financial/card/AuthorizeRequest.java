@@ -3,7 +3,11 @@ package com.emerchantpay.gateway.api.requests.financial.card;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.*;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.UcofAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
@@ -11,6 +15,7 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +46,7 @@ import java.util.Map;
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes,
         BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes,
-        TokenizationAttributes {
+        TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
@@ -51,14 +56,13 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
     private Boolean gaming;
     private BigDecimal amount;
     private String currency;
+    private String referenceId;
 
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
     private GenesisValidator validator = new GenesisValidator();
-
-
 
     public AuthorizeRequest() {
         super();
@@ -101,6 +105,15 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
         return currency;
     }
 
+    public AuthorizeRequest setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+        return this;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -108,7 +121,6 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
     @Override
     public String toXML() {
-
         return buildRequest("payment_transaction").toXML();
     }
 
@@ -129,15 +141,21 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
         // Validate request
         validator.isValidRequest(requiredParams);
+        validateReferenceId(getRecurringType());
+        validateManagedRecurring(getRecurringType());
 
         return requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCreditCardParams().toXML())
+                .addElement("reference_id", referenceId)
                 .addElement("gaming", gaming)
                 .addElement("moto", moto)
                 .addElement(buildCryptoParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildRecurringAttrParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
@@ -153,5 +171,18 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
+    }
+
+    @Override
+    public List<String> getAllowedRecurringTypes() {
+        return Arrays.asList("initial", "managed", "subsequent");
+    }
+
+    private void validateReferenceId(String recurringType) {
+        String refId = getReferenceId();
+        if("subsequent".equalsIgnoreCase(recurringType) && (refId==null || refId.isEmpty())) {
+            throw new InvalidParamException("Invalid reference_id [" + (refId!=null ? refId : "null")
+                    + "] when recurring_type is 'subsequent'.");
+        }
     }
 }

@@ -36,6 +36,11 @@ import com.emerchantpay.gateway.util.Currency;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
+/**
+ * @deprecated Recurring Sale transaction will be soon deprecated. Please start using Sale or Authorize transaction
+ * with initial recurring type instead.
+ */
+@Deprecated
 public class RecurringSaleRequest extends Request implements PaymentAttributes, BusinessParamsAttributes, TravelDataAttributes {
 
     private String transactionType = TransactionTypes.RECURRING_SALE;

@@ -63,6 +63,7 @@ public class RequiredParameters {
     public static String paymentToken = "payment_token";
 
     public static String paymentSubType = "payment_subtype";
+    public static String payerId = "payer_id";
 
     //Payment Token attributes
     public static String tokenVersion = "version";
@@ -155,6 +156,19 @@ public class RequiredParameters {
     // Mobile
     public static String operator = "operator";
     public static String target = "target";
+
+    // Recurring
+    public static String recurringType = "recurring_type";
+    // Managed recurring
+    public static String mode = "mode";
+    public static String period = "period";
+    public static String paymentType = "payment_type";
+    public static String amountType = "amount_type";
+    public static String frequency = "frequency";
+    public static String registrationReferenceNumber = "registration_reference_number";
+    public static String maxAmount = "max_amount";
+    public static String maxCount = "max_count";
+    public static String validated = "validated";
 
     // Required params
     private HashMap<String, String> requiredParamsMap = new HashMap<String, String>();

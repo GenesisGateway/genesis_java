@@ -4,10 +4,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.exceptions.ApiException;
-import com.emerchantpay.gateway.api.exceptions.GenesisException;
-import com.emerchantpay.gateway.api.exceptions.RegexException;
-import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
+import com.emerchantpay.gateway.api.exceptions.*;
 import com.emerchantpay.gateway.api.requests.wpf.WPFCreateRequest;
 import com.emerchantpay.gateway.api.requests.wpf.WPFReconcileRequest;
 import com.emerchantpay.gateway.model.Reminder;
@@ -28,13 +25,13 @@ import java.util.Random;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 public class WPFRequestsTest {
 
+    private static final String ANY_STRING = "ANY_STRING";
+    private static final String MANAGED = "managed";
+    private static final String STANDING_ORDER = "standing_order";
     private GenesisClient client;
     private WPFCreateRequest wpfCreate;
     private WPFReconcileRequest wpfReconcile;
@@ -344,6 +341,19 @@ public class WPFRequestsTest {
     }
 
     @Test
+    public void buildRecurrency() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setRecurringType(MANAGED);
+        wpfCreate.setMode("automatic");
+        wpfCreate.setPeriod(20);
+        wpfCreate.setRecurringCategory(STANDING_ORDER);
+        wpfCreate.toXML();
+
+        assertEquals(MANAGED, wpfCreate.getRecurringType());
+        assertEquals(STANDING_ORDER, wpfCreate.getRecurringCategory());
+    }
+
+    @Test
     public void buildThreedsV2Attributes() {
         wpfCreate = new WPFCreateRequest();
 
@@ -458,4 +468,12 @@ public class WPFRequestsTest {
 
         assertTrue(wpfCreate.buildThreedsV2Params() instanceof RequestBuilder);
     }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrencyError() throws MalformedURLException {
+        stubWPF();
+        wpfCreate.setRecurringType(ANY_STRING);
+        wpfCreate.buildRecurringAttrParams();
+    }
+
 }

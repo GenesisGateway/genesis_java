@@ -1,13 +1,5 @@
 package com.emerchantpay.gateway.api.requests.wpf;
 
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-
-
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
@@ -20,9 +12,17 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
         DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes,
-        ThreedsV2CommonAttributes, TokenizationAttributes {
+        ThreedsV2CommonAttributes, TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes,
+        ManagedRecurringAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
@@ -221,6 +221,9 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("return_cancel_url", cancelUrl)
                 .addElement(buildPendingPaymentParams().toXML())
                 .addElement("lifetime", lifetime)
+                .addElement(buildRecurringAttrParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("transaction_types", transactionTypes)
@@ -263,6 +266,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
         // Validate request
         validator.isValidRequest(requiredParams);
+        validateManagedRecurring(getRecurringType());
 
         return requestBuilder;
     }
@@ -274,4 +278,5 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     public RemindersRequest getReminders() {
         return reminders;
     }
+
 }

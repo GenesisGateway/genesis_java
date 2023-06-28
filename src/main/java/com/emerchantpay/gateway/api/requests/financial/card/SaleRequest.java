@@ -3,7 +3,11 @@ package com.emerchantpay.gateway.api.requests.financial.card;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.*;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.UcofAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
@@ -11,6 +15,7 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +44,9 @@ import java.util.Map;
  */
 
 public class SaleRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
-        DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
-        TravelDataAttributes, UcofAttributes, TokenizationAttributes {
+        DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes,
+        CryptoAttributes, TravelDataAttributes, UcofAttributes, TokenizationAttributes, RecurringTypeAttributes,
+        RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.SALE;
     private Boolean moto;
@@ -101,6 +107,10 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
         return this;
     }
 
+    public String getReferenceId() {
+        return referenceId;
+    }
+
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -128,6 +138,8 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
 
         // Validate request
         validator.isValidRequest(requiredParams);
+        validateReferenceId(getRecurringType());
+        validateManagedRecurring(getRecurringType());
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
@@ -138,6 +150,9 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
                 .addElement("moto", moto)
                 .addElement(buildCryptoParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildRecurringAttrParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
@@ -152,5 +167,18 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
+    }
+
+    @Override
+    public List<String> getAllowedRecurringTypes() {
+        return Arrays.asList("initial", "managed", "subsequent");
+    }
+
+    private void validateReferenceId(String recurringType) {
+        String refId = getReferenceId();
+        if("subsequent".equalsIgnoreCase(recurringType) && (refId==null || refId.isEmpty())) {
+            throw new InvalidParamException("Invalid reference_id [" + (refId!=null ? refId : "null")
+                    + "] when recurring_type is 'subsequent'.");
+        }
     }
 }

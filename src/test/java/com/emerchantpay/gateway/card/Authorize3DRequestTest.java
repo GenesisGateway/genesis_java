@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -26,6 +27,12 @@ public class Authorize3DRequestTest {
 
     private GenesisClient client;
     private Authorize3DRequest authorize3d;
+
+    private Authorize3DRequest prepareObject() {
+        Authorize3DRequest authorize3d = new Authorize3DRequest();
+        authorize3d.setCurrency(Currency.USD.getCurrency());
+        return authorize3d;
+    }
 
     @Before
     public void createAuthorize3D() {
@@ -81,6 +88,7 @@ public class Authorize3DRequestTest {
         when(authorize3d.setReturnFailureUrl(isA(URL.class))).thenReturn(authorize3d);
         when(authorize3d.setFXRateId(isA(String.class))).thenReturn(authorize3d);
         when(authorize3d.setCrypto(isA(Boolean.class))).thenReturn(authorize3d);
+        when(authorize3d.setRecurringType(isA(String.class))).thenReturn(authorize3d);
 
         assertEquals(authorize3d.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize3d);
         assertEquals(authorize3d.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize3d);
@@ -95,6 +103,7 @@ public class Authorize3DRequestTest {
                 .setReturnFailureUrl(new URL("http://www.example.com/failure")), authorize3d);
         assertEquals(authorize3d.setFXRateId("123"), authorize3d);
         assertEquals(authorize3d.setCrypto(true), authorize3d);
+        assertEquals(authorize3d.setRecurringType("initial"), authorize3d);
 
         verify(authorize3d).setTransactionId(uniqueId);
         verify(authorize3d).setRemoteIp("82.137.112.202");
@@ -119,6 +128,7 @@ public class Authorize3DRequestTest {
         verify(authorize3d).setReturnFailureUrl(new URL("http://www.example.com/failure"));
         verify(authorize3d).setFXRateId("123");
         verify(authorize3d).setCrypto(true);
+        verify(authorize3d).setRecurringType("initial");
 
         verifyNoMoreInteractions(authorize3d);
 
@@ -138,19 +148,25 @@ public class Authorize3DRequestTest {
 
     @Test(expected = RegexException.class)
     public void testNegativeAmountError(){
-        Authorize3DRequest authorize3D = new Authorize3DRequest();
-        authorize3D.setCurrency(Currency.USD.getCurrency());
+        Authorize3DRequest authorize3D = prepareObject();
         authorize3D.setAmount(new BigDecimal("-22.00"));
         authorize3D.buildPaymentParams();
     }
 
     @Test
     public void testZeroAmount(){
-        Authorize3DRequest authorize3D = new Authorize3DRequest();
-        authorize3D.setCurrency(Currency.USD.getCurrency());
+        Authorize3DRequest authorize3D = prepareObject();
         BigDecimal amount = new BigDecimal("0.00");
         authorize3D.setAmount(new BigDecimal("0.00"));
         assertEquals(amount, authorize3D.getAmount());
         assertTrue(authorize3D.buildPaymentParams() instanceof RequestBuilder);
     }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrencyError(){
+        Authorize3DRequest authorize3D = prepareObject();
+        authorize3D.setRecurringType("ANY_TYPE");
+        authorize3D.buildRecurringAttrParams();
+    }
+
 }

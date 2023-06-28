@@ -1,20 +1,22 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.*;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +44,8 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
 public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
         MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
-        TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes, TokenizationAttributes {
+        TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes, TokenizationAttributes,
+        RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.AUTHORIZE_3D;
     private BigDecimal amount;
@@ -145,6 +148,7 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
 
         // Validate request
         validator.isValidRequest(requiredParams);
+        validateManagedRecurring(getRecurringType());
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
@@ -156,6 +160,9 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
+                .addElement(buildRecurringAttrParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

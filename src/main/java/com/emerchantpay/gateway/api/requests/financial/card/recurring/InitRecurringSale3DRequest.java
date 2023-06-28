@@ -41,16 +41,20 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
+/**
+ * @deprecated Init Recurring Sale 3D transaction will be soon deprecated. Please start using Sale or Authorize transaction
+ * with initial recurring type instead.
+ */
+@Deprecated
 public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
         RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, TravelDataAttributes, ThreedsV2Attributes,
-        TokenizationAttributes {
+        TokenizationAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
     private Boolean moto;
     private BigDecimal amount;
     private String currency;
-
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
@@ -149,6 +153,8 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

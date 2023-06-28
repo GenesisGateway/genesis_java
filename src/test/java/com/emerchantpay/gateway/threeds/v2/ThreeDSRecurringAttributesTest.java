@@ -13,7 +13,7 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RecurringAttributesTest {
+public class ThreeDSRecurringAttributesTest {
 
     private Sale3DRequest sale3DRequest;
     private Random random;

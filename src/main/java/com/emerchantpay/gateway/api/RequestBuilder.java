@@ -53,13 +53,16 @@ public class RequestBuilder {
     }
 
     public RequestBuilder addElement(Object value) {
+        if (value instanceof String) {
+            elements.removeIf(elements -> elements.getKey().equals("") && elements.getValue().equals(value.toString()));
+        }
         elements.add(new AbstractMap.SimpleEntry<String, Object>("", value));
 
         return this;
     }
 
     public RequestBuilder addElement(String name, Object value) {
-        if (name != null && name != "reminder") {
+        if (name != null && !"reminder".equals(name)) {
             elements.removeIf(elements -> elements.getKey().equals(name));
         }
 

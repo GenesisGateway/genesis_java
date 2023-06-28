@@ -59,6 +59,7 @@ public class InitRecurringSaleTest {
         when(initRecurring.setMoto(isA(Boolean.class))).thenReturn(initRecurring);
         when(initRecurring.setCurrency(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setAmount(isA(BigDecimal.class))).thenReturn(initRecurring);
+        when(initRecurring.setRecurringCategory(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setCardNumber(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setCardHolder(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setCvv(isA(String.class))).thenReturn(initRecurring);
@@ -87,6 +88,7 @@ public class InitRecurringSaleTest {
                 .setExpirationMonth("02").setExpirationYear("2020"), initRecurring);
         assertEquals(initRecurring.setCustomerEmail("john@example.com").setCustomerPhone("+55555555"), initRecurring);
         assertEquals(initRecurring.setBirthDate("24-04-1988"), initRecurring);
+        assertEquals(initRecurring.setRecurringCategory("subscription"), initRecurring);
         assertEquals(initRecurring.setBillingPrimaryAddress("Berlin")
                 .setBillingSecondaryAddress("Berlin")
                 .setBillingFirstname("Plamen")
@@ -103,6 +105,7 @@ public class InitRecurringSaleTest {
         verify(initRecurring).setMoto(true);
         verify(initRecurring).setCurrency(Currency.USD.getCurrency());
         verify(initRecurring).setAmount(new BigDecimal("10.00"));
+        verify(initRecurring).setRecurringCategory("subscription");
         verify(initRecurring).setCardNumber("4200000000000000");
         verify(initRecurring).setCardHolder("PLAMEN PETROV");
         verify(initRecurring).setCvv("123");
@@ -152,4 +155,5 @@ public class InitRecurringSaleTest {
         assertEquals(amount, initRecurringSale.getAmount());
         assertTrue(initRecurringSale.buildPaymentParams() instanceof RequestBuilder);
     }
+
 }

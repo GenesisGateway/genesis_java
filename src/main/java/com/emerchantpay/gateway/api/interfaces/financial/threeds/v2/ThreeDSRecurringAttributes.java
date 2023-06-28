@@ -32,9 +32,9 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface RecurringAttributes {
+public interface ThreeDSRecurringAttributes {
 
-    default RecurringAttributes set3dsV2RecurringExpirationDate(String expirationDate) {
+    default ThreeDSRecurringAttributes set3dsV2RecurringExpirationDate(String expirationDate) {
         if(getValidator().isValidDate(expirationDate, "expiration_date")) {
             get3DSv2RecurringAttrParamsMap().put("expiration_date ", expirationDate);
             get3DSv2RecurringAttrRequestBuilder().addElement("expiration_date ", expirationDate);
@@ -46,7 +46,7 @@ public interface RecurringAttributes {
         return get3DSv2RecurringAttrParamsMap().get("expiration_date ");
     }
 
-    default RecurringAttributes set3dsV2RecurringFrequency(Integer frequency) {
+    default ThreeDSRecurringAttributes set3dsV2RecurringFrequency(Integer frequency) {
 
         get3DSv2RecurringAttrParamsMap().put("frequency", String.valueOf(frequency));
         get3DSv2RecurringAttrRequestBuilder().addElement("frequency", frequency);

@@ -35,6 +35,9 @@ public class RegexValidator {
     //Date in format dd-mm-yyyy. Leading zeros required
     public static final Pattern VALID_DATE = Pattern.compile("(3[01]|[12][0-9]|0[1-9])-(1[0-2]|0[1-9])-[0-9]{4}");
 
+    //Date in format yyyy-mm-dd. Leading zeros required
+    public static final Pattern VALID_DATE_US = Pattern.compile("^[0-9]{4}-(1[0-2]|0[1-9])-(3[01]|[12][0-9]|0[1-9])$");
+
     // Date in format "MMDD". Leading zeros required
     public static final Pattern VALID_MONTH_DATE = Pattern.compile("^(0[1-9]|1[012])(0[1-9]|[12]\\d|3[01])$");
 
@@ -51,6 +54,8 @@ public class RegexValidator {
     //Hotel Rental Еxtra charge. Array of max 6. Each position can be used to indicate a type of charge.
     //Allowed values: 2, 3, 4, 5, 6, 7.
     public static final Pattern VALID_HOTEL_EXTRA_CHARGE = Pattern.compile("^[234567]{1,6}$");
+    // Three-letter format
+    public static final Pattern VALID_THREE_LETTERS = Pattern.compile("^[A-Za-z]{3}$");
 
     private ArrayList<String> invalidParamsList = new ArrayList<String>();
 
@@ -202,6 +207,19 @@ public class RegexValidator {
         }
     }
 
+    //Validate date
+    public Boolean isValidDateUS(String date, String paramName) {
+        if (date == null || date.isEmpty()) {
+            return true;
+        } else if (VALID_DATE_US.matcher(date).matches()) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
     //Validate 'MMDD' format date
     public Boolean isValidMonthDate(String date, String paramName) {
         if (date == null || date.isEmpty() || VALID_MONTH_DATE.matcher(date).matches()) {
@@ -274,6 +292,16 @@ public class RegexValidator {
     // Validate string size
     public Boolean isValidStringSize(String string, int sizeLimit, String paramName) {
         if (string != null && !string.isEmpty() && string.length() <= sizeLimit) {
+            invalidParamsList.removeAll(Arrays.asList(paramName));
+            return true;
+        } else {
+            invalidParamsList.add(paramName);
+            return false;
+        }
+    }
+
+    public Boolean isValidLetters(String string, String paramName) {
+        if (string != null && !string.isEmpty() && VALID_THREE_LETTERS.matcher(string).matches()) {
             invalidParamsList.removeAll(Arrays.asList(paramName));
             return true;
         } else {

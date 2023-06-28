@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.Sale3DRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -19,10 +20,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 public class Sale3DTest {
 
@@ -30,6 +28,12 @@ public class Sale3DTest {
 
     private GenesisClient client;
     private Sale3DRequest sale3d;
+
+    private Sale3DRequest prepareObject() {
+        Sale3DRequest sale = new Sale3DRequest();
+        sale.setCurrency(Currency.USD.getCurrency());
+        return sale;
+    }
 
     @Before
     public void createSale() throws MalformedURLException {
@@ -84,6 +88,7 @@ public class Sale3DTest {
         when(sale3d.setReturnFailureUrl(isA(URL.class))).thenReturn(sale3d);
         when(sale3d.setFXRateId(isA(String.class))).thenReturn(sale3d);
         when(sale3d.setCrypto(isA(Boolean.class))).thenReturn(sale3d);
+        when(sale3d.setRecurringType(isA(String.class))).thenReturn(sale3d);
 
         assertEquals(sale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 sale3d);
@@ -104,6 +109,7 @@ public class Sale3DTest {
                 .setBillingState("NY"), sale3d);
         assertEquals(sale3d.setFXRateId("123"), sale3d);
         assertEquals(sale3d.setCrypto(true), sale3d);
+        assertEquals(sale3d.setRecurringType("initial"), sale3d);
 
         verify(sale3d).setTransactionId(uniqueId);
         verify(sale3d).setRemoteIp("192.168.0.1");
@@ -130,6 +136,7 @@ public class Sale3DTest {
         verify(sale3d).setBillingState("NY");
         verify(sale3d).setFXRateId("123");
         verify(sale3d).setCrypto(true);
+        verify(sale3d).setRecurringType("initial");
         verifyNoMoreInteractions(sale3d);
 
         verifyExecute();
@@ -147,19 +154,39 @@ public class Sale3DTest {
 
     @Test(expected = RegexException.class)
     public void testNegativeAmountError(){
-        Sale3DRequest sale3D = new Sale3DRequest();
-        sale3D.setCurrency(Currency.USD.getCurrency());
+        Sale3DRequest sale3D = prepareObject();
         sale3D.setAmount(new BigDecimal("-22.00"));
         sale3D.buildPaymentParams();
     }
 
     @Test
     public void testZeroAmount(){
-        Sale3DRequest sale3D = new Sale3DRequest();
-        sale3D.setCurrency(Currency.USD.getCurrency());
+        Sale3DRequest sale3D = prepareObject();
         BigDecimal amount = new BigDecimal("0.00");
         sale3D.setAmount(new BigDecimal("0.00"));
         assertEquals(amount, sale3D.getAmount());
         assertTrue(sale3D.buildPaymentParams() instanceof RequestBuilder);
     }
+
+    @Test
+    public void testRecurrency_ShouldSuccess_WhenProvidedInitial(){
+        Sale3DRequest sale3D = new Sale3DRequest();
+        sale3D.setRecurringType("initial");
+        sale3D.buildRecurringAttrParams();
+    }
+
+    @Test
+    public void testRecurrencShouldSuccess_WhenProvidedManaged(){
+        Sale3DRequest sale3D = new Sale3DRequest();
+        sale3D.setRecurringType("managed");
+        sale3D.buildRecurringAttrParams();
+    }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrencyError(){
+        Sale3DRequest sale3D = new Sale3DRequest();
+        sale3D.setRecurringType("subsequent");
+        sale3D.buildRecurringAttrParams();
+    }
+
 }

@@ -50,6 +50,10 @@ public abstract class RequestRoot {
     private RequestBuilder customerInfoAttrRequestBuilder;
     private HashMap<String, String> customerInfoAttrParamsMap;
 
+    //Sender Info Attributes
+    private RequestBuilder senderAttrRequestBuilder;
+    private HashMap<String, String> senderAttrParamsMap;
+
     //Payment Attributes
     private RequestBuilder paymentAttrRequestBuilder;
 
@@ -98,6 +102,10 @@ public abstract class RequestRoot {
     private RequestBuilder cryptoAttrRequestBuilder;
     private HashMap<String, String> cryptoAttrParamsMap;
 
+    //Bank Attributes
+    private RequestBuilder bankAttrRequestBuilder;
+    private HashMap<String, String> bankAttrParamsMap;
+
     //Business Attributes
     private RequestBuilder businessAttrRequestBuilder;
     private HashMap<String, String> businessAttrParamsMap;
@@ -127,6 +135,18 @@ public abstract class RequestRoot {
     //Pending Payment Attributes
     private RequestBuilder pendingPaymentAttrRequestBuilder;
     private HashMap<String, String> pendingPaymentAttrParamsMap;
+
+    // RecurringType Attributes
+    private RequestBuilder recurringTypeAttrRequestBuilder;
+    private HashMap<String, String> recurringTypeAttrParamsMap;
+
+    // RecurringCategory Attributes
+    private RequestBuilder recurringCategoryAttrRequestBuilder;
+    private HashMap<String, String> recurringCategoryAttrParamsMap;
+
+    //Managed Recurring Attributes
+    private RequestBuilder managedRecurringAttrRequestBuilder;
+    private HashMap<String, String> managedRecurringAttrParamsMap;
 
     public GenesisValidator getValidator() {
         if (validator == null) {
@@ -189,6 +209,20 @@ public abstract class RequestRoot {
             customerInfoAttrParamsMap = new HashMap<String, String>();
         }
         return customerInfoAttrParamsMap;
+    }
+
+    public RequestBuilder getSenderAttrRequestBuilder() {
+        if (senderAttrRequestBuilder == null) {
+            senderAttrRequestBuilder = new RequestBuilder("");
+        }
+        return senderAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getSenderAttrParamsMap() {
+        if (senderAttrParamsMap == null) {
+            senderAttrParamsMap = new HashMap<String, String>();
+        }
+        return senderAttrParamsMap;
     }
 
     public RequestBuilder getPaymentAttrRequestBuilder() {
@@ -359,6 +393,20 @@ public abstract class RequestRoot {
         return cryptoAttrParamsMap;
     }
 
+    public RequestBuilder getBankAttrRequestBuilder() {
+        if (bankAttrRequestBuilder == null) {
+            bankAttrRequestBuilder = new RequestBuilder("");
+        }
+        return bankAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getBankAttrParamsMap() {
+        if (bankAttrParamsMap == null) {
+            bankAttrParamsMap = new HashMap<String, String>();
+        }
+        return bankAttrParamsMap;
+    }
+
     public List<AirlineItineraryTaxRequest> getAirlineItineraryTaxes() {
         if (airlineItineraryTaxes == null) {
             airlineItineraryTaxes = new ArrayList<AirlineItineraryTaxRequest>();
@@ -455,5 +503,47 @@ public abstract class RequestRoot {
             pendingPaymentAttrParamsMap = new HashMap<String, String>();
         }
         return pendingPaymentAttrParamsMap;
+    }
+
+    public RequestBuilder getRecurringTypeAttrRequestBuilder() {
+        if (recurringTypeAttrRequestBuilder == null) {
+            recurringTypeAttrRequestBuilder = new RequestBuilder("");
+        }
+        return recurringTypeAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getRecurringTypeAttrParamsMap() {
+        if (recurringTypeAttrParamsMap == null) {
+            recurringTypeAttrParamsMap = new HashMap<String, String>();
+        }
+        return recurringTypeAttrParamsMap;
+    }
+
+    public RequestBuilder getRecurringCategoryAttrRequestBuilder() {
+        if (recurringCategoryAttrRequestBuilder == null) {
+            recurringCategoryAttrRequestBuilder = new RequestBuilder("");
+        }
+        return recurringCategoryAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getRecurringCategoryAttrParamsMap() {
+        if (recurringCategoryAttrParamsMap == null) {
+            recurringCategoryAttrParamsMap = new HashMap<String, String>();
+        }
+        return recurringCategoryAttrParamsMap;
+    }
+
+    public RequestBuilder getManagedRecurringAttrRequestBuilder() {
+        if (managedRecurringAttrRequestBuilder == null) {
+            managedRecurringAttrRequestBuilder = new RequestBuilder("");
+        }
+        return managedRecurringAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getManagedRecurringAttrParamsMap() {
+        if (managedRecurringAttrParamsMap == null) {
+            managedRecurringAttrParamsMap = new HashMap<String, String>();
+        }
+        return managedRecurringAttrParamsMap;
     }
 }

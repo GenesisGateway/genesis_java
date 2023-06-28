@@ -3,6 +3,7 @@ package com.emerchantpay.gateway.api.validation;
 import com.emerchantpay.gateway.api.constants.ErrorMessages;
 import com.emerchantpay.gateway.api.constants.ReminderConstants;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.model.Reminder;
@@ -10,7 +11,9 @@ import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class GenesisValidator extends RegexValidator {
 

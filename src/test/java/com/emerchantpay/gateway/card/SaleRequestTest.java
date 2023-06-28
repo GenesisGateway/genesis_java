@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -15,10 +16,7 @@ import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 
 public class SaleRequestTest {
@@ -34,6 +32,18 @@ public class SaleRequestTest {
 
         client = mock(GenesisClient.class);
         sale = mock(SaleRequest.class);
+    }
+
+    private SaleRequest prepareObject() {
+        SaleRequest sale = new SaleRequest();
+        sale.setTransactionId(uniqueId);
+        sale.setCurrency(Currency.USD.getCurrency());
+        sale.setAmount(new BigDecimal("12.00"));
+        sale.setCardNumber("4200000000000000");
+        sale.setCardHolder("PLAMEN PETROV");
+        sale.setExpirationMonth("02");
+        sale.setExpirationYear("2020");
+        return sale;
     }
 
     public void clearRequiredParams() {
@@ -77,6 +87,7 @@ public class SaleRequestTest {
         when(sale.setBillingState(isA(String.class))).thenReturn(sale);
         when(sale.setFXRateId(isA(String.class))).thenReturn(sale);
         when(sale.setCrypto(isA(Boolean.class))).thenReturn(sale);
+        when(sale.setRecurringType(isA(String.class))).thenReturn(sale);
 
         assertEquals(sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"), sale);
         assertEquals(sale.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency()), sale);
@@ -92,6 +103,7 @@ public class SaleRequestTest {
                 .setBillingState("NY"), sale);
         assertEquals(sale.setFXRateId("123"), sale);
         assertEquals(sale.setCrypto(true), sale);
+        assertEquals(sale.setRecurringType("initial"), sale);
 
         verify(sale).setTransactionId(uniqueId);
         verify(sale).setRemoteIp("192.168.0.1");
@@ -115,6 +127,7 @@ public class SaleRequestTest {
         verify(sale).setBillingState("NY");
         verify(sale).setFXRateId("123");
         verify(sale).setCrypto(true);
+        verify(sale).setRecurringType("initial");
         verifyNoMoreInteractions(sale);
 
         verifyExecute();
@@ -148,4 +161,26 @@ public class SaleRequestTest {
         assertEquals(amount, sale.getAmount());
         assertTrue(sale.buildPaymentParams() instanceof RequestBuilder);
     }
+
+    @Test
+    public void testRecurrency_ShouldSuccess_WhenProvidedReferenceId(){
+        SaleRequest sale = prepareObject();
+        sale.setRecurringType("subsequent");
+        sale.setReferenceId("1234");
+        sale.toXML();
+    }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrency_ThrowException_WhenMissedReferenceId() {
+        SaleRequest sale = prepareObject();
+        sale.setRecurringType("subsequent");
+        sale.toXML();
+    }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrencyError(){
+        SaleRequest sale = new SaleRequest();
+        sale.setRecurringType("ANY_TYPE");
+    }
+
 }

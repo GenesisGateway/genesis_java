@@ -76,6 +76,9 @@ public class TransactionTypes {
     // APM used to process Mobile network operator payments
     public static final String AFRICAN_MOBILE_SALE = "african_mobile_sale";
 
+    // APM which provides 3 different payment services: BankAccount, MobileWallet and CashPickup
+    public static final String TRANSFER_TO_PAYOUT = "transfer_to_payout";
+
     // Voucher-based payment
     public static final String CASHU = "cashu";
 
@@ -230,6 +233,9 @@ public class TransactionTypes {
     public static final String MY_BANK = "my_bank";
     public static final String ONLINE_BANKING = "online_banking";
 
+    // Bank payout
+    public static final String BANK_PAYOUT = "bank_payout";
+
     //Preauthorizations
     public static final String INCREMENTAL_AUTHORIZE = "incremental_authorize";
     public static final String PARTIAL_REVERSAL = "partial_reversal";
@@ -278,7 +284,6 @@ public class TransactionTypes {
                 INSTADEBIT_PAYIN,
                 INTERSOLVE,
                 ITAU,
-                KLARNA_AUTHORIZE,
                 MULTIBANCO,
                 MY_BANK,
                 NARANJA,
@@ -290,10 +295,7 @@ public class TransactionTypes {
                 P24,
                 PAGO_FACIL,
                 PAYBYVOUCHER_YEEPAY,
-                PAYPAL_EXPRESS_CHECKOUT,
                 PAYSAFECARD,
-                PAYSEC,
-                PAYSEC_PAYOUT,
                 PAYU,
                 POLI,
                 POST_FINANCE,

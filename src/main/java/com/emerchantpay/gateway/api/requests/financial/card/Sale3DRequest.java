@@ -3,7 +3,9 @@ package com.emerchantpay.gateway.api.requests.financial.card;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.*;
+import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
+import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
+import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
@@ -42,7 +44,8 @@ import java.util.Map;
 public class Sale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes, DescriptorAttributes,
         MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
         FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes,
-        ThreedsV2Attributes, TokenizationAttributes {
+        ThreedsV2Attributes, TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes,
+        ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.SALE_3D;
     private Boolean moto;
@@ -107,6 +110,10 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
         return this;
     }
 
+    public String getReferenceId() {
+        return referenceId;
+    }
+
     @Override
     public String getTransactionType() {
         return transactionType;
@@ -151,6 +158,7 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
 
         // Validate request
         validator.isValidRequest(requiredParams);
+        validateManagedRecurring(getRecurringType());
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
                 .addElement(buildBaseParams().toXML())
@@ -163,6 +171,9 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement(buildNotificationParams().toXML())
                 .addElement(buildAsyncParams().toXML())
+                .addElement(buildRecurringAttrParams().toXML())
+                .addElement(buildRecurringCategoryParams().toXML())
+                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())

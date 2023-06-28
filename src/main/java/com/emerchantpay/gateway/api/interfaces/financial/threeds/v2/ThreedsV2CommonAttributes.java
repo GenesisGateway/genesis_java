@@ -29,7 +29,7 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import java.util.HashMap;
 
 public interface ThreedsV2CommonAttributes extends CardHolderAccountAttributes,
-        ControlAttributes, MerchantRiskAttributes, PurchaseAttributes, RecurringAttributes{
+        ControlAttributes, MerchantRiskAttributes, PurchaseAttributes, ThreeDSRecurringAttributes {
 
     default RequestBuilder get3DSv2CardHolderAttrRequestBuilder(){
         RequestBuilder cardHolderAttrRequestBuilder = getThreedsV2RequestBuildersMap().get("cardHolderAccount");

@@ -4,6 +4,7 @@ import com.emerchantpay.gateway.GenesisClient;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
+import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -31,6 +32,18 @@ public class AuthorizeRequestTest {
 
         client = mock(GenesisClient.class);
         authorize = mock(AuthorizeRequest.class);
+    }
+
+    private AuthorizeRequest prepareObject() {
+        AuthorizeRequest authorize = new AuthorizeRequest();
+        authorize.setTransactionId(uniqueId);
+        authorize.setCurrency(Currency.USD.getCurrency());
+        authorize.setAmount(new BigDecimal("12.00"));
+        authorize.setCardNumber("4200000000000000");
+        authorize.setCardHolder("PLAMEN PETROV");
+        authorize.setExpirationMonth("02");
+        authorize.setExpirationYear("2020");
+        return authorize;
     }
 
     public void clearRequiredParams() {
@@ -75,6 +88,7 @@ public class AuthorizeRequestTest {
         when(authorize.setBirthDate(isA(String.class))).thenReturn(authorize);
         when(authorize.setFXRateId(isA(String.class))).thenReturn(authorize);
         when(authorize.setCrypto(isA(Boolean.class))).thenReturn(authorize);
+        when(authorize.setRecurringType(isA(String.class))).thenReturn(authorize);
 
         assertEquals(authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize);
         assertEquals(authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize);
@@ -87,6 +101,7 @@ public class AuthorizeRequestTest {
                 .setBillingZipCode("M4B1B3").setBillingState("CA"), authorize);
         assertEquals(authorize.setFXRateId("123"), authorize);
         assertEquals(authorize.setCrypto(true), authorize);
+        assertEquals(authorize.setRecurringType("initial"), authorize);
 
         verify(authorize).setTransactionId(uniqueId);
         verify(authorize).setRemoteIp("82.137.112.202");
@@ -109,6 +124,7 @@ public class AuthorizeRequestTest {
         verify(authorize).setBillingState("CA");
         verify(authorize).setFXRateId("123");
         verify(authorize).setCrypto(true);
+        verify(authorize).setRecurringType("initial");
         verifyNoMoreInteractions(authorize);
 
         verifyExecute();
@@ -142,4 +158,26 @@ public class AuthorizeRequestTest {
         assertEquals(amount, authorize.getAmount());
         assertTrue(authorize.buildPaymentParams() instanceof RequestBuilder);
     }
+
+    @Test
+    public void testRecurrency_ShouldSuccess_WhenProvidedReferenceId(){
+        AuthorizeRequest authorize = prepareObject();
+        authorize.setRecurringType("subsequent");
+        authorize.setReferenceId("1234");
+        authorize.toXML();
+    }
+
+    @Test (expected = InvalidParamException.class)
+    public void testRecurrency_ThrowException_WhenMissedReferenceId(){
+        AuthorizeRequest authorize = prepareObject();
+        authorize.setRecurringType("subsequent");
+        authorize.toXML();
+    }
+
+    @Test(expected = InvalidParamException.class)
+    public void testRecurrencyError(){
+        AuthorizeRequest authorize = prepareObject();
+        authorize.setRecurringType("ANY_TYPE");
+    }
+
 }
