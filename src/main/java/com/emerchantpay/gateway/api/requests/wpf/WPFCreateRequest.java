@@ -21,8 +21,7 @@ import java.util.Map;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
         DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes,
-        ThreedsV2CommonAttributes, TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes,
-        ManagedRecurringAttributes {
+        ThreedsV2CommonAttributes, TokenizationAttributes, RecurringCategoryAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
@@ -221,9 +220,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("return_cancel_url", cancelUrl)
                 .addElement(buildPendingPaymentParams().toXML())
                 .addElement("lifetime", lifetime)
-                .addElement(buildRecurringAttrParams().toXML())
                 .addElement(buildRecurringCategoryParams().toXML())
-                .addElement(buildManagedRecurring().toXML())
                 .addElement(buildBillingAddress(false).toXML())
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("transaction_types", transactionTypes)
@@ -266,7 +263,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
         // Validate request
         validator.isValidRequest(requiredParams);
-        validateManagedRecurring(getRecurringType());
 
         return requestBuilder;
     }

@@ -343,13 +343,8 @@ public class WPFRequestsTest {
     @Test
     public void buildRecurrency() throws MalformedURLException {
         stubWPF();
-        wpfCreate.setRecurringType(MANAGED);
-        wpfCreate.setMode("automatic");
-        wpfCreate.setPeriod(20);
         wpfCreate.setRecurringCategory(STANDING_ORDER);
         wpfCreate.toXML();
-
-        assertEquals(MANAGED, wpfCreate.getRecurringType());
         assertEquals(STANDING_ORDER, wpfCreate.getRecurringCategory());
     }
 
@@ -467,13 +462,6 @@ public class WPFRequestsTest {
         assertEquals(frequency, wpfCreate.get3dsV2RecurringFrequency());
 
         assertTrue(wpfCreate.buildThreedsV2Params() instanceof RequestBuilder);
-    }
-
-    @Test(expected = InvalidParamException.class)
-    public void testRecurrencyError() throws MalformedURLException {
-        stubWPF();
-        wpfCreate.setRecurringType(ANY_STRING);
-        wpfCreate.buildRecurringAttrParams();
     }
 
 }
