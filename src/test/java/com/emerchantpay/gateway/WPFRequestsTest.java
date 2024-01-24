@@ -67,6 +67,7 @@ public class WPFRequestsTest {
     public WPFCreateRequest stubWPF() throws MalformedURLException {
         wpfCreate = new WPFCreateRequest();
         wpfCreate.setTransactionId(uidWpf);
+        wpfCreate.addTransactionType(TransactionTypes.AUTHORIZE).done();
         wpfCreate.setAmount(new BigDecimal("2.00"));
         wpfCreate.setCurrency("EUR");
         wpfCreate.setDescription("TICKETS");
