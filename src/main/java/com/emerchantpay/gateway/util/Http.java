@@ -1,15 +1,16 @@
 package com.emerchantpay.gateway.util;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.constants.ContentTypes;
+import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
+import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
+import com.emerchantpay.gateway.api.exceptions.NetworkException;
+import com.emerchantpay.gateway.api.exceptions.NotFoundException;
+import com.emerchantpay.gateway.api.exceptions.ServerException;
+import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
+import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -17,17 +18,23 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import com.emerchantpay.gateway.api.*;
-import com.emerchantpay.gateway.api.constants.ContentTypes;
-import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
-import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
-import com.emerchantpay.gateway.api.exceptions.NotFoundException;
-import com.emerchantpay.gateway.api.exceptions.ServerException;
-import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
-import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -159,7 +166,6 @@ public class Http implements Serializable {
             if (requestMethod.equals(RequestMethod.DELETE)) {
                 return null;
             }
-
             InputStream responseStream = null;
             try {
                 responseStream = connection.getResponseCode() == 422 ? connection.getErrorStream()
@@ -183,13 +189,10 @@ public class Http implements Serializable {
                     responseStream.close();
                 }
             }
+        } catch (UnknownHostException e) {
+            throw new NetworkException("No route to host " + e.getMessage() + ":" + port, e);
         } catch (IOException e) {
-            try {
-                throw new UnexpectedException(e.getMessage(), e);
-            } catch (UnexpectedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
+            throw new UnexpectedException(e.getMessage() + ", host: " + host + ", port: " + port, e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -252,13 +255,10 @@ public class Http implements Serializable {
                     responseStream.close();
                 }
             }
+        } catch (UnknownHostException e) {
+            throw new NetworkException("No route to host " + e.getMessage() + ":" + port, e);
         } catch (IOException e) {
-            try {
-                throw new UnexpectedException(e.getMessage(), e);
-            } catch (UnexpectedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
+            throw new UnexpectedException(e.getMessage() + ", host: " + host + ", port: " + port, e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -326,6 +326,7 @@ public class Http implements Serializable {
 
         String user_pass = configuration.getUsername() + ":" + configuration.getPassword();
         String encoded = Base64.getEncoder().encodeToString(user_pass.getBytes());
+
 
         connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod.toString());

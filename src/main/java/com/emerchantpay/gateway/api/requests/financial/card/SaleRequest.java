@@ -10,6 +10,7 @@ import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.UcofAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -46,7 +47,7 @@ import java.util.Map;
 public class SaleRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
         DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes,
         CryptoAttributes, TravelDataAttributes, UcofAttributes, TokenizationAttributes, RecurringTypeAttributes,
-        RecurringCategoryAttributes, ManagedRecurringAttributes {
+        RecurringCategoryAttributes, ManagedRecurringAttributes, FundingAttributes {
 
     private String transactionType = TransactionTypes.SALE;
     private Boolean moto;
@@ -162,7 +163,8 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement(buildUcofParams(getCredentialOnFile()).toXML())
-                .addElement(buildTokenizationParams().toXML());
+                .addElement(buildTokenizationParams().toXML())
+                .addElement("funding", buildFundingParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

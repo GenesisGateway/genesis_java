@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.17.7</version>
+        <version>1.18.0</version>
 </dependency>
 ```
 
@@ -200,9 +200,6 @@ api.requests.financial.card.CreditRequest
 api.requests.financial.card.PayoutRequest
 api.requests.financial.card.SaleRequest
 api.requests.financial.card.Sale3DRequest
-api.requests.financial.card.recurring.InitRecurringSaleRequest
-api.requests.financial.card.recurring.InitRecurringSale3DRequest
-api.requests.financial.card.recurring.RecurringSaleRequest
 
 //South American Card transactions
 api.requests.financial.card.southamerican.ArgencardRequest
