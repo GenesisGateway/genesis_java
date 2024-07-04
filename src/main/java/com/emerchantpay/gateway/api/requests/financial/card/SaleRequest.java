@@ -129,13 +129,17 @@ public class SaleRequest extends Request implements PaymentAttributes, CreditCar
 
     protected RequestBuilder buildRequest(String root) {
 
+        boolean isSubsequentRecurringType = "subsequent".equalsIgnoreCase(getRecurringType());
+
         // Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
-        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.amount, getAmount() != null ? getAmount().toString() : null);
         requiredParams.put(RequiredParameters.currency, getCurrency());
-        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
         requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
-        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber(), isSubsequentRecurringType));
+        if (!isSubsequentRecurringType) {
+            requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        }
 
         // Validate request
         validator.isValidRequest(requiredParams);
