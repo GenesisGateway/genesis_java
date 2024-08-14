@@ -46,6 +46,9 @@ public class GenesisClient extends Request {
     //Execute requests asynchronously in chunks of 10.
     private static final int asyncRequestsChunkSize = 10;
 
+    private int connectTimeout = 60000;
+    private int readTimeout = 60000;
+
     // Execute
     private Http http;
     //Transaction Id to response
@@ -250,6 +253,8 @@ public class GenesisClient extends Request {
         }
 
         http = new Http(configuration);
+        http.setConnectTimeout(connectTimeout);
+        http.setReadTimeout(readTimeout);
         NodeWrapper response = http.postXML(configuration.getBaseUrl(), request);
 
         String requestIdentifier = getRequestIdentifier(request);
@@ -272,6 +277,37 @@ public class GenesisClient extends Request {
 
     public List<NodeWrapper> getAllResponses() {
         return new ArrayList<NodeWrapper>(responseMap.values());
+    }
+
+    /**
+     * Sets a specified timeout value, in milliseconds, to be used when opening a communications link to the resource
+     * referenced by this GenesisClient. If the timeout expires before the connection can be established,
+     * a java. net. SocketTimeoutException is raised. A timeout of zero is interpreted as an infinite timeout.
+     *
+     * @param timeout an int that specifies the connect timeout value in milliseconds.
+     * @throws IllegalArgumentException if the timeout parameter is negative
+     */
+    public void setConnectTimeout(int timeout) {
+        if (timeout < 0) {
+            throw new IllegalArgumentException("timeout can not be negative");
+        }
+        connectTimeout = timeout;
+    }
+
+    /**
+     * Sets the read timeout to a specified timeout, in milliseconds. A non-zero value specifies the timeout when
+     * reading from Input stream when a connection is established to a resource. If the timeout expires before there
+     * is data available for read, a java. net. SocketTimeoutException is raised. A timeout of zero is interpreted as
+     * an infinite timeout.
+     *
+     * @param timeout an int that specifies the timeout value to be used in milliseconds.
+     * @throws IllegalArgumentException if the timeout parameter is negative
+     */
+    public void setReadTimeout(int timeout) {
+        if (timeout < 0) {
+            throw new IllegalArgumentException("timeout can not be negative");
+        }
+        readTimeout = timeout;
     }
 
     private Configuration getConfiguration() {

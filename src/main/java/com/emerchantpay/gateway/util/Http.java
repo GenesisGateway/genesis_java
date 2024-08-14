@@ -70,6 +70,9 @@ public class Http implements Serializable {
     private String host;
     private Integer port;
 
+    private int connectTimeout;
+    private int readTimeout;
+
     public Http(Configuration configuration) {
         this.configuration = configuration;
     }
@@ -121,6 +124,14 @@ public class Http implements Serializable {
 
     public NodeWrapper put(String url, Request request) {
         return httpRequestXML(RequestMethod.PUT, url, request.toXML());
+    }
+
+    public void setConnectTimeout(int timeout){
+        connectTimeout = timeout;
+    }
+
+    public void setReadTimeout(int timeout) {
+        readTimeout = timeout;
     }
 
     private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url) {
@@ -334,7 +345,8 @@ public class Http implements Serializable {
         connection.setRequestProperty("Content-Type",contentType);
         connection.addRequestProperty("Authorization", "Basic " + encoded);
         connection.setDoOutput(true);
-        connection.setReadTimeout(60000);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
 
         return connection;
     }
