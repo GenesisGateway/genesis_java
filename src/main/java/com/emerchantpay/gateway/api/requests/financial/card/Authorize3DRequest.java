@@ -8,6 +8,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
@@ -45,7 +46,7 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
         MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
         TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes, TokenizationAttributes,
-        RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
+        RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes, FundingAttributes {
 
     private String transactionType = TransactionTypes.AUTHORIZE_3D;
     private BigDecimal amount;
@@ -174,7 +175,8 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
                 .addElement(buildPreauthorizationParams().toXML())
-                .addElement(buildTokenizationParams().toXML());
+                .addElement(buildTokenizationParams().toXML())
+                .addElement("funding", buildFundingParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

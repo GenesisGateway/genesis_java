@@ -76,4 +76,21 @@ public class RequestBuilderTest {
         assertEquals(
                 "<success_url>https://google.com/?enabled=true&amp;orderId=123456</success_url>", element2);
     }
+
+    @Test
+    public void toXMLEmptyElement() {
+        RequestBuilder requestBuilder = new RequestBuilder("test_parent");
+        requestBuilder.addElement("test_blank", null);
+        requestBuilder.addElement("test_empty", "");
+        String requestEmptyXML = requestBuilder.toXML();
+        assertTrue(requestEmptyXML.isEmpty());
+
+        requestBuilder.addElement("test_valid", "test");
+        String requestXML = requestBuilder.toXML();
+
+        assertFalse(requestXML.contains("test_blank"));
+        assertFalse(requestXML.contains("test_empty"));
+        assertTrue(requestXML.contains("test_parent"));
+        assertTrue(requestXML.contains("test_valid"));
+    }
 }

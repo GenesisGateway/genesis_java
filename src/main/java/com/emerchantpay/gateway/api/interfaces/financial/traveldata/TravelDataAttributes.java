@@ -138,16 +138,16 @@ public interface TravelDataAttributes extends AirlineItineraryAttributes, CarRen
         RequestBuilder travelDataAttrRequestBuilder = new RequestBuilder("");
 
         RequestBuilder taxesRequestBuilder = new RequestBuilder("taxes");
-        for(AirlineItineraryTaxRequest airlineItineraryTax : getAirlineItineraryTaxes()){
-            taxesRequestBuilder.addElement("tax",
-                    airlineItineraryTax.buildAirlineItineraryTaxParams().toXML());
-        }
+            for(AirlineItineraryTaxRequest airlineItineraryTax : getAirlineItineraryTaxes()){
+                taxesRequestBuilder.addElement("tax",
+                        airlineItineraryTax.buildAirlineItineraryTaxParams().toXML());
+            }
 
         RequestBuilder legsRequestBuilder = new RequestBuilder("legs");
-        for(AirlineItineraryLegRequest airlineItineraryLeg : getAirlineItineraryLegs()){
-            legsRequestBuilder.addElement("leg",
-                    airlineItineraryLeg.buildAirlineItineraryLegParams().toXML());
-        }
+            for(AirlineItineraryLegRequest airlineItineraryLeg : getAirlineItineraryLegs()){
+                legsRequestBuilder.addElement("leg",
+                        airlineItineraryLeg.buildAirlineItineraryLegParams().toXML());
+            }
 
         RequestBuilder rentalsRequestBuilder = new RequestBuilder("rentals");
         rentalsRequestBuilder.addElement("car_rental", buildCarRentalParams().toXML())

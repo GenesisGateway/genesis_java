@@ -6,6 +6,8 @@ import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
+import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.SaleRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -34,11 +36,16 @@ public class SaleRequestTest {
         sale = mock(SaleRequest.class);
     }
 
-    private SaleRequest prepareObject() {
+    private SaleRequest prepareObjectWithoutCardData() {
         SaleRequest sale = new SaleRequest();
         sale.setTransactionId(uniqueId);
         sale.setCurrency(Currency.USD.getCurrency());
         sale.setAmount(new BigDecimal("12.00"));
+        return sale;
+    }
+
+    private SaleRequest prepareObject() {
+        SaleRequest sale = prepareObjectWithoutCardData();
         sale.setCardNumber("4200000000000000");
         sale.setCardHolder("PLAMEN PETROV");
         sale.setExpirationMonth("02");
@@ -170,11 +177,27 @@ public class SaleRequestTest {
         sale.toXML();
     }
 
+    @Test
+    public void testRecurrency_ShouldSuccess_WhenMissedCardData(){
+        SaleRequest sale = prepareObjectWithoutCardData();
+        sale.setRecurringType("subsequent");
+        sale.setReferenceId("1234");
+        sale.toXML();
+    }
+
     @Test(expected = InvalidParamException.class)
     public void testRecurrency_ThrowException_WhenMissedReferenceId() {
         SaleRequest sale = prepareObject();
         sale.setRecurringType("subsequent");
         sale.toXML();
+    }
+
+    @Test(expected = RequiredParamsException.class)
+    public void testRecurrency_ThrowException_WhenMissedAmount() {
+        SaleRequest authorize = prepareObject();
+        authorize.setRecurringType("subsequent");
+        authorize.setAmount(null);
+        authorize.toXML();
     }
 
     @Test(expected = InvalidParamException.class)

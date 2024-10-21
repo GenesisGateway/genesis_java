@@ -1,15 +1,16 @@
 package com.emerchantpay.gateway.util;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.constants.ContentTypes;
+import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
+import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
+import com.emerchantpay.gateway.api.exceptions.NetworkException;
+import com.emerchantpay.gateway.api.exceptions.NotFoundException;
+import com.emerchantpay.gateway.api.exceptions.ServerException;
+import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
+import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -17,17 +18,25 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import com.emerchantpay.gateway.api.*;
-import com.emerchantpay.gateway.api.constants.ContentTypes;
-import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
-import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
-import com.emerchantpay.gateway.api.exceptions.NotFoundException;
-import com.emerchantpay.gateway.api.exceptions.ServerException;
-import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
-import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -62,6 +71,11 @@ public class Http implements Serializable {
 
     private String host;
     private Integer port;
+
+    private int connectTimeout;
+    private int readTimeout;
+    private String proxyHost;
+    private int proxyPort;
 
     public Http(Configuration configuration) {
         this.configuration = configuration;
@@ -116,6 +130,22 @@ public class Http implements Serializable {
         return httpRequestXML(RequestMethod.PUT, url, request.toXML());
     }
 
+    public void setConnectTimeout(int timeout) {
+        connectTimeout = timeout;
+    }
+
+    public void setReadTimeout(int timeout) {
+        readTimeout = timeout;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
     private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url) {
         return httpRequestXML(requestMethod, url, null);
     }
@@ -159,37 +189,41 @@ public class Http implements Serializable {
             if (requestMethod.equals(RequestMethod.DELETE)) {
                 return null;
             }
-
             InputStream responseStream = null;
             try {
                 responseStream = connection.getResponseCode() == 422 ? connection.getErrorStream()
                         : connection.getInputStream();
 
-                String xml = StringUtils.inputStreamToString(responseStream);
+                String responseXml = StringUtils.inputStreamToString(responseStream);
 
                 configuration.getLogger().log(Level.INFO, "[Genesis] [{0}]] {1} {2}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url});
                 configuration.getLogger().log(Level.FINE, "[Genesis] [{0}] {1} {2} {3}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url, connection.getResponseCode()});
 
-                if (xml != null && configuration.isDebugModeEnabled() == true) {
+                if (configuration.isDebugModeEnabled()) {
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(postBody));
-                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(xml));
+                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(responseXml));
                 }
 
-                nodeWrapper = NodeWrapperFactory.instance.create(xml);
+                nodeWrapper = NodeWrapperFactory.instance.create(responseXml);
             } finally {
                 if (responseStream != null) {
                     responseStream.close();
                 }
             }
-        } catch (IOException e) {
-            try {
-                throw new UnexpectedException(e.getMessage(), e);
-            } catch (UnexpectedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+        } catch (UnknownHostException e) {
+            String errorStr = "No route to host " + host + ":" + port;
+            if (proxyHost != null && proxyPort > 0) {
+                errorStr += " , used proxy_host: " + proxyHost + ", proxy_port: " + proxyPort;
             }
+            throw new NetworkException(errorStr, e);
+        } catch (IOException e) {
+            String errorStr = ", host: " + host + ", port: " + port;
+            if (proxyHost != null && proxyPort > 0) {
+                errorStr += ", used proxy_host: " + proxyHost + ", proxy_port: " + proxyPort;
+            }
+            throw new UnexpectedException(e.getMessage() + errorStr, e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -238,7 +272,7 @@ public class Http implements Serializable {
                 configuration.getLogger().log(Level.FINE, "[Genesis] [{0}] {1} {2} {3}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url, connection.getResponseCode()});
 
-                if (json != null && configuration.isDebugModeEnabled() == true) {
+                if (configuration.isDebugModeEnabled()) {
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(postBody));
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(json));
                 }
@@ -252,13 +286,10 @@ public class Http implements Serializable {
                     responseStream.close();
                 }
             }
+        } catch (UnknownHostException e) {
+            throw new NetworkException("No route to host " + e.getMessage() + ":" + port, e);
         } catch (IOException e) {
-            try {
-                throw new UnexpectedException(e.getMessage(), e);
-            } catch (UnexpectedException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
+            throw new UnexpectedException(e.getMessage() + ", host: " + host + ", port: " + port, e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -327,13 +358,19 @@ public class Http implements Serializable {
         String user_pass = configuration.getUsername() + ":" + configuration.getPassword();
         String encoded = Base64.getEncoder().encodeToString(user_pass.getBytes());
 
-        connection = (HttpURLConnection) url.openConnection();
+        if (proxyHost != null && !proxyHost.isEmpty() && proxyPort > 0) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            connection = (HttpURLConnection) url.openConnection(proxy);
+        } else {
+            connection = (HttpURLConnection) url.openConnection();
+        }
         connection.setRequestMethod(requestMethod.toString());
         connection.addRequestProperty("Accept", acceptHeader);
-        connection.setRequestProperty("Content-Type",contentType);
+        connection.setRequestProperty("Content-Type", contentType);
         connection.addRequestProperty("Authorization", "Basic " + encoded);
         connection.setDoOutput(true);
-        connection.setReadTimeout(60000);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
 
         return connection;
     }

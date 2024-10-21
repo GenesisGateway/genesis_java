@@ -60,6 +60,12 @@ public interface MpiAttributes {
         return this;
     }
 
+    default MpiAttributes setMpiProtocolSubVersion(String mpiProtocolSubVersion) {
+        paramsMap.put("protocol_sub_version", mpiProtocolSubVersion);
+        getMpiAttrRequest3DSv2Builder().addElement("protocol_sub_version", mpiProtocolSubVersion);
+        return this;
+    }
+
     default MpiAttributes setMpiDirectoryServerId(String mpiDirectoryServerId) {
         paramsMap.put("directory_server_id", mpiDirectoryServerId);
         getMpiAttrRequest3DSv2Builder().addElement("directory_server_id", mpiDirectoryServerId);

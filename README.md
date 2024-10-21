@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.17.6</version>
+        <version>1.18.4</version>
 </dependency>
 ```
 
@@ -162,6 +162,20 @@ Endpoints
 
 The current version supports two endpoints: ```ECOMPROCESSING``` and ```EMERCHANTPAY```
 
+Proxy configuration
+-------------------
+
+Proxy configuration is optional. You can use proxy host domain name or IP address and proxy port number.
+
+```java
+// Create proxy configuration
+GenesisClient client = new GenesisClient(configuration, request);
+client.setProxyHost("proxy_host");
+client.setProxyPort(8080);
+client.debugMode(true);
+client.execute();
+```
+
 Request types
 -------------
 
@@ -200,9 +214,6 @@ api.requests.financial.card.CreditRequest
 api.requests.financial.card.PayoutRequest
 api.requests.financial.card.SaleRequest
 api.requests.financial.card.Sale3DRequest
-api.requests.financial.card.recurring.InitRecurringSaleRequest
-api.requests.financial.card.recurring.InitRecurringSale3DRequest
-api.requests.financial.card.recurring.RecurringSaleRequest
 
 //South American Card transactions
 api.requests.financial.card.southamerican.ArgencardRequest

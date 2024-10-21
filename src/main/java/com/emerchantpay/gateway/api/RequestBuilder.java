@@ -86,12 +86,14 @@ public class RequestBuilder {
 
     public String toXML() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("<%s>", parent));
         for (Map.Entry<String, Object> entry : elements) {
             builder.append(buildXMLElement(entry.getKey(), entry.getValue()));
         }
-        builder.append(String.format("</%s>", parent));
-
+        //Add parent tag only if its content is not empty
+        if(!builder.toString().isEmpty()) {
+            builder.insert(0, String.format("<%s>", parent));
+            builder.append(String.format("</%s>", parent));
+        }
         return StringUtils.replaceAllSpecialCharacters(builder.toString());
     }
 
@@ -121,6 +123,8 @@ public class RequestBuilder {
     @SuppressWarnings("unchecked")
     protected static String buildXMLElement(String name, Object element) {
         if (element == null) {
+            return "";
+        } else if(element instanceof String && element.toString().isEmpty()) {
             return "";
         } else if (element instanceof Request) {
             return ((Request) element).toXML();

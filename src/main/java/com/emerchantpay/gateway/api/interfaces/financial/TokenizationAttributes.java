@@ -82,7 +82,8 @@ public interface TokenizationAttributes {
         return getTokenizationAttrRequestBuilder();
     }
 
-    default HashMap<String, String> getTokenizationConditionalRequiredParams(String customerEmail, String cardNumber){
+    default HashMap<String, String> getTokenizationConditionalRequiredParams(String customerEmail, String cardNumber,
+                                                                             boolean isSubsequentRec){
         HashMap<String, String> requiredParams = new HashMap<String, String>();
         if(getToken() != null && !getToken().isEmpty()){
             requiredParams.put(RequiredParameters.customerEmail, customerEmail);
@@ -97,14 +98,18 @@ public interface TokenizationAttributes {
         }
 
         List<String> tokenAndCardNumberParams = Arrays.asList(new String[]{RequiredParameters.cardNumber, RequiredParameters.token});
-        if((cardNumber == null || cardNumber.isEmpty()) && (getToken() == null || getToken().isEmpty())){
+        if((cardNumber == null || cardNumber.isEmpty()) && (getToken() == null || getToken().isEmpty()) && !isSubsequentRec){
             throw new RequiredParamsException(ErrorMessages.AT_LEAST_ONE_PARAMETER_REQUIRED + tokenAndCardNumberParams);
         }
 
         if(getToken() != null && !getToken().isEmpty() && cardNumber != null && !cardNumber.isEmpty()){
-            throw new RequiredParamsException(ErrorMessages.ONLY_ONE_PARAMETER_ALLOWED + tokenAndCardNumberParams.toString());
+            throw new RequiredParamsException(ErrorMessages.ONLY_ONE_PARAMETER_ALLOWED + tokenAndCardNumberParams);
         }
         return requiredParams;
+    }
+
+    default HashMap<String, String> getTokenizationConditionalRequiredParams(String customerEmail, String cardNumber){
+        return getTokenizationConditionalRequiredParams(customerEmail, cardNumber, false);
     }
 
     RequestBuilder getTokenizationAttrRequestBuilder();

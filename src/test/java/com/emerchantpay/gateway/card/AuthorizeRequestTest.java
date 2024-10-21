@@ -6,6 +6,7 @@ import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
@@ -34,11 +35,16 @@ public class AuthorizeRequestTest {
         authorize = mock(AuthorizeRequest.class);
     }
 
-    private AuthorizeRequest prepareObject() {
+    private AuthorizeRequest prepareObjectWithoutCardData() {
         AuthorizeRequest authorize = new AuthorizeRequest();
         authorize.setTransactionId(uniqueId);
         authorize.setCurrency(Currency.USD.getCurrency());
         authorize.setAmount(new BigDecimal("12.00"));
+        return authorize;
+    }
+
+    private AuthorizeRequest prepareObject() {
+        AuthorizeRequest authorize = prepareObjectWithoutCardData();
         authorize.setCardNumber("4200000000000000");
         authorize.setCardHolder("PLAMEN PETROV");
         authorize.setExpirationMonth("02");
@@ -167,10 +173,26 @@ public class AuthorizeRequestTest {
         authorize.toXML();
     }
 
+    @Test
+    public void testRecurrency_ShouldSuccess_WhenMissedCardData(){
+        AuthorizeRequest authorize = prepareObjectWithoutCardData();
+        authorize.setRecurringType("subsequent");
+        authorize.setReferenceId("1234");
+        authorize.toXML();
+    }
+
     @Test (expected = InvalidParamException.class)
     public void testRecurrency_ThrowException_WhenMissedReferenceId(){
         AuthorizeRequest authorize = prepareObject();
         authorize.setRecurringType("subsequent");
+        authorize.toXML();
+    }
+
+    @Test (expected = RequiredParamsException.class)
+    public void testRecurrency_ThrowException_WhenMissedAmount(){
+        AuthorizeRequest authorize = prepareObject();
+        authorize.setRecurringType("subsequent");
+        authorize.setAmount(null);
         authorize.toXML();
     }
 

@@ -10,6 +10,7 @@ import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.UcofAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
@@ -46,7 +47,7 @@ import java.util.Map;
 public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes,
         BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes,
-        TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
+        TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes, FundingAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
@@ -131,13 +132,17 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
 
     protected RequestBuilder buildRequest(String root) {
 
+        boolean isSubsequentRecurringType = "subsequent".equalsIgnoreCase(getRecurringType());
+
         // Set required params
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
-        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.amount, getAmount() != null ? getAmount().toString() : null);
         requiredParams.put(RequiredParameters.currency, getCurrency());
-        requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
         requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
-        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
+        requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber(), isSubsequentRecurringType));
+        if (!isSubsequentRecurringType) {
+            requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        }
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -166,7 +171,8 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement(buildUcofParams(getCredentialOnFile()).toXML())
                 .addElement(buildPreauthorizationParams().toXML())
-                .addElement(buildTokenizationParams().toXML());
+                .addElement(buildTokenizationParams().toXML())
+                .addElement("funding", buildFundingParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

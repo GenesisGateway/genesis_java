@@ -6,6 +6,7 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2CommonAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 public class WPFCreateRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
         DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes,
-        ThreedsV2CommonAttributes, TokenizationAttributes, RecurringCategoryAttributes {
+        ThreedsV2CommonAttributes, TokenizationAttributes, RecurringCategoryAttributes, FundingAttributes {
 
     //Request Builder
     private RequestBuilder requestBuilder;
@@ -229,7 +230,8 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("pay_later", payLater)
                 .addElement("sca_preference", scaPreference)
                 .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
-                .addElement(buildTokenizationParams().toXML());
+                .addElement(buildTokenizationParams().toXML())
+                .addElement("funding", buildFundingParams().toXML());
 
         // Klarna payment method
         if (klarnaItemsRequest != null

@@ -8,6 +8,7 @@ import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.*;
+import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
@@ -45,7 +46,7 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
         MpiAttributes, NotificationAttributes, AsyncAttributes, CustomerInfoAttributes, RiskParamsAttributes,
         FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes,
         ThreedsV2Attributes, TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes,
-        ManagedRecurringAttributes {
+        ManagedRecurringAttributes, FundingAttributes {
 
     private String transactionType = TransactionTypes.SALE_3D;
     private Boolean moto;
@@ -184,7 +185,8 @@ public class Sale3DRequest extends Request implements PaymentAttributes, CreditC
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())
                 .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
-                .addElement(buildTokenizationParams().toXML());
+                .addElement(buildTokenizationParams().toXML())
+                .addElement("funding", buildFundingParams().toXML());
     }
 
     public List<Map.Entry<String, Object>> getElements() {

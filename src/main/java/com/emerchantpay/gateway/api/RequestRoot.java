@@ -148,6 +148,15 @@ public abstract class RequestRoot {
     private RequestBuilder managedRecurringAttrRequestBuilder;
     private HashMap<String, String> managedRecurringAttrParamsMap;
 
+    // Funding Attributes
+    private RequestBuilder fundingAttrRequestBuilder;
+
+    private HashMap<String, String> fundingAttrParamsMap;
+
+    private RequestBuilder receiverAttrRequestBuilder;
+
+    private HashMap<String, String> receiverAttrParamsMap;
+
     public GenesisValidator getValidator() {
         if (validator == null) {
             validator = new GenesisValidator();
@@ -545,5 +554,33 @@ public abstract class RequestRoot {
             managedRecurringAttrParamsMap = new HashMap<String, String>();
         }
         return managedRecurringAttrParamsMap;
+    }
+
+    public RequestBuilder getFundingAttrRequestBuilder() {
+        if (fundingAttrRequestBuilder == null) {
+            fundingAttrRequestBuilder = new RequestBuilder("");
+        }
+        return fundingAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getFundingAttrParamsMap() {
+        if (fundingAttrParamsMap == null) {
+            fundingAttrParamsMap = new HashMap<String, String>();
+        }
+        return fundingAttrParamsMap;
+    }
+
+    public RequestBuilder getReceiverAttrRequestBuilder() {
+        if (receiverAttrRequestBuilder == null) {
+            receiverAttrRequestBuilder = new RequestBuilder("");
+        }
+        return receiverAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getReceiverAttrParamsMap() {
+        if (receiverAttrParamsMap == null) {
+            receiverAttrParamsMap = new HashMap<String, String>();
+        }
+        return receiverAttrParamsMap;
     }
 }
