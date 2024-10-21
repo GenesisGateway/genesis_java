@@ -26,6 +26,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
@@ -72,6 +74,8 @@ public class Http implements Serializable {
 
     private int connectTimeout;
     private int readTimeout;
+    private String proxyHost;
+    private int proxyPort;
 
     public Http(Configuration configuration) {
         this.configuration = configuration;
@@ -126,12 +130,20 @@ public class Http implements Serializable {
         return httpRequestXML(RequestMethod.PUT, url, request.toXML());
     }
 
-    public void setConnectTimeout(int timeout){
+    public void setConnectTimeout(int timeout) {
         connectTimeout = timeout;
     }
 
     public void setReadTimeout(int timeout) {
         readTimeout = timeout;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
     }
 
     private NodeWrapper httpRequestXML(RequestMethod requestMethod, String url) {
@@ -182,28 +194,36 @@ public class Http implements Serializable {
                 responseStream = connection.getResponseCode() == 422 ? connection.getErrorStream()
                         : connection.getInputStream();
 
-                String xml = StringUtils.inputStreamToString(responseStream);
+                String responseXml = StringUtils.inputStreamToString(responseStream);
 
                 configuration.getLogger().log(Level.INFO, "[Genesis] [{0}]] {1} {2}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url});
                 configuration.getLogger().log(Level.FINE, "[Genesis] [{0}] {1} {2} {3}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url, connection.getResponseCode()});
 
-                if (xml != null && configuration.isDebugModeEnabled() == true) {
+                if (configuration.isDebugModeEnabled()) {
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(postBody));
-                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(xml));
+                    configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(responseXml));
                 }
 
-                nodeWrapper = NodeWrapperFactory.instance.create(xml);
+                nodeWrapper = NodeWrapperFactory.instance.create(responseXml);
             } finally {
                 if (responseStream != null) {
                     responseStream.close();
                 }
             }
         } catch (UnknownHostException e) {
-            throw new NetworkException("No route to host " + e.getMessage() + ":" + port, e);
+            String errorStr = "No route to host " + host + ":" + port;
+            if (proxyHost != null && proxyPort > 0) {
+                errorStr += " , used proxy_host: " + proxyHost + ", proxy_port: " + proxyPort;
+            }
+            throw new NetworkException(errorStr, e);
         } catch (IOException e) {
-            throw new UnexpectedException(e.getMessage() + ", host: " + host + ", port: " + port, e);
+            String errorStr = ", host: " + host + ", port: " + port;
+            if (proxyHost != null && proxyPort > 0) {
+                errorStr += ", used proxy_host: " + proxyHost + ", proxy_port: " + proxyPort;
+            }
+            throw new UnexpectedException(e.getMessage() + errorStr, e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -252,7 +272,7 @@ public class Http implements Serializable {
                 configuration.getLogger().log(Level.FINE, "[Genesis] [{0}] {1} {2} {3}",
                         new Object[]{getCurrentTime(), requestMethod.toString(), url, connection.getResponseCode()});
 
-                if (json != null && configuration.isDebugModeEnabled() == true) {
+                if (configuration.isDebugModeEnabled()) {
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(postBody));
                     configuration.getLogger().log(Level.INFO, formatSanitizeBodyForLog(json));
                 }
@@ -338,11 +358,15 @@ public class Http implements Serializable {
         String user_pass = configuration.getUsername() + ":" + configuration.getPassword();
         String encoded = Base64.getEncoder().encodeToString(user_pass.getBytes());
 
-
-        connection = (HttpURLConnection) url.openConnection();
+        if (proxyHost != null && !proxyHost.isEmpty() && proxyPort > 0) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            connection = (HttpURLConnection) url.openConnection(proxy);
+        } else {
+            connection = (HttpURLConnection) url.openConnection();
+        }
         connection.setRequestMethod(requestMethod.toString());
         connection.addRequestProperty("Accept", acceptHeader);
-        connection.setRequestProperty("Content-Type",contentType);
+        connection.setRequestProperty("Content-Type", contentType);
         connection.addRequestProperty("Authorization", "Basic " + encoded);
         connection.setDoOutput(true);
         connection.setConnectTimeout(connectTimeout);
