@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.18.4</version>
+        <version>1.18.3</version>
 </dependency>
 ```
 
@@ -161,20 +161,6 @@ Endpoints
 ---------
 
 The current version supports two endpoints: ```ECOMPROCESSING``` and ```EMERCHANTPAY```
-
-Proxy configuration
--------------------
-
-Proxy configuration is optional. You can use proxy host domain name or IP address and proxy port number.
-
-```java
-// Create proxy configuration
-GenesisClient client = new GenesisClient(configuration, request);
-client.setProxyHost("proxy_host");
-client.setProxyPort(8080);
-client.debugMode(true);
-client.execute();
-```
 
 Request types
 -------------

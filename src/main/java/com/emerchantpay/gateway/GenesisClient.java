@@ -48,8 +48,6 @@ public class GenesisClient extends Request {
 
     private int connectTimeout = 60000;
     private int readTimeout = 60000;
-    private String proxyHost;
-    private int proxyPort;
 
     // Execute
     private Http http;
@@ -257,8 +255,6 @@ public class GenesisClient extends Request {
         http = new Http(configuration);
         http.setConnectTimeout(connectTimeout);
         http.setReadTimeout(readTimeout);
-        http.setProxyHost(proxyHost);
-        http.setProxyPort(proxyPort);
         NodeWrapper response = http.postXML(configuration.getBaseUrl(), request);
 
         String requestIdentifier = getRequestIdentifier(request);
@@ -312,29 +308,6 @@ public class GenesisClient extends Request {
             throw new IllegalArgumentException("timeout can not be negative");
         }
         readTimeout = timeout;
-    }
-
-    /**
-     * Sets a specified proxy host value to be used when opening a communications link to the resource
-     * referenced by this GenesisClient. Use domain or IP address.
-     *
-     * @param proxyHost proxy host
-     */
-    public void setProxyHost(String proxyHost) {
-        this.proxyHost = proxyHost;
-    }
-
-    /**
-     * Sets a specified proxy port value to be used when opening a communications link to the resource
-     * referenced by this GenesisClient. A non-zero value specifies the proxy port.
-     *
-     * @param proxyPort proxy port
-     */
-    public void setProxyPort(int proxyPort) {
-        if (proxyPort < 1 || proxyPort > 65535) {
-            throw new IllegalArgumentException("invalid port: " + proxyPort);
-        }
-        this.proxyPort = proxyPort;
     }
 
     private Configuration getConfiguration() {
