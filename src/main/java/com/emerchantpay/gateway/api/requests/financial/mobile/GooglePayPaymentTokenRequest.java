@@ -6,6 +6,7 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
@@ -43,18 +44,24 @@ public class GooglePayPaymentTokenRequest extends Request {
     //Payment Token attributes
     //Version information about the payment token.
 
+    @Getter
     private String tokenSignedKey;
 
+    @Getter
     private String tokenSignedMessage;
 
+    @Getter
     private String tokenProtocolVersion;
     //Signature of the payment and header data.
+    @Getter
     private String tokenSignature;
 
     //Signatures of the payment and header data.
+    @Getter
     private String[] tokenSignatures;
     private String tokenTransactionIdentifier;
 
+    @Getter
     private String paymentToken;
 
     // Required params
@@ -65,18 +72,6 @@ public class GooglePayPaymentTokenRequest extends Request {
 
     public GooglePayPaymentTokenRequest() {
         super();
-    }
-
-    public String getTokenSignedKey() {
-        return tokenSignedKey;
-    }
-
-    public String getTokenSignedMessage() {
-        return tokenSignedMessage;
-    }
-
-    public String getTokenProtocolVersion() {
-        return tokenProtocolVersion;
     }
 
     public GooglePayPaymentTokenRequest setSignedTokenKey(String signedTokenKey) {
@@ -92,14 +87,6 @@ public class GooglePayPaymentTokenRequest extends Request {
     public GooglePayPaymentTokenRequest setTokenProtocolVersion(String tokenProtocolVersion) {
         this.tokenProtocolVersion = tokenProtocolVersion;
         return this;
-    }
-
-    public String getTokenSignature() {
-        return tokenSignature;
-    }
-
-    public String[] getTokenSignatures() {
-        return tokenSignatures;
     }
 
     public GooglePayPaymentTokenRequest setTokenSignature(String tokenSignature) {
@@ -121,10 +108,6 @@ public class GooglePayPaymentTokenRequest extends Request {
     public GooglePayPaymentTokenRequest setPaymentToken(String paymentToken) {
         this.paymentToken = paymentToken;
         return this;
-    }
-
-    public String getPaymentToken() {
-        return this.paymentToken;
     }
 
     @Override

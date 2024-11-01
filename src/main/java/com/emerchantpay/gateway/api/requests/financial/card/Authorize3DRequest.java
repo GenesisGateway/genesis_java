@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
@@ -11,10 +10,10 @@ import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,15 +41,14 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class Authorize3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
+public class Authorize3DRequest extends FinancialRequest implements CreditCardAttributes,
         DescriptorAttributes, CustomerInfoAttributes, NotificationAttributes, AsyncAttributes,
         MpiAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, CryptoAttributes,
         TravelDataAttributes, ThreedsV2Attributes, PreauthorizationAttributes, TokenizationAttributes,
         RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes, FundingAttributes {
 
     private String transactionType = TransactionTypes.AUTHORIZE_3D;
-    private BigDecimal amount;
-    private String currency;
+
     private Boolean moto;
     private Boolean gaming;
 
@@ -81,28 +79,6 @@ public class Authorize3DRequest extends Request implements PaymentAttributes, Cr
     @Override
     public Boolean getZeroAmountSupport(){
         return true;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override

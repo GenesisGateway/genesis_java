@@ -1,27 +1,23 @@
 package com.emerchantpay.gateway.api.requests.financial.pbv;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PBVAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-public class PBVSaleRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class PBVSaleRequest extends FinancialRequest implements CreditCardAttributes, CustomerInfoAttributes,
 		DescriptorAttributes, PBVAttributes {
 
 	private String transactionType = TransactionTypes.PAYBYVOUCHER_SALE;
-	private BigDecimal amount;
-	private String currency;
 
 	// Required params
 	private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -31,28 +27,6 @@ public class PBVSaleRequest extends Request implements PaymentAttributes, Credit
 
 	public PBVSaleRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	@Override

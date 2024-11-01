@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.18.4</version>
+        <version>1.18.5</version>
 </dependency>
 ```
 
@@ -89,6 +89,25 @@ public class GenesisExample {
         System.out.println("Transaction Id: " + result.getTransaction().getTransactionId());
     }
 }
+```
+
+Smart Routing
+-------------------
+
+The Smart Routing API is a higher-level abstraction that allows for simpler and more efficient gateway Processing API integration. 
+It does not require the terminal token. This by itself minimizes the need for complex customer-level manual routing to 
+terminals set up on the gateway platform configuration layer.
+
+By default the Smart Router is disabled. Contact your account manager to use the functionality.
+
+Smart Router can be enabled as follows:
+```java
+// Enable smart routing globally
+Configuration configuration = new Configuration(Environments.STAGING, Endpoints.EMERCHANTPAY);
+configuration.setForceSmartRouting(true);
+// Enable smart routing per request
+AuthorizeRequest authorize = new AuthorizeRequest();
+authorize.setUseSmartRouting(true);
 ```
 
 Notifications

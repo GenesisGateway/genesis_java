@@ -6,6 +6,7 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
@@ -43,26 +44,37 @@ public class ApplePayPaymentTokenRequest extends Request {
 
     //Payment Token attributes
     //Version information about the payment token.
+    @Getter
     private String tokenVersion;
     //Encrypted payment data.
+    @Getter
     private String tokenData;
     //Signature of the payment and header data.
+    @Getter
     private String tokenSignature;
     //Ephemeral public key bytes.
+    @Getter
     private String tokenEphemeralPublicKey;
     //Hash of encoded public key bytes of the merchant’s certificate.
+    @Getter
     private String tokenPublicKeyHash;
     //Transaction identifier, generated on the device
+    @Getter
     private String tokenTransactionId;
     //describes the card
+    @Getter
     private String tokenDisplayName;
     //Describes the payment network backing the card
+    @Getter
     private String tokenNetwork;
     //Representing the card’s type
+    @Getter
     private String tokenType;
     //A unique identifier for this payment.
+    @Getter
     private String tokenTransactionIdentifier;
 
+    @Getter
     private String paymentToken;
 
     // Required params
@@ -75,17 +87,9 @@ public class ApplePayPaymentTokenRequest extends Request {
         super();
     }
 
-    public String getTokenVersion() {
-        return tokenVersion;
-    }
-
     public ApplePayPaymentTokenRequest setTokenVersion(String tokenVersion) {
         this.tokenVersion = tokenVersion;
         return this;
-    }
-
-    public String getTokenData() {
-        return tokenData;
     }
 
     public ApplePayPaymentTokenRequest setTokenData(String tokenData) {
@@ -93,17 +97,9 @@ public class ApplePayPaymentTokenRequest extends Request {
         return this;
     }
 
-    public String getTokenSignature() {
-        return tokenSignature;
-    }
-
     public ApplePayPaymentTokenRequest setTokenSignature(String tokenSignature) {
         this.tokenSignature = tokenSignature;
         return this;
-    }
-
-    public String getTokenEphemeralPublicKey() {
-        return tokenEphemeralPublicKey;
     }
 
     public ApplePayPaymentTokenRequest setTokenEphemeralPublicKey(String tokenEphemeralPublicKey) {
@@ -111,17 +107,9 @@ public class ApplePayPaymentTokenRequest extends Request {
         return this;
     }
 
-    public String getTokenPublicKeyHash() {
-        return tokenPublicKeyHash;
-    }
-
     public ApplePayPaymentTokenRequest setTokenPublicKeyHash(String tokenPublicKeyHash) {
         this.tokenPublicKeyHash = tokenPublicKeyHash;
         return this;
-    }
-
-    public String getTokenTransactionId() {
-        return tokenTransactionId;
     }
 
     public ApplePayPaymentTokenRequest setTokenTransactionId(String tokenTransactionId) {
@@ -129,17 +117,9 @@ public class ApplePayPaymentTokenRequest extends Request {
         return this;
     }
 
-    public String getTokenDisplayName() {
-        return tokenDisplayName;
-    }
-
     public ApplePayPaymentTokenRequest setTokenDisplayName(String tokenDisplayName) {
         this.tokenDisplayName = tokenDisplayName;
         return this;
-    }
-
-    public String getTokenNetwork() {
-        return tokenNetwork;
     }
 
     public ApplePayPaymentTokenRequest setTokenNetwork(String tokenNetwork) {
@@ -147,17 +127,9 @@ public class ApplePayPaymentTokenRequest extends Request {
         return this;
     }
 
-    public String getTokenType() {
-        return tokenType;
-    }
-
     public ApplePayPaymentTokenRequest setTokenType(String tokenType) {
         this.tokenType = tokenType;
         return this;
-    }
-
-    public String getTokenTransactionIdentifier() {
-        return tokenTransactionIdentifier;
     }
 
     public ApplePayPaymentTokenRequest setTokenTransactionIdentifier(String tokenTransactionIdentifier) {
@@ -200,10 +172,6 @@ public class ApplePayPaymentTokenRequest extends Request {
     public ApplePayPaymentTokenRequest setPaymentToken(String paymentToken) {
         this.paymentToken = paymentToken;
         return this;
-    }
-
-    public String getPaymentToken() {
-        return this.paymentToken;
     }
 
     @Override

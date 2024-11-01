@@ -2,7 +2,6 @@ package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.base.GiftCardRequest;
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the

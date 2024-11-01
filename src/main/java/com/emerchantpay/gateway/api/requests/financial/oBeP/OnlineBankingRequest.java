@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
@@ -9,30 +8,35 @@ import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Currency;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-public class OnlineBankingRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, BillingAddressAttributes, ShippingAddressAttributes {
+public class OnlineBankingRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes, BillingAddressAttributes, ShippingAddressAttributes {
 
     private static final String transactionType = TransactionTypes.ONLINE_BANKING;
-    private String currency;
-    private BigDecimal amount;
+
+    @Getter
     private String bankCode;
+    @Getter
     private String documentId;
+    @Getter
     private String paymentType;
+    @Getter
     private String virtualPaymentAddress;
+    @Getter
     private String consumerReference;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     private static final ArrayList<String> allowedPaymentTypes = new ArrayList<>(Arrays.asList(
             "online_banking",
@@ -65,7 +69,7 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
             "SPDB",
             "YLB"));
 
-    private static final ArrayList<String> allowedBankCodesCLP = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> allowedBankCodesCLP = new ArrayList<>(Collections.singletonList(
             "SP"));
 
     private static final ArrayList<String> allowedBankCodesINR = new ArrayList<>(Arrays.asList(
@@ -176,13 +180,13 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
             "FPX_SCB",
             "FPX_UOB"));
 
-    private static final ArrayList<String> allowedBankCodesPYG = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> allowedBankCodesPYG = new ArrayList<>(Collections.singletonList(
             "PE"));
 
-    private static final ArrayList<String> allowedBankCodesPHP = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> allowedBankCodesPHP = new ArrayList<>(Collections.singletonList(
             "DRAGONPAY"));
 
-    private static final ArrayList<String> allowedBankCodesSGD = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> allowedBankCodesSGD = new ArrayList<>(Collections.singletonList(
             "ENETS-D"));
 
     private static final ArrayList<String> allowedBankCodesTHB = new ArrayList<>(Arrays.asList(
@@ -197,7 +201,7 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
             "TH_PB_SCBPN",
             "UOB_THB"));
 
-    private static final ArrayList<String> allowedBankCodesUYU = new ArrayList<>(Arrays.asList(
+    private static final ArrayList<String> allowedBankCodesUYU = new ArrayList<>(Collections.singletonList(
             "AI"));
 
     private static final ArrayList<String> allowedBankCodesVND = new ArrayList<>(Arrays.asList(
@@ -252,24 +256,16 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
     }
 
     @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
     public OnlineBankingRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setAmount(amount);
         return this;
     }
 
     @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public OnlineBankingRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
     }
 
@@ -278,17 +274,9 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
         return transactionType;
     }
 
-    public String getBankCode() {
-        return bankCode;
-    }
-
     public OnlineBankingRequest setBankCode(String bankCode) {
         this.bankCode = bankCode;
         return this;
-    }
-
-    public String getDocumentId() {
-        return documentId;
     }
 
     public OnlineBankingRequest setDocumentId(String documentId) {
@@ -296,26 +284,14 @@ public class OnlineBankingRequest extends Request implements PaymentAttributes, 
         return this;
     }
 
-    public String getPaymentType() {
-        return paymentType;
-    }
-
     public OnlineBankingRequest setPaymentType(String paymentType) {
         this.paymentType = paymentType;
         return this;
     }
 
-    public String getVirtualPaymentAddress() {
-        return virtualPaymentAddress;
-    }
-
     public OnlineBankingRequest setVirtualPaymentAddress(String virtualPaymentAddress) {
         this.virtualPaymentAddress = virtualPaymentAddress;
         return this;
-    }
-
-    public String getConsumerReference() {
-        return consumerReference;
     }
 
     public OnlineBankingRequest setConsumerReference(String consumerReference) {

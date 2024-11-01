@@ -1,19 +1,16 @@
 package com.emerchantpay.gateway.api.requests.financial.wallets;
 
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,11 +35,10 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class NetellerRequest extends Request implements PaymentAttributes, AsyncAttributes, CustomerInfoAttributes {
+public class NetellerRequest extends FinancialRequest implements AsyncAttributes, CustomerInfoAttributes {
 
 	private String transactionType = TransactionTypes.NETELLER;
-	private BigDecimal amount;
-	private String currency;
+
 	private String customerAccount;
 	private String accountPassword;
 
@@ -54,28 +50,6 @@ public class NetellerRequest extends Request implements PaymentAttributes, Async
 
 	public NetellerRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	public NetellerRequest setCustomerAccount(String customerAccount) {

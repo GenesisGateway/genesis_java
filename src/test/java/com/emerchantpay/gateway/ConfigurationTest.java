@@ -2,13 +2,10 @@ package com.emerchantpay.gateway;
 
 import static org.junit.Assert.*;
 
-import com.emerchantpay.gateway.api.constants.ConsumerEndpoints;
-import com.emerchantpay.gateway.api.constants.Environments;
-import com.emerchantpay.gateway.api.constants.FXEndpoints;
+import com.emerchantpay.gateway.api.constants.*;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
 import org.junit.Test;
 
-import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.util.Configuration;
 
 public class ConfigurationTest {
@@ -18,6 +15,7 @@ public class ConfigurationTest {
     Configuration configurationConsumer = new Configuration(environment, endpoint, ConsumerEndpoints.CREATE_CONSUMER, "v1");
     Configuration configurationFX = new Configuration(environment, endpoint, FXEndpoints.FX_TIERS, "v1");
     Configuration configurationScaChecker = new Configuration(environment, endpoint, "v1");
+    Configuration configurationFinancial = new Configuration(environment, endpoint);
 
     @Test
     public void testEnvironment() {
@@ -86,5 +84,26 @@ public class ConfigurationTest {
         assertTrue(urlWithParams.contains(expectedQueryParam));
         configurationConsumer.clearQueryParameters();
         assertEquals(urlWithoutQueryParams, configurationConsumer.getBaseUrl());
+    }
+
+    @Test
+    public void testSmartRoutingEnabledBaseURl(){
+        configurationFinancial.setAction(EndpointActions.TRANSACTIONS);
+        configurationFinancial.setTokenEnabled(false);
+        String baseUrl = configurationFinancial.getBaseUrl();
+        String expectedUrl = "https://staging.api.emerchantpay.net/transactions";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testSmartRoutingDisabledBaseURl(){
+        configurationFinancial.setAction(EndpointActions.PROCESS);
+        configurationFinancial.setTokenEnabled(true);
+        configurationFinancial.setToken("testTerminalToken");
+        String baseUrl = configurationFinancial.getBaseUrl();
+        String expectedUrl = "https://staging.gate.emerchantpay.net/process/testTerminalToken";
+
+        assertEquals(expectedUrl, baseUrl);
     }
 }

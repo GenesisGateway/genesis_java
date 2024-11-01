@@ -1,17 +1,16 @@
 package com.emerchantpay.gateway.api.requests.financial.card.recurring;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.util.Currency;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,12 +40,10 @@ import com.emerchantpay.gateway.util.Currency;
  * with initial recurring type instead.
  */
 @Deprecated
-public class RecurringSaleRequest extends Request implements PaymentAttributes, BusinessParamsAttributes, TravelDataAttributes {
+public class RecurringSaleRequest extends FinancialRequest implements BusinessParamsAttributes, TravelDataAttributes {
 
     private String transactionType = TransactionTypes.RECURRING_SALE;
-    private BigDecimal amount;
     private String referenceId;
-    private String currency;
     private Boolean moto;
 
     public RecurringSaleRequest() {
@@ -56,28 +53,6 @@ public class RecurringSaleRequest extends Request implements PaymentAttributes, 
     public  RecurringSaleRequest setMoto(Boolean moto) {
         this.moto = moto;
         return this;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public RecurringSaleRequest setReferenceId(String referencialId) {

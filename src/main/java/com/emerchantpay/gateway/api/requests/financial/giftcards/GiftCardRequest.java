@@ -1,13 +1,11 @@
-package com.emerchantpay.gateway.api.requests.base;
+package com.emerchantpay.gateway.api.requests.financial.giftcards;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 /*
@@ -33,44 +31,19 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public abstract class GiftCardRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+public abstract class GiftCardRequest extends FinancialRequest implements CustomerInfoAttributes,
         DescriptorAttributes {
 
-    private BigDecimal amount;
-    private String currency;
     private String cardnumber;
     private String cvv;
     private String referenceId;
 
-    private GenesisValidator validator = new GenesisValidator();
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
+    private final GenesisValidator validator = new GenesisValidator();
 
     public GiftCardRequest setCardNumber(String cardnumber) {
         if (validator.isValidGiftCard(cardnumber)) {
             this.cardnumber = cardnumber;
         }
-
         return this;
     }
 

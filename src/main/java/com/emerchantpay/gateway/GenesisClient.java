@@ -2,10 +2,14 @@ package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.constants.DeprecatedTransactionTypes;
+import com.emerchantpay.gateway.api.constants.EndpointActions;
 import com.emerchantpay.gateway.api.exceptions.LimitsException;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,23 +42,31 @@ public class GenesisClient extends Request {
 
     private Configuration configuration;
     //Transaction id to Configuration if specific configuration is needed for any request
-    private HashMap<String, Configuration> configurationMap = new HashMap<String, Configuration>();
-    private List<Request> requestList = new ArrayList<Request>();
+    private final HashMap<String, Configuration> configurationMap = new HashMap<String, Configuration>();
+    private final List<Request> requestList = new ArrayList<Request>();
 
     //Maximum number of requests to be chained sync or async
+    @Getter
     private static final int maxRequestNumber = 100;
     //Execute requests asynchronously in chunks of 10.
     private static final int asyncRequestsChunkSize = 10;
 
     private int connectTimeout = 60000;
     private int readTimeout = 60000;
+    /**
+     * -- SETTER --
+     * Sets a specified proxy host value to be used when opening a communications link to the resource
+     * referenced by this GenesisClient. Use domain or IP address.
+     */
+    @Setter
     private String proxyHost;
     private int proxyPort;
 
     // Execute
     private Http http;
     //Transaction Id to response
-    private ConcurrentHashMap<String, NodeWrapper> responseMap = new ConcurrentHashMap<String, NodeWrapper>();
+    private final ConcurrentHashMap<String, NodeWrapper> responseMap = new ConcurrentHashMap<String, NodeWrapper>();
+    @Getter
     private Boolean asyncExecute = false;
 
     public GenesisClient(Configuration configuration, Request request) {
@@ -82,17 +94,9 @@ public class GenesisClient extends Request {
         }
     }
 
-    public Boolean getAsyncExecute() {
-        return asyncExecute;
-    }
-
     public GenesisClient setAsyncExecute(Boolean asyncExecute) {
         this.asyncExecute = asyncExecute;
         return this;
-    }
-
-    public static int getMaxRequestNumber() {
-        return maxRequestNumber;
     }
 
     public GenesisClient debugMode(Boolean enabled) {
@@ -153,8 +157,7 @@ public class GenesisClient extends Request {
     }
 
     private void executeAsync() {
-
-        ArrayList<CompletableFuture> requestFutures = new ArrayList<CompletableFuture>();
+        ArrayList<CompletableFuture> requestFutures = new ArrayList<>();
         for (int requestIndex = 0; requestIndex < requestList.size(); requestIndex++) {
             Request request = requestList.get(requestIndex);
             //Clone configuration for each request so asynchronous execution doesn't throw errors
@@ -241,8 +244,15 @@ public class GenesisClient extends Request {
                 break;
             default:
                 configuration.setWpfEnabled(false);
-                configuration.setTokenEnabled(true);
-                configuration.setAction("process");
+                FinancialRequest financialRequest = request instanceof FinancialRequest ? ((FinancialRequest) request) : null;
+                boolean useSmartRouting = configuration.getForceSmartRouting() || (financialRequest != null && financialRequest.getUseSmartRouting());
+                if (useSmartRouting) {
+                    configuration.setTokenEnabled(false);
+                    configuration.setAction(EndpointActions.TRANSACTIONS);
+                } else {
+                    configuration.setTokenEnabled(true);
+                    configuration.setAction(EndpointActions.PROCESS);
+                }
                 break;
         }
 
@@ -312,16 +322,6 @@ public class GenesisClient extends Request {
             throw new IllegalArgumentException("timeout can not be negative");
         }
         readTimeout = timeout;
-    }
-
-    /**
-     * Sets a specified proxy host value to be used when opening a communications link to the resource
-     * referenced by this GenesisClient. Use domain or IP address.
-     *
-     * @param proxyHost proxy host
-     */
-    public void setProxyHost(String proxyHost) {
-        this.proxyHost = proxyHost;
     }
 
     /**

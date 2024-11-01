@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
@@ -8,8 +7,8 @@ import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
@@ -18,12 +17,10 @@ import com.emerchantpay.gateway.util.Currency;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class MyBankRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes,
+public class MyBankRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes,
         BillingAddressAttributes, ShippingAddressAttributes, PendingPaymentAttributes {
 
     private static final String transactionType = TransactionTypes.MY_BANK;
-    private String currency = Currency.EUR.getCurrency();
-    private BigDecimal amount;
 
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -33,27 +30,20 @@ public class MyBankRequest extends Request implements PaymentAttributes, Custome
 
     public MyBankRequest() {
         super();
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
+        setCurrency(Currency.EUR.getCurrency());
     }
 
     @Override
     public MyBankRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setAmount(amount);
         return this;
     }
 
     @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public MyBankRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
     }
 

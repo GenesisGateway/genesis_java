@@ -1,19 +1,17 @@
 package com.emerchantpay.gateway.api.requests.financial.mobile;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,17 +39,18 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class GooglePayRequest extends Request implements BaseAttributes, PaymentAttributes, CustomerInfoAttributes,
+public class GooglePayRequest extends FinancialRequest implements CustomerInfoAttributes,
         AddressAttributes, BusinessParamsAttributes {
 
     private String transactionType = TransactionTypes.GOOGLE_PAY;
-    private BigDecimal amount;
-    private String currency;
+
+    @Getter
     private String paymentSubType;
+    @Getter
     private String documentId;
+    @Getter
     private String birthDate;
     private GooglePayPaymentTokenRequest googlePayPaymentTokenRequest = new GooglePayPaymentTokenRequest();
-
 
     /**
      * Used in Google token for signatures array
@@ -74,28 +73,6 @@ public class GooglePayRequest extends Request implements BaseAttributes, Payment
     }
 
     @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public String getTransactionType() {
         return transactionType;
     }
@@ -105,24 +82,14 @@ public class GooglePayRequest extends Request implements BaseAttributes, Payment
         return this;
     }
 
-    public String getPaymentSubType(){ return paymentSubType; }
-
     public GooglePayRequest setDocumentId(String documentId) {
         this.documentId = documentId;
         return this;
     }
 
-    public String getDocumentId() {
-        return documentId;
-    }
-
     public GooglePayRequest setBirthDate(String birthDate) {
         this.birthDate = birthDate;
         return this;
-    }
-
-    public String getBirthDate() {
-        return birthDate;
     }
 
     @Override
@@ -146,8 +113,8 @@ public class GooglePayRequest extends Request implements BaseAttributes, Payment
 
     protected RequestBuilder buildRequest(String root) {
         // Set required params
-        requiredParams.put(RequiredParameters.amount, amount.toString());
-        requiredParams.put(RequiredParameters.currency, currency);
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.paymentSubType, paymentSubType);
 

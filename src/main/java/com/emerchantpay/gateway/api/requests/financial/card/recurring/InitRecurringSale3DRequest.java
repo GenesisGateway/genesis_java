@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.card.recurring;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
@@ -10,10 +9,10 @@ import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttribut
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.threeds.v2.ThreedsV2Attributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,15 +45,14 @@ import java.util.Map;
  * with initial recurring type instead.
  */
 @Deprecated
-public class InitRecurringSale3DRequest extends Request implements PaymentAttributes, CreditCardAttributes,
+public class InitRecurringSale3DRequest extends FinancialRequest implements CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, AsyncAttributes, NotificationAttributes, MpiAttributes,
         RiskParamsAttributes, FXAttributes, ScaAttributes, BusinessParamsAttributes, TravelDataAttributes, ThreedsV2Attributes,
         TokenizationAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes {
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE_3D;
     private Boolean moto;
-    private BigDecimal amount;
-    private String currency;
+
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
 
@@ -69,30 +67,9 @@ public class InitRecurringSale3DRequest extends Request implements PaymentAttrib
         super();
     }
 
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
     @Override
     public Boolean getZeroAmountSupport(){
         return true;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public InitRecurringSale3DRequest setMoto(Boolean moto) {

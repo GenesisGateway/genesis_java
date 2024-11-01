@@ -22,3 +22,4 @@
 .metadata/
 .DC_Store
 *.jks
+src/testIntegration/resources/test-integration.properties

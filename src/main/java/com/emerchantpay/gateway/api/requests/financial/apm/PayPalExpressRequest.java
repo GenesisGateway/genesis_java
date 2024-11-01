@@ -1,15 +1,13 @@
 package com.emerchantpay.gateway.api.requests.financial.apm;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +35,9 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PayPalExpressRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes {
+public class PayPalExpressRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.PAYPAL_EXPRESS_CHECKOUT;
-    private BigDecimal amount;
-    private String currency;
 
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -54,25 +50,10 @@ public class PayPalExpressRequest extends Request implements PaymentAttributes, 
     }
 
     @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
     public PayPalExpressRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override

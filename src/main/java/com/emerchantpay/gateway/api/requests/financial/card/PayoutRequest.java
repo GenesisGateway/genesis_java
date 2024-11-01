@@ -1,20 +1,18 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.CreditCardAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.FXAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.TokenizationAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,12 +37,11 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PayoutRequest extends Request implements PaymentAttributes, CreditCardAttributes, CustomerInfoAttributes,
+public class PayoutRequest extends FinancialRequest implements CreditCardAttributes, CustomerInfoAttributes,
         FXAttributes, TokenizationAttributes {
 
 	private String transactionType = TransactionTypes.PAYOUT;
-	private BigDecimal amount;
-	private String currency;
+
 
 	// Required params
 	private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -54,28 +51,6 @@ public class PayoutRequest extends Request implements PaymentAttributes, CreditC
 
 	public PayoutRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	@Override

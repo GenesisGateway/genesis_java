@@ -1,17 +1,14 @@
 package com.emerchantpay.gateway.api.requests.financial;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.MobileAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +38,9 @@ import java.util.stream.Collectors;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public abstract class AfricanMobileRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, MobileAttributes, BillingAddressAttributes {
+public abstract class AfricanMobileRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes, MobileAttributes, BillingAddressAttributes {
 
-    private BigDecimal amount;
-    private String currency;
+
 
     //Mobile Attributes
     private RequestBuilder mobileAttrRequestBuilder;
@@ -58,28 +54,6 @@ public abstract class AfricanMobileRequest extends Request implements PaymentAtt
 
     public AfricanMobileRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public RequestBuilder getMobileAttrRequestBuilder() {

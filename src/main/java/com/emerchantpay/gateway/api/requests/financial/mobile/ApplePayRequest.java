@@ -1,20 +1,17 @@
 package com.emerchantpay.gateway.api.requests.financial.mobile;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.CryptoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -42,12 +39,11 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class ApplePayRequest extends Request implements BaseAttributes, PaymentAttributes, CustomerInfoAttributes,
+public class ApplePayRequest extends FinancialRequest implements CustomerInfoAttributes,
         AddressAttributes, BusinessParamsAttributes, CryptoAttributes {
 
     private String transactionType = TransactionTypes.APPLE_PAY;
-    private BigDecimal amount;
-    private String currency;
+
     private String paymentType;
     private String documentId;
     private String birthDate;
@@ -65,28 +61,6 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
 
     public ApplePayPaymentTokenRequest getPaymentTokenRequest() {
         return applePayPaymentTokenRequest;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override
@@ -140,8 +114,8 @@ public class ApplePayRequest extends Request implements BaseAttributes, PaymentA
 
     protected RequestBuilder buildRequest(String root) {
         // Set required params
-        requiredParams.put(RequiredParameters.amount, amount.toString());
-        requiredParams.put(RequiredParameters.currency, currency);
+        requiredParams.put(RequiredParameters.amount, getAmount().toString());
+        requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.paymentSubType, paymentType);
 

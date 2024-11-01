@@ -38,6 +38,76 @@ public interface DescriptorAttributes {
         return this;
     }
 
+    default DescriptorAttributes setDynamicSubMerchantId(String dynamicSubMerchantId) {
+        getDescriptorAttrRequestBuilder().addElement("sub_merchant_id", dynamicSubMerchantId);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantCountry(String dynamicMerchantCountry) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_country", dynamicMerchantCountry);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantState(String dynamicMerchantState) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_state", dynamicMerchantState);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantZipCode(String dynamicMerchantZipCode) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_zip_code", dynamicMerchantZipCode);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantAddress(String dynamicMerchantAddress) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_address", dynamicMerchantAddress);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantUrl(String dynamicMerchantUrl) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_url", dynamicMerchantUrl);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantPhone(String dynamicMerchantPhone) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_phone", dynamicMerchantPhone);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServiceCity(String dynamicMerchantServiceCity) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_city", dynamicMerchantServiceCity);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServiceCountry(String dynamicMerchantServiceCountry) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_country", dynamicMerchantServiceCountry);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServiceState(String dynamicMerchantServiceState) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_state", dynamicMerchantServiceState);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServiceZipCode(String dynamicMerchantServiceZipCode) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_zip_code", dynamicMerchantServiceZipCode);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServicePhone(String dynamicMerchantServicePhone) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_phone", dynamicMerchantServicePhone);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantGeoCoordinates(String dynamicMerchantGeoCoordinates) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_geo_coordinates", dynamicMerchantGeoCoordinates);
+        return this;
+    }
+
+    default DescriptorAttributes setDynamicMerchantServiceGeoCoordinates(String dynamicMerchantServiceGeoCoordinates) {
+        getDescriptorAttrRequestBuilder().addElement("merchant_service_geo_coordinates", dynamicMerchantServiceGeoCoordinates);
+        return this;
+    }
+
     default RequestBuilder buildDescriptorParams() {
         return getDescriptorAttrRequestBuilder();
     }

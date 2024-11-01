@@ -1,16 +1,14 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +37,11 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class WechatRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+public class WechatRequest extends FinancialRequest implements CustomerInfoAttributes,
         NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.WECHAT;
-    private BigDecimal amount;
-    private String currency;
+
     private String productCode;
     private Integer productNumber;
     private String productDescription;
@@ -58,28 +55,6 @@ public class WechatRequest extends Request implements PaymentAttributes, Custome
 
     public WechatRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public WechatRequest setProductCode(String productCode) {

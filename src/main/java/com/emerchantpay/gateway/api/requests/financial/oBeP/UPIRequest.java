@@ -23,32 +23,30 @@ package com.emerchantpay.gateway.api.requests.financial.oBeP;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Currency;
+import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UPIRequest extends Request implements BaseAttributes, AsyncAttributes, PaymentAttributes, CustomerInfoAttributes, AddressAttributes {
+public class UPIRequest extends FinancialRequest implements AsyncAttributes, CustomerInfoAttributes, AddressAttributes {
 
     private String transactionType = TransactionTypes.UPI;
-    private BigDecimal amount;
-    private String currency = Currency.INR.getCurrency();
+    @Getter
     private String documentId;
+    @Getter
     private String virtualPaymentAddress;
 
     // Required params
@@ -59,28 +57,7 @@ public class UPIRequest extends Request implements BaseAttributes, AsyncAttribut
 
     public UPIRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
+        setCurrency(Currency.INR.getCurrency());
     }
 
     @Override
@@ -93,17 +70,9 @@ public class UPIRequest extends Request implements BaseAttributes, AsyncAttribut
         return this;
     }
 
-    public String getDocumentId() {
-        return documentId;
-    }
-
     public UPIRequest setVirtualPaymentAddress(String virtualPaymentAddress) {
         this.virtualPaymentAddress = virtualPaymentAddress;
         return this;
-    }
-
-    public String getVirtualPaymentAddress() {
-        return virtualPaymentAddress;
     }
 
     @Override

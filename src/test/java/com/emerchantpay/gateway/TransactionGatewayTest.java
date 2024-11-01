@@ -38,7 +38,7 @@ public class TransactionGatewayTest {
         when(transaction.getThreedsMethodUrl()).thenReturn("https://staging.gate.emerchantpay.net/threeds/threeds_method");
         when(transaction.getThreedsMethodContinueUrl()).thenReturn("https://staging.gate.emerchantpay.net/threeds/threeds_method/1234");
         Transaction paymentTransaction = mock(Transaction.class);
-        LinkedList paymentTransactions = new LinkedList<>();
+        LinkedList<Transaction> paymentTransactions = new LinkedList<>();
         paymentTransactions.add(paymentTransaction);
         when(transaction.getPaymentTransactions()).thenReturn(paymentTransactions);
 

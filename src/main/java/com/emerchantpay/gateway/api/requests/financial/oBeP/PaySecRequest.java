@@ -1,14 +1,12 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -35,37 +33,13 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class PaySecRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+public class PaySecRequest extends FinancialRequest implements CustomerInfoAttributes,
         NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.PAYSEC;
-    private BigDecimal amount;
-    private String currency;
 
     public PaySecRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override

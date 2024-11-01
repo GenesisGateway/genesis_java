@@ -2,58 +2,32 @@ package com.emerchantpay.gateway.api.requests.financial.apm.klarna;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class KlarnaRefundRequest extends KlarnaItemsRequest implements PaymentAttributes {
+public class KlarnaRefundRequest extends KlarnaItemsRequest {
 
     // Request builder
     private RequestBuilder requestBuilder;
 
-    private String transactionType = TransactionTypes.KLARNA_REFUND;
-    private BigDecimal amount;
-    private String currency;
+    private final String transactionType = TransactionTypes.KLARNA_REFUND;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     // Klarna items
-    private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
+    private final KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
 
     public KlarnaRefundRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override

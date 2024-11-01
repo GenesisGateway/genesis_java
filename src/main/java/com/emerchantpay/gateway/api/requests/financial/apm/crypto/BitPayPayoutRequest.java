@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.apm.crypto;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
@@ -9,51 +8,26 @@ import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttribut
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.CryptoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BitPayPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, CryptoAttributes, AsyncAttributes, NotificationAttributes, BillingAddressAttributes, ShippingAddressAttributes {
+public class BitPayPayoutRequest extends FinancialRequest implements CustomerInfoAttributes, CryptoAttributes, AsyncAttributes, NotificationAttributes, BillingAddressAttributes, ShippingAddressAttributes {
 
     private static final String TRANSACTION_TYPE = TransactionTypes.BITPAY_PAYOUT;
-    private BigDecimal amount;
-    private String currency;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     public BitPayPayoutRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override
@@ -100,5 +74,4 @@ public class BitPayPayoutRequest extends Request implements PaymentAttributes, C
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
     }
-
 }

@@ -1,11 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial;
 
-import java.math.BigDecimal;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,37 +26,14 @@ import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RefundRequest extends Request implements PaymentAttributes {
+public class RefundRequest extends FinancialRequest {
 
 	private String transactionType = TransactionTypes.REFUND;
-	private BigDecimal amount;
-	private String currency;
+
 	private String referenceId;
 
 	public RefundRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	public RefundRequest setReferencialId(String referencialId) {

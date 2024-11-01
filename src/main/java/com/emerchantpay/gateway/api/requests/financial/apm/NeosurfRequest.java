@@ -23,32 +23,27 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
-import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
-import com.emerchantpay.gateway.util.Currency;
+import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NeosurfRequest extends Request implements BaseAttributes, PaymentAttributes, CustomerInfoAttributes,
+public class NeosurfRequest extends FinancialRequest implements CustomerInfoAttributes,
         AddressAttributes {
 
-
     private String transactionType = TransactionTypes.NEOSURF;
-    private BigDecimal amount;
-    private String currency;
+
+    @Getter
     private String voucherNumber;
 
     // Required params
@@ -62,34 +57,8 @@ public class NeosurfRequest extends Request implements BaseAttributes, PaymentAt
     }
 
     @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public String getTransactionType() {
         return transactionType;
-    }
-
-    public String getVoucherNumber() {
-        return voucherNumber;
     }
 
     public NeosurfRequest setVoucherNumber(String voucherNumber) {

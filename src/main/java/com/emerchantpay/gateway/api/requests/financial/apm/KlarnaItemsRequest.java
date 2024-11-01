@@ -1,13 +1,13 @@
 package com.emerchantpay.gateway.api.requests.financial.apm;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class KlarnaItemsRequest extends Request {
+public class KlarnaItemsRequest extends FinancialRequest {
 
     private ArrayList<KlarnaItem> klarnaItemsList = new ArrayList<KlarnaItem>();
 

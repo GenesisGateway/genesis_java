@@ -23,30 +23,24 @@ package com.emerchantpay.gateway.api.requests.financial;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.interfaces.AddressAttributes;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PproAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SouthAmericanPaymentRequest extends Request implements BaseAttributes, PaymentAttributes, AsyncAttributes,
+public abstract class SouthAmericanPaymentRequest extends FinancialRequest implements AsyncAttributes,
         CustomerInfoAttributes, AddressAttributes, PproAttributes, PendingPaymentAttributes {
 
-    private BigDecimal amount;
-    private String currency;
     //Ppro Attributes
     private RequestBuilder pproAttrRequestBuilder;
     private HashMap<String, String> pproAttrParamsMap;
@@ -76,28 +70,6 @@ public abstract class SouthAmericanPaymentRequest extends Request implements Bas
         requiredParams.put(RequiredParameters.consumerReference, getConsumerReference());
         requiredParams.put(RequiredParameters.nationalId, getNationalId());
         return requiredParams;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public RequestBuilder getPproAttrRequestBuilder(){

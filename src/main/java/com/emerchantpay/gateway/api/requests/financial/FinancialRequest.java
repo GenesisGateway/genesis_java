@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.api.constants;
+package com.emerchantpay.gateway.api.requests.financial;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,29 +23,39 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import java.io.Serializable;
+import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import lombok.Getter;
+import lombok.Setter;
 
-//TODO: Move API subdomains out of environments (i.e. "gate")
-public class Environments implements Serializable {
+import java.math.BigDecimal;
 
-	private String environmentName;
+public abstract class FinancialRequest extends Request implements PaymentAttributes {
+    private BigDecimal amount;
+    private String currency;
+    @Getter
+    @Setter
+    private Boolean useSmartRouting = false;
 
-	// Production Environments
-	public static Environments PRODUCTION = new Environments("gate");
+    @Override
+    public PaymentAttributes setAmount(BigDecimal amount) {
+        this.amount = amount;
+        return this;
+    }
 
-	// Staging Environments
-	public static Environments STAGING = new Environments("staging.gate");
+    @Override
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	public Environments(String environmentName) {
+    @Override
+    public PaymentAttributes setCurrency(String currency) {
+        this.currency = currency;
+        return this;
+    }
 
-		this.environmentName = environmentName;
-	}
-
-	public String getEnvironmentName() {
-		return this.environmentName;
-	}
-
-	public String toString() {
-		return getEnvironmentName();
-	}
+    @Override
+    public String getCurrency() {
+        return currency;
+    }
 }

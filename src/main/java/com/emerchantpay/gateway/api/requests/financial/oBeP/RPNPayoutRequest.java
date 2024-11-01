@@ -1,14 +1,12 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +33,11 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RPNPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes,
+public class RPNPayoutRequest extends FinancialRequest implements CustomerInfoAttributes,
         NotificationAttributes, AsyncAttributes {
 
     private String transactionType = TransactionTypes.RPN_PAYOUT;
-    private BigDecimal amount;
-    private String currency;
+
     private String bankName;
     private String subBranch;
     private String bankAccountName;
@@ -50,28 +47,6 @@ public class RPNPayoutRequest extends Request implements PaymentAttributes, Cust
 
     public RPNPayoutRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public RPNPayoutRequest setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public RPNPayoutRequest setBankName(String bankName) {

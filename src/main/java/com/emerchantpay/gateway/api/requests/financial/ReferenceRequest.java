@@ -24,23 +24,17 @@ package com.emerchantpay.gateway.api.requests.financial;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.interfaces.BaseAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.ReferenceAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ReferenceRequest extends Request implements BaseAttributes, PaymentAttributes, ReferenceAttributes {
+public abstract class ReferenceRequest extends FinancialRequest implements ReferenceAttributes {
 
-    private BigDecimal amount;
-    private String currency;
     //Reference Attributes
     private RequestBuilder referenceAttrRequestBuilder;
     private HashMap<String, String> referenceAttrParamsMap;
@@ -63,28 +57,6 @@ public abstract class ReferenceRequest extends Request implements BaseAttributes
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.referenceId, getReferenceId());
         return requiredParams;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     public RequestBuilder getReferenceAttrRequestBuilder(){

@@ -9,11 +9,11 @@ import com.emerchantpay.gateway.api.interfaces.RiskParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.DescriptorAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,48 +21,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements PaymentAttributes, CustomerInfoAttributes,
+public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements CustomerInfoAttributes,
         DescriptorAttributes, AsyncAttributes, RiskParamsAttributes {
 
     // Request Builder
     private RequestBuilder requestBuilder;
 
-    private String transactionType = TransactionTypes.KLARNA_AUTHORIZE;
-    private BigDecimal amount;
-    private String currency;
+    private final String transactionType = TransactionTypes.KLARNA_AUTHORIZE;
+
     private String description;
     private String customerGender;
+    @Getter
     private BigDecimal orderTaxAmount;
     private String paymentMethodCategory;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // Genesis validator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     // Klarna items
-    private KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
+    private final KlarnaItemsRequest klarnaItemsRequest = new KlarnaItemsRequest();
 
     public KlarnaAuthorizeRequest() {
         super();
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
     }
 
     public KlarnaAuthorizeRequest setDescription(String description) {
@@ -91,11 +74,6 @@ public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements Paymen
     }
 
     @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public String getTransactionType() {
         return transactionType;
     }
@@ -111,7 +89,7 @@ public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements Paymen
     }
 
     protected RequestBuilder buildRequest(String root) {
-        if (validator.isValidKlarnaAuthorizeRequest(transactionType, this, amount, orderTaxAmount)) {
+        if (validator.isValidKlarnaAuthorizeRequest(transactionType, this, getAmount(), orderTaxAmount)) {
             requestBuilder = new RequestBuilder(root).addElement("transaction_type", transactionType)
                     .addElement(buildBaseParams().toXML())
                     .addElement(buildPaymentParams().toXML())
@@ -159,15 +137,11 @@ public class KlarnaAuthorizeRequest extends KlarnaItemsRequest implements Paymen
         
         if (!requiredCountries.contains(getBillingCountryCode())) {
             throw new RequiredParamsException("Invalid country. Allowed countries are: "
-                    + requiredCountries.toString());
+                    + requiredCountries);
         }
     }
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
-    }
-
-    public BigDecimal getOrderTaxAmount() {
-        return orderTaxAmount;
     }
 }

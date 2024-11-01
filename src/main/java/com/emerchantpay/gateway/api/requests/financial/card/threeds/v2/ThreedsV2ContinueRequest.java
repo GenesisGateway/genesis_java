@@ -23,13 +23,13 @@ package com.emerchantpay.gateway.api.requests.financial.card.threeds.v2;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ContentTypes;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.*;
@@ -45,16 +45,14 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ThreedsV2ContinueRequest extends Request {
+public class ThreedsV2ContinueRequest extends FinancialRequest {
 
     private String threedsMethodContinueUrl;
     private String uniqueId;
     private String threedsSignature;
-    private BigDecimal amount;
-    private String currency;
+
     private Instant threedsTimestamp;
     private Configuration configuration;
-    private Http http;
     private NodeWrapper node;
     private static final String PATH_SEPARATOR = "/";
 
@@ -130,23 +128,16 @@ public class ThreedsV2ContinueRequest extends Request {
         return this;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
     public ThreedsV2ContinueRequest setAmount(BigDecimal amount) {
-
-        this.amount = amount;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setAmount(amount);
         return this;
     }
 
     public ThreedsV2ContinueRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
-    }
-
-    public String getCurrency() {
-        return currency;
     }
 
     public String getThreedsTimestamp() {
@@ -171,7 +162,6 @@ public class ThreedsV2ContinueRequest extends Request {
 
     @Override
     public String toXML() {
-
         return buildRequest("").toXML();
     }
 
@@ -187,7 +177,7 @@ public class ThreedsV2ContinueRequest extends Request {
                     " or " + RequiredParameters.threedsUniqueId + " must be provided.");
         }
 
-        getValidator().isValidAmount(amount);
+        getValidator().isValidAmount(getAmount());
 
         ArrayList<String> invalidParams = new ArrayList<String>(getValidator().getInvalidParams());
         if (!invalidParams.isEmpty()) {
@@ -230,9 +220,9 @@ public class ThreedsV2ContinueRequest extends Request {
     private String generateSignature() {
         String signature = null;
         BigDecimal convertedAmount = null;
-        if (amount != null && currency != null) {
+        if (getAmount() != null && getCurrency() != null) {
             Currency curr = new Currency();
-            curr.setAmountToExponent(amount, currency);
+            curr.setAmountToExponent(getAmount(), getCurrency());
             convertedAmount = curr.getAmount();
         }
         try {

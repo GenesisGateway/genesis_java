@@ -1,16 +1,14 @@
 package com.emerchantpay.gateway.api.requests.financial.sdd;
 
-import java.math.BigDecimal;
+import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
+import com.emerchantpay.gateway.api.validation.GenesisValidator;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
-import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
-import com.emerchantpay.gateway.api.validation.GenesisValidator;
-import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,11 +33,10 @@ import com.emerchantpay.gateway.api.validation.RequiredParameters;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SDDRecurringSaleRequest extends Request implements PaymentAttributes {
+public class SDDRecurringSaleRequest extends FinancialRequest {
 
 	private String transactionType = TransactionTypes.SDD_RECURRING_SALE;
-	private BigDecimal amount;
-	private String currency;
+
 	private String referenceId;
 
 	// Required params
@@ -50,28 +47,6 @@ public class SDDRecurringSaleRequest extends Request implements PaymentAttribute
 
 	public SDDRecurringSaleRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	public SDDRecurringSaleRequest setReferenceId(String referenceId) {

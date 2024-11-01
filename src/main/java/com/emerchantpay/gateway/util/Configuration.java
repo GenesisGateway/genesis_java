@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import com.emerchantpay.gateway.api.constants.*;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
+import lombok.Getter;
+import lombok.Setter;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,20 +36,86 @@ import com.emerchantpay.gateway.api.exceptions.GenesisException;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
+/**
+ * Configuration class for handling global settings for Genesis API requests.
+ * This class encapsulates essential configuration options such as environment, endpoint,
+ * API versions, authentication details, and debug settings. It offers various constructors
+ * to support specific configurations for consumer, FX, and SCA Checker APIs.
+ *
+ * <p>
+ * Usage:
+ * Configure different endpoints, versions, and credentials for Genesis services
+ * through a single instance of this class. Enables debugging and parameterized URLs
+ * for enhanced logging and testing capabilities.
+ * </p>
+ *
+ * @see Environments
+ * @see Endpoints
+ * @see GenesisException
+ * @see Logger
+ */
 public class Configuration implements Serializable, Cloneable {
 
-    private Environments environment;
-    private Endpoints endpoint;
+    /**
+     * Specifies the environment in which the Genesis API will operate (e.g., production or staging sandbox).
+     */
+    @Getter
+    private final Environments environment;
+
+    /**
+     * The endpoint to which requests will be directed, customized for the specific API in use.
+     */
+    @Getter
+    private final Endpoints endpoint;
+
+    /**
+     * Username for API authentication.
+     */
+    @Getter
+    @Setter
     private String username;
+
+    /**
+     * Password for API authentication.
+     */
+    @Getter
+    @Setter
     private String password;
+
+    /**
+     * Token or identifier for virtual terminal defined at Genesis.
+     */
+    @Getter
+    @Setter
     private String token;
+    @Getter
+    @Setter
+    //TODO: Convert it to enum
     private String action;
+    /**
+     * Indicates if we need to pass Virtual Terminal token to Genesis.
+     * <p>Default: {@code true}
+     */
+    @Getter
+    @Setter
     private Boolean tokenEnabled = true;
-    private Boolean wpf = false;
+    /**
+     * Indicates if smart routing is enabled.
+     * <p>Default: {@code false}
+     */
+    @Getter
+    @Setter
+    private Boolean forceSmartRouting = false;
+    @Getter
+    @Setter
+    private Boolean wpfEnabled = false;
     private Boolean enabledDebugMode = false;
+    @Getter
+    @Setter
     private Locale language;
     private String consumerAPIVersion;
     private String fxAPIVersion;
+    @Getter
     private String scaCheckerAPIVersion;
     private QueryString queryParams;
 
@@ -61,10 +129,10 @@ public class Configuration implements Serializable, Cloneable {
     }
 
     private static Logger logger;
-    private static String[] availableFXAPIVersions = new String[]{"v1"};
-    private static String[] availableConsumerAPIVersions = new String[]{"v1"};
-    private static String[] availableScaAPIVersions = new String[]{"v1"};
-    private static String pathSeparator = "/";
+    private static final String[] availableFXAPIVersions = new String[]{"v1"};
+    private static final String[] availableConsumerAPIVersions = new String[]{"v1"};
+    private static final String[] availableScaAPIVersions = new String[]{"v1"};
+    private static final String pathSeparator = "/";
 
 
     static {
@@ -87,7 +155,7 @@ public class Configuration implements Serializable, Cloneable {
             this.environment = environment;
             this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + consumerAPIVersion + consumerEndpoint.getEndpointName());
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList.toString());
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList);
         }
     }
 
@@ -99,7 +167,7 @@ public class Configuration implements Serializable, Cloneable {
             this.environment = environment;
             this.endpoint = new Endpoints(endpoint.getEndpointName() + pathSeparator + fxAPIVersion + fxEndpoints.getEndpointName());
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList.toString());
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList);
         }
     }
 
@@ -126,65 +194,6 @@ public class Configuration implements Serializable, Cloneable {
         return this.enabledDebugMode;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-
-        return username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-
-        return password;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-
-        return token;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setWpfEnabled(Boolean wpf) {
-        this.wpf = wpf;
-    }
-
-    public Boolean getWpfEnabled() {
-        return wpf;
-    }
-
-    public void setTokenEnabled(Boolean tokenEnabled) {
-        this.tokenEnabled = tokenEnabled;
-    }
-
-    public Boolean getTokenEnabled() {
-        return tokenEnabled;
-    }
-
-    public void setLanguage(Locale language) {
-        this.language = language;
-    }
-
-    public Locale getLanguage() {
-        return language;
-    }
-
     public Configuration addQueryParameter(String paramName, Object paramValue){
         if(queryParams == null){
             queryParams = new QueryString();
@@ -199,32 +208,28 @@ public class Configuration implements Serializable, Cloneable {
     }
 
     public String getBaseUrl() {
-        String queryParamStr = "";
-        if(queryParams != null){
-            queryParamStr = "?" + queryParams.toString();
-        }
+        String queryParamStr = queryParams != null ? "?" + queryParams : "";
 
-        if (getTokenEnabled() == true) {
-            return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator + getAction()
-                    + pathSeparator + token + queryParamStr;
-        } else {
-
-            if (getWpfEnabled() == true) {
-                return "https://" + environment.getEnvironmentName().replace("gate", "wpf") + "."
-                        + endpoint.getEndpointName() + pathSeparator + getAction() + queryParamStr;
-            } else {
-                return "https://" + environment.getEnvironmentName() + "." + endpoint.getEndpointName() + pathSeparator
-                        + getAction() + queryParamStr;
+        String baseEnvironment = environment.getEnvironmentName();
+        if (!getTokenEnabled()) {
+            if (getWpfEnabled()) {
+                baseEnvironment = baseEnvironment.replace("gate", "wpf");
+            } else if (EndpointActions.TRANSACTIONS.equals(getAction())) {
+                baseEnvironment = baseEnvironment.replace("gate", "api");
             }
         }
+
+        return buildUrl(baseEnvironment, queryParamStr);
     }
 
-    public Environments getEnvironment() {
-        return environment;
-    }
-
-    public Endpoints getEndpoint() {
-        return endpoint;
+    private String buildUrl(String environmentName, String queryParamStr) {
+        return String.format("https://%s.%s%s%s%s",
+                environmentName,
+                endpoint.getEndpointName(),
+                pathSeparator,
+                getAction(),
+                getTokenEnabled() ? pathSeparator + token : ""
+        ) + queryParamStr;
     }
 
     public void setConsumerAPIVersion(String version) {
@@ -232,7 +237,7 @@ public class Configuration implements Serializable, Cloneable {
         if (availableVersionsList.contains(version)) {
             this.consumerAPIVersion = version;
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList.toString());
+            throw new GenesisException(ErrorMessages.INVALID_CONSUMER_API_VERSION + availableVersionsList);
         }
     }
 
@@ -245,7 +250,7 @@ public class Configuration implements Serializable, Cloneable {
         if (availableVersionsList.contains(version)) {
             this.fxAPIVersion = version;
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList.toString());
+            throw new GenesisException(ErrorMessages.INVALID_FX_API_VERSION + availableVersionsList);
         }
     }
 
@@ -258,11 +263,8 @@ public class Configuration implements Serializable, Cloneable {
         if (availableVersionsList.contains(version)) {
             this.scaCheckerAPIVersion = version;
         } else {
-            throw new GenesisException(ErrorMessages.INVALID_SCA_API_VERSION + availableVersionsList.toString());
+            throw new GenesisException(ErrorMessages.INVALID_SCA_API_VERSION + availableVersionsList);
         }
     }
 
-    public String getScaCheckerAPIVersion() {
-        return scaCheckerAPIVersion;
-    }
 }

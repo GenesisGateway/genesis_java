@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
@@ -10,10 +9,12 @@ import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttribut
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.BankAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Currency;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,16 +22,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BankPayoutRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes,
+public class BankPayoutRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes,
         NotificationAttributes, BankAttributes, BillingAddressAttributes {
 
     private static final String transactionType = TransactionTypes.BANK_PAYOUT;
-    private String currency;
-    private BigDecimal amount;
+
+    @Getter
+    @Setter
     private String idCardNumber;
+    @Getter
+    @Setter
     private String documentType;
+    @Getter
+    @Setter
     private String accountId;
+    @Getter
+    @Setter
     private String userId;
+    @Getter
+    @Setter
     private String birthDate;
 
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -44,65 +54,17 @@ public class BankPayoutRequest extends Request implements PaymentAttributes, Cus
     }
 
     @Override
-    public String getCurrency() {
-        return currency;
-    }
-
-    @Override
     public BankPayoutRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
     }
 
     @Override
     public BankPayoutRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setAmount(amount);
         return this;
-    }
-
-    public void setIdCardNumber(String idCardNumber) {
-        this.idCardNumber = idCardNumber;
-    }
-
-    public String getIdCardNumber() {
-        return idCardNumber;
-    }
-
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
-    }
-
-    public String getDocumentType() {
-        return documentType;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getBirthDate() {
-        return birthDate;
     }
 
     @Override

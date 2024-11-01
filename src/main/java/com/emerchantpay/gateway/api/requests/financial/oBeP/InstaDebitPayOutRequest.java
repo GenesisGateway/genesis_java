@@ -1,12 +1,9 @@
 package com.emerchantpay.gateway.api.requests.financial.oBeP;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
-import com.emerchantpay.gateway.util.Configuration;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +30,10 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class InstaDebitPayOutRequest extends Request implements PaymentAttributes {
+public class InstaDebitPayOutRequest extends FinancialRequest {
 
     private String transactionType = TransactionTypes.INSTADEBIT_PAYOUT;
     private String referenceId;
-    private BigDecimal amount;
-    private String currency;
 
     public InstaDebitPayOutRequest() {
         super();
@@ -52,28 +47,6 @@ public class InstaDebitPayOutRequest extends Request implements PaymentAttribute
     public InstaDebitPayOutRequest setReferenceId(String referenceId) {
         this.referenceId = referenceId;
         return this;
-    }
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override

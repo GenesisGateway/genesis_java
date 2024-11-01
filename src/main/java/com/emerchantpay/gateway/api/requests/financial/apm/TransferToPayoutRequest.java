@@ -23,7 +23,6 @@ package com.emerchantpay.gateway.api.requests.financial.apm;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
@@ -31,33 +30,44 @@ import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.SenderAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Currency;
+import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TransferToPayoutRequest extends Request implements PaymentAttributes, AsyncAttributes, SenderAttributes,
+public class TransferToPayoutRequest extends FinancialRequest implements AsyncAttributes, SenderAttributes,
         BillingAddressAttributes {
 
     private String transactionType = TransactionTypes.TRANSFER_TO_PAYOUT;
-    private BigDecimal amount;
-    private String currency;
+
+    @Getter
     private String customerEmail;
+    @Getter
     private String payerId;
+    @Getter
     private String bankAccountNumber;
     // indian_financial_system_code
+    @Getter
     private String ifsCode;
+    @Getter
     private String msisdn;
+    @Getter
     private String branchNumber;
+    @Getter
     private String accountType;
+    @Getter
     private String registeredName;
+    @Getter
     private String registrationNumber;
+    @Getter
     private String iban;
+    @Getter
     private String idType;
+    @Getter
     private String idNumber;
 
     private static final Set<String> currencies = new HashSet<>(Arrays.asList(
@@ -77,35 +87,9 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         super();
     }
 
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
-
     public TransferToPayoutRequest setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
         return this;
-    }
-
-    public String getCustomerEmail() {
-        return customerEmail;
     }
 
     public TransferToPayoutRequest setPayerId(String payerId) {
@@ -113,17 +97,9 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         return this;
     }
 
-    public String getPayerId() {
-        return payerId;
-    }
-
     public TransferToPayoutRequest setBankAccountNumber(String bankAccountNumber) {
         this.bankAccountNumber = bankAccountNumber;
         return this;
-    }
-
-    public String getBankAccountNumber() {
-        return bankAccountNumber;
     }
 
     public TransferToPayoutRequest setIfsCode(String ifsCode) {
@@ -131,17 +107,9 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         return this;
     }
 
-    public String getIfsCode() {
-        return ifsCode;
-    }
-
     public TransferToPayoutRequest setMsisdn(String msisdn) {
         this.msisdn = msisdn;
         return this;
-    }
-
-    public String getMsisdn() {
-        return msisdn;
     }
 
     public TransferToPayoutRequest setBranchNumber(String branchNumber) {
@@ -149,17 +117,9 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         return this;
     }
 
-    public String getBranchNumber() {
-        return branchNumber;
-    }
-
     public TransferToPayoutRequest setAccountType(String accountType) {
         this.accountType = accountType;
         return this;
-    }
-
-    public String getAccountType() {
-        return accountType;
     }
 
     public TransferToPayoutRequest setRegisteredName(String registeredName) {
@@ -167,17 +127,9 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         return this;
     }
 
-    public String getRegisteredName() {
-        return registeredName;
-    }
-
     public TransferToPayoutRequest setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
         return this;
-    }
-
-    public String getRegistrationNumber() {
-        return registrationNumber;
     }
 
     public TransferToPayoutRequest setIban(String iban) {
@@ -185,26 +137,14 @@ public class TransferToPayoutRequest extends Request implements PaymentAttribute
         return this;
     }
 
-    public String getIban() {
-        return iban;
-    }
-
     public TransferToPayoutRequest setIdType(String idType) {
         this.idType = idType;
         return this;
     }
 
-    public String getIdType() {
-        return idType;
-    }
-
     public TransferToPayoutRequest setIdNumber(String idNumber) {
         this.idNumber = idNumber;
         return this;
-    }
-
-    public String getIdNumber() {
-        return idNumber;
     }
 
     public void validateCurrency() throws InvalidParamException {

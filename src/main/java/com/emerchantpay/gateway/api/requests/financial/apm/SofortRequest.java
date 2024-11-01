@@ -1,22 +1,20 @@
 package com.emerchantpay.gateway.api.requests.financial.apm;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.PendingPaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.util.Country;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,11 +39,10 @@ import com.emerchantpay.gateway.util.Country;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class SofortRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, AsyncAttributes, PendingPaymentAttributes {
+public class SofortRequest extends FinancialRequest implements CustomerInfoAttributes, AsyncAttributes, PendingPaymentAttributes {
 
 	private String transactionType = TransactionTypes.SOFORT;
-	private BigDecimal amount;
-	private String currency;
+
 	private String customerBankId;
 	private String bankAccountNumber;
 
@@ -57,28 +54,6 @@ public class SofortRequest extends Request implements PaymentAttributes, Custome
 
 	public SofortRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	public SofortRequest setCustomerBankId(String customerBankId) {

@@ -1,6 +1,5 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
@@ -12,10 +11,11 @@ import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttribut
 import com.emerchantpay.gateway.api.interfaces.financial.*;
 import com.emerchantpay.gateway.api.interfaces.financial.funding.FundingAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +44,7 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class AuthorizeRequest extends Request implements PaymentAttributes, CreditCardAttributes,
+public class AuthorizeRequest extends FinancialRequest implements CreditCardAttributes,
         CustomerInfoAttributes, DescriptorAttributes, RiskParamsAttributes, FXAttributes, ScaAttributes,
         BusinessParamsAttributes, CryptoAttributes, TravelDataAttributes, UcofAttributes, PreauthorizationAttributes,
         TokenizationAttributes, RecurringTypeAttributes, RecurringCategoryAttributes, ManagedRecurringAttributes, FundingAttributes {
@@ -52,18 +52,18 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
     // Request Builder
     private RequestBuilder requestBuilder;
 
-    private String transactionType = TransactionTypes.AUTHORIZE;
+    private final String transactionType = TransactionTypes.AUTHORIZE;
     private Boolean moto;
     private Boolean gaming;
-    private BigDecimal amount;
-    private String currency;
+
+    @Getter
     private String referenceId;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     public AuthorizeRequest() {
         super();
@@ -84,35 +84,9 @@ public class AuthorizeRequest extends Request implements PaymentAttributes, Cred
         return true;
     }
 
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
-
     public AuthorizeRequest setReferenceId(String referenceId) {
         this.referenceId = referenceId;
         return this;
-    }
-
-    public String getReferenceId() {
-        return referenceId;
     }
 
     @Override

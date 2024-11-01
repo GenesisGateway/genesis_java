@@ -1,24 +1,21 @@
 package com.emerchantpay.gateway.api.requests.financial.wallets;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.financial.AsyncAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.NotificationAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-public class EzeewalletRequest extends Request implements PaymentAttributes, NotificationAttributes, AsyncAttributes {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class EzeewalletRequest extends FinancialRequest implements NotificationAttributes, AsyncAttributes {
 
 	private String transactionType = TransactionTypes.EZEEWALLET;
-	private BigDecimal amount;
-	private String currency;
+
 	private String sourceWalletId;
 	private String sourceWalletPwd;
 
@@ -30,28 +27,6 @@ public class EzeewalletRequest extends Request implements PaymentAttributes, Not
 
 	public EzeewalletRequest() {
 		super();
-	}
-
-	@Override
-	public PaymentAttributes setAmount(BigDecimal amount) {
-		this.amount = amount;
-		return this;
-	}
-
-	@Override
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	@Override
-	public PaymentAttributes setCurrency(String currency) {
-		this.currency = currency;
-		return this;
-	}
-
-	@Override
-	public String getCurrency() {
-		return currency;
 	}
 
 	public EzeewalletRequest setSourceWalletId(String sourceWalletId) {

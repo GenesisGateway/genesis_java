@@ -3,6 +3,7 @@ package com.emerchantpay.gateway;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.requests.financial.giftcards.FashionchequeRequest;
+import com.emerchantpay.gateway.api.requests.financial.giftcards.GiftCardRequest;
 import com.emerchantpay.gateway.api.requests.financial.giftcards.IntersolveRequest;
 import com.emerchantpay.gateway.api.requests.financial.giftcards.TcsRequest;
 import com.emerchantpay.gateway.util.Currency;
@@ -56,37 +57,6 @@ public class GiftCardRequestsTest {
         tcs = mock(TcsRequest.class);
     }
 
-    public void clearRequiredParams() {
-        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
-        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
-                new Throwable());
-
-        when(fashioncheque.setCardNumber(null)).thenThrow(exception);
-        when(intersolve.setCardNumber(null)).thenThrow(exception);
-        when(tcs.setCardNumber(null)).thenThrow(exception);
-    }
-
-    public void verifyFashionExecute() {
-        when(client.execute()).thenReturn(fashioncheque);
-        assertEquals(client.execute(), fashioncheque);
-        verify(client).execute();
-        verifyNoMoreInteractions(client);
-    }
-
-    public void verifyIntersolveExecute() {
-        when(client.execute()).thenReturn(intersolve);
-        assertEquals(client.execute(), intersolve);
-        verify(client).execute();
-        verifyNoMoreInteractions(client);
-    }
-
-    public void verifyTcsExecute() {
-        when(client.execute()).thenReturn(tcs);
-        assertEquals(client.execute(), tcs);
-        verify(client).execute();
-        verifyNoMoreInteractions(client);
-    }
-
     @Test
     public void testFashioncheque() throws MalformedURLException {
 
@@ -98,8 +68,8 @@ public class GiftCardRequestsTest {
         when(fashioncheque.setCurrency(isA(String.class))).thenReturn(fashioncheque);
         when(fashioncheque.setCardNumber(isA(String.class))).thenReturn(fashioncheque);
         when(fashioncheque.setCvv(isA(String.class))).thenReturn(fashioncheque);
-        when(fashioncheque.setDynamicMerchantName(isA(String.class))).thenReturn(fashioncheque);
-        when(fashioncheque.setDynamicMerchantCity(isA(String.class))).thenReturn(fashioncheque);
+
+        setDynamicDescriptorStubs(fashioncheque);
 
         assertEquals(fashioncheque.setTransactionId(fashionChequeUId)
                 .setRemoteIp("82.137.112.202").setUsage("TICKETS"), fashioncheque);
@@ -120,7 +90,7 @@ public class GiftCardRequestsTest {
         verify(fashioncheque).setDynamicMerchantName("New York");
         verifyNoMoreInteractions(fashioncheque);
 
-        verifyFashionExecute();
+        verifyClientExecute(fashioncheque);
     }
 
     @Test
@@ -134,8 +104,8 @@ public class GiftCardRequestsTest {
         when(intersolve.setCurrency(isA(String.class))).thenReturn(intersolve);
         when(intersolve.setCardNumber(isA(String.class))).thenReturn(intersolve);
         when(intersolve.setCvv(isA(String.class))).thenReturn(intersolve);
-        when(intersolve.setDynamicMerchantName(isA(String.class))).thenReturn(intersolve);
-        when(intersolve.setDynamicMerchantCity(isA(String.class))).thenReturn(intersolve);
+
+        setDynamicDescriptorStubs(intersolve);
 
         assertEquals(intersolve.setTransactionId(intersolveUId)
                 .setRemoteIp("82.137.112.202").setUsage("TICKETS"), intersolve);
@@ -156,8 +126,7 @@ public class GiftCardRequestsTest {
         verify(intersolve).setDynamicMerchantName("New York");
         verifyNoMoreInteractions(intersolve);
 
-        verifyIntersolveExecute();
-
+        verifyClientExecute(intersolve);
     }
 
     @Test
@@ -171,8 +140,8 @@ public class GiftCardRequestsTest {
         when(tcs.setCurrency(isA(String.class))).thenReturn(tcs);
         when(tcs.setCardNumber(isA(String.class))).thenReturn(tcs);
         when(tcs.setCvv(isA(String.class))).thenReturn(tcs);
-        when(tcs.setDynamicMerchantName(isA(String.class))).thenReturn(tcs);
-        when(tcs.setDynamicMerchantCity(isA(String.class))).thenReturn(tcs);
+
+        setDynamicDescriptorStubs(tcs);
 
         assertEquals(tcs.setTransactionId(tcsUId)
                 .setRemoteIp("82.137.112.202").setUsage("TICKETS"), tcs);
@@ -193,7 +162,7 @@ public class GiftCardRequestsTest {
         verify(tcs).setDynamicMerchantName("New York");
         verifyNoMoreInteractions(tcs);
 
-        verifyTcsExecute();
+        verifyClientExecute(tcs);
     }
 
     @Test(expected = ApiException.class)
@@ -203,7 +172,7 @@ public class GiftCardRequestsTest {
         verify(fashioncheque).setCardNumber(null);
         verifyNoMoreInteractions(fashioncheque);
 
-        verifyIntersolveExecute();
+        verifyClientExecute(fashioncheque);
     }
 
     @Test(expected = ApiException.class)
@@ -213,7 +182,7 @@ public class GiftCardRequestsTest {
         verify(intersolve).setCardNumber(null);
         verifyNoMoreInteractions(intersolve);
 
-        verifyIntersolveExecute();
+        verifyClientExecute(intersolve);
     }
 
     @Test(expected = ApiException.class)
@@ -223,6 +192,42 @@ public class GiftCardRequestsTest {
         verify(tcs).setCardNumber(null);
         verifyNoMoreInteractions(tcs);
 
-        verifyTcsExecute();
+        verifyClientExecute(tcs);
+    }
+
+    private void clearRequiredParams() {
+        Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
+        ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
+                new Throwable());
+
+        when(fashioncheque.setCardNumber(null)).thenThrow(exception);
+        when(intersolve.setCardNumber(null)).thenThrow(exception);
+        when(tcs.setCardNumber(null)).thenThrow(exception);
+    }
+
+    private void verifyClientExecute(GiftCardRequest request) {
+        when(client.execute()).thenReturn(request);
+        assertEquals(client.execute(), request);
+        verify(client).execute();
+        verifyNoMoreInteractions(client);
+    }
+
+    private void setDynamicDescriptorStubs(GiftCardRequest request) {
+        when(request.setDynamicMerchantName(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantCity(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantCountry(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantState(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantZipCode(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantAddress(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantUrl(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantPhone(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServiceCity(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServiceCountry(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServiceState(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServiceZipCode(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServicePhone(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantGeoCoordinates(isA(String.class))).thenReturn(request);
+        when(request.setDynamicMerchantServiceGeoCoordinates(isA(String.class))).thenReturn(request);
+        when(request.setDynamicSubMerchantId(isA(String.class))).thenReturn(request);
     }
 }

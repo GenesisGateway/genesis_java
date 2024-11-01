@@ -1,14 +1,14 @@
 package com.emerchantpay.gateway.api.requests.financial.apm.crypto;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BillingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.ShippingAddressAttributes;
 import com.emerchantpay.gateway.api.interfaces.customerinfo.CustomerInfoAttributes;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -16,18 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BitPaySaleRequest extends Request implements PaymentAttributes, CustomerInfoAttributes, BillingAddressAttributes, ShippingAddressAttributes {
+public class BitPaySaleRequest extends FinancialRequest implements CustomerInfoAttributes, BillingAddressAttributes, ShippingAddressAttributes {
 
     private static final String TRANSACTION_TYPE = TransactionTypes.BITPAY_SALE;
-    private BigDecimal amount;
-    private String currency;
+
+    @Getter
     private URL returnUrl;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     public BitPaySaleRequest() {
         super();
@@ -38,30 +38,18 @@ public class BitPaySaleRequest extends Request implements PaymentAttributes, Cus
         return this;
     }
 
-    public URL getReturnUrl() {
-        return returnUrl;
-    }
-
     @Override
     public BitPaySaleRequest setAmount(BigDecimal amount) {
-        this.amount = amount;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setAmount(amount);
         return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
     }
 
     @Override
     public BitPaySaleRequest setCurrency(String currency) {
-        this.currency = currency;
+        //TODO: Do we really need to return this class, not PaymentAttributes, like all standard methods do?
+        super.setCurrency(currency);
         return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
     }
 
     @Override
@@ -103,5 +91,4 @@ public class BitPaySaleRequest extends Request implements PaymentAttributes, Cus
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("payment_transaction").getElements();
     }
-
 }
