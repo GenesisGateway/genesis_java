@@ -26,6 +26,7 @@ package com.emerchantpay.gateway.api.requests.financial.card.threeds.v2;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ContentTypes;
 import com.emerchantpay.gateway.api.constants.Endpoints;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
 import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
@@ -55,6 +56,7 @@ public class ThreedsV2ContinueRequest extends FinancialRequest {
     private Configuration configuration;
     private NodeWrapper node;
     private static final String PATH_SEPARATOR = "/";
+    private final String transactionType = TransactionTypes.CONTINUE_3D;
 
     public ThreedsV2ContinueRequest(){
         super();
@@ -70,9 +72,13 @@ public class ThreedsV2ContinueRequest extends FinancialRequest {
         setAmount(trx.getAmount());
         setCurrency(trx.getCurrency());
         setThreedsTimestamp(trx.getTimestamp());
-        configuration.setAction(Endpoints.THREEDS_METHOD.getEndpointName() + PATH_SEPARATOR + getUniqueId());
         setThreedsConfiguration(configuration);
         setThreedsSignature(generateSignature());
+    }
+
+    @Override
+    public String getTransactionType() {
+        return transactionType;
     }
 
     public Configuration getThreedsConfiguration() {
@@ -158,6 +164,14 @@ public class ThreedsV2ContinueRequest extends FinancialRequest {
         }
 
         return this;
+    }
+
+    @Override
+    public void setUseSmartRouting(Boolean useSmartRouting) {
+        if (useSmartRouting) {
+            throw new IllegalArgumentException("Smart routing is not supported for this request");
+        }
+        super.setUseSmartRouting(false);
     }
 
     @Override

@@ -1,25 +1,39 @@
 package com.emerchantpay.gateway;
 
-import static org.junit.Assert.*;
-
 import com.emerchantpay.gateway.api.constants.*;
 import com.emerchantpay.gateway.api.exceptions.GenesisException;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.emerchantpay.gateway.util.Configuration;
 
 public class ConfigurationTest {
 
-    Environments environment = new Environments("staging.gate");
-    Endpoints endpoint = new Endpoints("emerchantpay.net");
-    Configuration configurationConsumer = new Configuration(environment, endpoint, ConsumerEndpoints.CREATE_CONSUMER, "v1");
-    Configuration configurationFX = new Configuration(environment, endpoint, FXEndpoints.FX_TIERS, "v1");
-    Configuration configurationScaChecker = new Configuration(environment, endpoint, "v1");
-    Configuration configurationFinancial = new Configuration(environment, endpoint);
+    private Environments stageEnvironment;
+    private Endpoints empEndpoint;
+    private Configuration configurationConsumer;
+    private Configuration configurationFX;
+    private Configuration configurationScaChecker;
+    private Configuration configurationStaging;
+    private Configuration configurationProd;
+
+    @BeforeEach
+    public void setUp() {
+        stageEnvironment = Environments.STAGING;
+        Environments prodEnvironment = Environments.PRODUCTION;
+        empEndpoint = Endpoints.EMERCHANTPAY;
+        configurationConsumer = new Configuration(stageEnvironment, empEndpoint, ConsumerEndpoints.CREATE_CONSUMER, "v1");
+        configurationFX = new Configuration(stageEnvironment, empEndpoint, FXEndpoints.FX_TIERS, "v1");
+        configurationScaChecker = new Configuration(stageEnvironment, empEndpoint, "v1");
+        configurationStaging = new Configuration(stageEnvironment, empEndpoint);
+        configurationProd = new Configuration(prodEnvironment, empEndpoint);
+    }
 
     @Test
     public void testEnvironment() {
-        Configuration configuration = new Configuration(environment, endpoint);
+        Configuration configuration = new Configuration(stageEnvironment, empEndpoint);
 
         assertEquals(Environments.STAGING.getEnvironmentName(), configuration.getEnvironment().getEnvironmentName());
         assertEquals(Endpoints.EMERCHANTPAY.getEndpointName(), configuration.getEndpoint().getEndpointName());
@@ -30,10 +44,9 @@ public class ConfigurationTest {
         assertEquals("v1", configurationConsumer.getConsumerVersion());
     }
 
-    @Test(expected = GenesisException.class)
+    @Test
     public void testConsumerVersionFailure() {
-        configurationConsumer.setConsumerAPIVersion("v5");
-        assertEquals("v5", configurationConsumer.getConsumerVersion());
+        assertThrows(GenesisException.class, () -> configurationConsumer.setConsumerAPIVersion("v5"));
     }
 
     @Test
@@ -41,10 +54,9 @@ public class ConfigurationTest {
         assertEquals("v1", configurationFX.getFXAPIVersion());
     }
 
-    @Test(expected = GenesisException.class)
+    @Test
     public void testFXAPIVersionFailure() {
-        configurationFX.setFXAPIVersion("v5");
-        assertEquals("v5", configurationFX.getFXAPIVersion());
+        assertThrows(GenesisException.class, () -> configurationFX.setFXAPIVersion("v5"));
     }
 
     @Test
@@ -52,10 +64,9 @@ public class ConfigurationTest {
         assertEquals("v1", configurationScaChecker.getScaCheckerAPIVersion());
     }
 
-    @Test(expected = GenesisException.class)
+    @Test
     public void testScaCheckerAPIVersionFailure() {
-        configurationScaChecker.setScaCheckerAPIVersion("v5");
-        assertEquals("v5", configurationScaChecker.getFXAPIVersion());
+        assertThrows(GenesisException.class, () -> configurationScaChecker.setScaCheckerAPIVersion("v5"));
     }
 
     @Test
@@ -87,22 +98,77 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testSmartRoutingEnabledBaseURl(){
-        configurationFinancial.setAction(EndpointActions.TRANSACTIONS);
-        configurationFinancial.setTokenEnabled(false);
-        String baseUrl = configurationFinancial.getBaseUrl();
+    public void testSmartRoutingEnabledStageBaseURl(){
+        configurationStaging.setAction(EndpointActions.TRANSACTIONS);
+        configurationStaging.setTokenEnabled(false);
+        String baseUrl = configurationStaging.getBaseUrl();
         String expectedUrl = "https://staging.api.emerchantpay.net/transactions";
 
         assertEquals(expectedUrl, baseUrl);
     }
 
     @Test
-    public void testSmartRoutingDisabledBaseURl(){
-        configurationFinancial.setAction(EndpointActions.PROCESS);
-        configurationFinancial.setTokenEnabled(true);
-        configurationFinancial.setToken("testTerminalToken");
-        String baseUrl = configurationFinancial.getBaseUrl();
+    public void testSmartRoutingDisabledStageBaseURl(){
+        configurationStaging.setAction(EndpointActions.PROCESS);
+        configurationStaging.setTokenEnabled(true);
+        configurationStaging.setToken("testTerminalToken");
+        String baseUrl = configurationStaging.getBaseUrl();
         String expectedUrl = "https://staging.gate.emerchantpay.net/process/testTerminalToken";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testSmartRoutingEnabledProdBaseURl(){
+        configurationProd.setAction(EndpointActions.TRANSACTIONS);
+        configurationProd.setTokenEnabled(false);
+        String baseUrl = configurationProd.getBaseUrl();
+        String expectedUrl = "https://prod.api.emerchantpay.net/transactions";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testSmartRoutingDisabledProdBaseURl(){
+        configurationProd.setAction(EndpointActions.PROCESS);
+        configurationProd.setTokenEnabled(true);
+        configurationProd.setToken("testTerminalToken");
+        String baseUrl = configurationProd.getBaseUrl();
+        String expectedUrl = "https://gate.emerchantpay.net/process/testTerminalToken";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testWpfStageBaseURl(){
+        configurationStaging.setWpfEnabled(true);
+        configurationStaging.setTokenEnabled(false);
+        configurationStaging.setAction("wpf/reconcile");
+        String baseUrl = configurationStaging.getBaseUrl();
+        String expectedUrl = "https://staging.wpf.emerchantpay.net/wpf/reconcile";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testWpfProdBaseURl(){
+        configurationProd.setWpfEnabled(true);
+        configurationProd.setTokenEnabled(false);
+        configurationProd.setAction("wpf/reconcile");
+        String baseUrl = configurationProd.getBaseUrl();
+        String expectedUrl = "https://wpf.emerchantpay.net/wpf/reconcile";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testArbitraryEnvironmentApiURl(){
+        Configuration arbitraryConfig = new Configuration(new Environments("sub4.sub3"), empEndpoint);
+        arbitraryConfig.setWpfEnabled(true);
+        arbitraryConfig.setTokenEnabled(false);
+        arbitraryConfig.setAction("wpf/reconcile");
+        String baseUrl = arbitraryConfig.getBaseUrl();
+        String expectedUrl = "https://sub4.sub3.emerchantpay.net/wpf/reconcile";
 
         assertEquals(expectedUrl, baseUrl);
     }

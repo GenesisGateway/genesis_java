@@ -42,6 +42,9 @@ public class TransactionTypes {
     // 3D-Secure Sale
     public static final String SALE_3D = "sale3d";
 
+    // 3D-Secure Continue
+    public static final String CONTINUE_3D = "continue3d";
+
     // Capture settles a transaction which has been authorized before
     public static final String CAPTURE = "capture";
 
@@ -269,6 +272,7 @@ public class TransactionTypes {
                 CASHU,
                 CENCOSUD,
                 CITADEL_PAYIN,
+                CONTINUE_3D,
                 DAVIVIENDA,
                 EFECTY,
                 ELO,

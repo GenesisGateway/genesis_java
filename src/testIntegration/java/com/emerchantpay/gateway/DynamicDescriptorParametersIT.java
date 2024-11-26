@@ -4,7 +4,6 @@ import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.constants.Environments;
 import com.emerchantpay.gateway.api.constants.TransactionStates;
-import com.emerchantpay.gateway.api.exceptions.ResponseException;
 import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.model.Transaction;
@@ -14,18 +13,17 @@ import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 // Before running the test, make sure src/testIntegration/resources/test-integration.properties exists
-public class SmartRoutingIT {
+public class DynamicDescriptorParametersIT {
 
     private static PropertiesConfiguration props;
     private Configuration configuration;
@@ -49,38 +47,11 @@ public class SmartRoutingIT {
     }
 
     @Test
-    public void testAuthorizeTransactionNoSmartRouting() {
+    public void testAuthorizeTransactionDynamicDescriptorProps() {
         configuration.setToken(props.getString("terminal.ci-eur.token"));
         AuthorizeRequest authorize = createAuthorizeRequest();
         TransactionResult<Transaction> result = executeRequest(authorize);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
-    }
-
-    @Test
-    public void testAuthorizeTransactionGlobalSmartRouting() {
-        configuration.setForceSmartRouting(true);
-        AuthorizeRequest authorize = createAuthorizeRequest();
-        TransactionResult<Transaction> result = executeRequest(authorize);
-        assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
-    }
-
-    @Test
-    public void testAuthorizeTransactionPerRequestSmartRouting() {
-        AuthorizeRequest authorize = createAuthorizeRequest();
-        authorize.setUseSmartRouting(true);
-        TransactionResult<Transaction> result = executeRequest(authorize);
-        assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
-    }
-
-    @Test
-    public void testAuthorizeTransactionErrorNoSmartRoutingNoToken() {
-        AuthorizeRequest authorize = createAuthorizeRequest();
-
-        ResponseException exception = assertThrows(ResponseException.class, () -> {
-            executeRequest(authorize);
-        });
-        assertTrue(exception.getMessage().contains("Code: 220"),
-                "Expected error code 220 in the exception message.");
     }
 
     private AuthorizeRequest createAuthorizeRequest() {
@@ -99,7 +70,7 @@ public class SmartRoutingIT {
         authorize.setCardHolder("Emil Example")
                 .setCardNumber("4200000000000000")
                 .setExpirationMonth("01")
-                .setExpirationYear("2029")
+                .setExpirationYear("2020")
                 .setCvv("123");
 
         authorize.setCustomerEmail("emil.example@abc.com");
@@ -110,6 +81,24 @@ public class SmartRoutingIT {
                 .setBillingZipCode("10178")
                 .setBillingCity("Los Angeles")
                 .setBillingState("CA").setBillingCountry(Country.UnitedStates.getCode());
+
+        // Set all descriptor attributes according to specified formats and lengths
+        authorize.setDynamicMerchantName("Dynamic MName") // Length <=25
+                .setDynamicMerchantCity("Dynamic MCity") // Length <=13
+                .setDynamicSubMerchantId("SubMerchantID01") // Length <=15
+                .setDynamicMerchantCountry(Country.UnitedStates.getCode()) // ISO 3166 format, Length 2
+                .setDynamicMerchantState("CA") // ISO 3166-2 code, Length <=3
+                .setDynamicMerchantZipCode("90001-1234") // Length <=10
+                .setDynamicMerchantAddress("123 Main Street, Suite 100") // Length <=48
+                .setDynamicMerchantUrl("https://merchant.example.com/shop") // Length <=60
+                .setDynamicMerchantPhone("+123456789012345") // Length <=16
+                .setDynamicMerchantServiceCity("Service City1") // Length <=13
+                .setDynamicMerchantServiceCountry(Country.UnitedStates.getCode()) // ISO 3166 format, Length 2
+                .setDynamicMerchantServiceState("CA") // ISO 3166-2 code, Length <=3
+                .setDynamicMerchantServiceZipCode("90002-5678") // Length <=10
+                .setDynamicMerchantServicePhone("+098765432109876") // Length <=16
+                .setDynamicMerchantGeoCoordinates("40.73061,-73.93524") // Length between 15-20
+                .setDynamicMerchantServiceGeoCoordinates("40.73061,-73.93524"); // Length between 15-20
 
         return authorize;
     }

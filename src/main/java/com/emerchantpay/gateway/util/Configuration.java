@@ -209,22 +209,48 @@ public class Configuration implements Serializable, Cloneable {
 
     public String getBaseUrl() {
         String queryParamStr = queryParams != null ? "?" + queryParams : "";
+        EndpointApiTypes service = getEndpointApiType();
+        String fullSubdomain = getFullSubDomain(service);
 
-        String baseEnvironment = environment.getEnvironmentName();
-        if (!getTokenEnabled()) {
-            if (getWpfEnabled()) {
-                baseEnvironment = baseEnvironment.replace("gate", "wpf");
-            } else if (EndpointActions.TRANSACTIONS.equals(getAction())) {
-                baseEnvironment = baseEnvironment.replace("gate", "api");
-            }
-        }
-
-        return buildUrl(baseEnvironment, queryParamStr);
+        return buildUrl(fullSubdomain, queryParamStr);
     }
 
-    private String buildUrl(String environmentName, String queryParamStr) {
+    private EndpointApiTypes getEndpointApiType() {
+        if (getTokenEnabled()) {
+            return EndpointApiTypes.GATE;
+        } else {
+            if (getWpfEnabled()) {
+                return EndpointApiTypes.WPF;
+            } else if (EndpointActions.TRANSACTIONS.equals(getAction())) {
+                return EndpointApiTypes.API;
+            } else {
+                // This can occur when we have ThreedsV2ContinueRequest, it is a non-token request
+                return EndpointApiTypes.GATE;
+            }
+        }
+    }
+
+    private String getFullSubDomain(EndpointApiTypes service) {
+        switch (environment.getEnvironmentName()) {
+            case "prod":
+                if (Environments.SERVICES_WITH_PROD_SUBDOMAIN.contains(service)) {
+                    return environment.getEnvironmentName() + "." + service.getUrlPart();
+                } else {
+                    return service.getUrlPart();
+                }
+
+            case "staging":
+                return environment.getEnvironmentName() + "." + service.getUrlPart();
+
+            default:
+                // Allow users flexibility with defining subdomains
+                return environment.getEnvironmentName();
+        }
+    }
+
+    private String buildUrl(String fullSubDomain, String queryParamStr) {
         return String.format("https://%s.%s%s%s%s",
-                environmentName,
+                fullSubDomain,
                 endpoint.getEndpointName(),
                 pathSeparator,
                 getAction(),

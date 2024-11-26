@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.18.5</version>
+        <version>1.18.6</version>
 </dependency>
 ```
 

@@ -1,5 +1,6 @@
 package com.emerchantpay.gateway.threeds.v2;
 
+import com.emerchantpay.gateway.api.constants.EndpointApiTypes;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.constants.Environments;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
@@ -65,7 +66,7 @@ public class ThreedsV2ContinueTest {
         assertEquals(currency, threedsV2ContinueRequest.getCurrency());
         assertEquals(timeStamp, threedsV2ContinueRequest.getThreedsTimestamp());
         assertNotNull(threedsV2ContinueRequest.getThreedsSignature());
-        assertTrue(threedsV2ContinueRequest.getThreedsMethodContinueUrl().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" +uniqueId));
+        assertTrue(threedsV2ContinueRequest.getThreedsMethodContinueUrl().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" + uniqueId));
         assertEquals(configuration, threedsV2ContinueRequest.getThreedsConfiguration());
         assertTrue(threedsV2ContinueRequest.getThreedsConfiguration().getAction().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" + uniqueId));
 
@@ -73,6 +74,32 @@ public class ThreedsV2ContinueTest {
         threedsV2ContinueRequest.toXML();
         //Query param added in build request
         assertTrue(threedsV2ContinueRequest.getThreedsConfiguration().getBaseUrl().contains("?signature="));
+    }
+
+    @Test
+    public void testContinueUrlSmartRoutingEnabled() {
+        //Mock transaction response
+        Transaction trx = mock(Transaction.class);
+        String uniqueId = RandomStringUtils.randomAlphanumeric(random.nextInt(MAX_BOUND_NINETEEN) + MIN_BOUND);
+        when(trx.getUniqueId()).thenReturn(uniqueId);
+        BigDecimal amount = new BigDecimal(random.nextInt(4) + MIN_BOUND);
+        when(trx.getAmount()).thenReturn(amount);
+        String currency = Currency.EUR.getCurrency();
+        when(trx.getCurrency()).thenReturn(currency);
+        DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_INSTANT.withZone(ZoneId.from(ZoneOffset.UTC));
+        String timeStamp = isoFormatter.format(Instant.now());
+        when(trx.getTimestamp()).thenReturn(timeStamp);
+
+        configuration.setForceSmartRouting(true);
+        threedsV2ContinueRequest = new ThreedsV2ContinueRequest(trx, configuration);
+        assertThrows(IllegalArgumentException.class, () -> threedsV2ContinueRequest.setUseSmartRouting(true));
+        assertTrue(threedsV2ContinueRequest.getThreedsMethodContinueUrl().equals(
+                "https://"
+                + Environments.STAGING + "."
+                + EndpointApiTypes.GATE + "."
+                + Endpoints.EMERCHANTPAY + "/"
+                + Endpoints.THREEDS_METHOD.getEndpointName() + "/"
+                + uniqueId));
     }
 
     @Test
@@ -85,7 +112,7 @@ public class ThreedsV2ContinueTest {
         threedsV2ContinueRequest.setThreedsConfiguration(configuration);
         assertEquals(configuration, threedsV2ContinueRequest.getThreedsConfiguration());
         assertTrue(threedsV2ContinueRequest.getThreedsConfiguration().getAction().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" + uniqueId));
-        assertTrue(threedsV2ContinueRequest.getThreedsMethodContinueUrl().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" +uniqueId));
+        assertTrue(threedsV2ContinueRequest.getThreedsMethodContinueUrl().contains(Endpoints.THREEDS_METHOD.getEndpointName() + "/" + uniqueId));
 
         //Cover unique Id retrieval from Continue URL
         String continueURL = threedsV2ContinueRequest.getThreedsMethodContinueUrl();

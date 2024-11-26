@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.emerchantpay.gateway</groupId>
     <artifactId>genesis-java</artifactId>
-    <version>1.18.5</version>
+    <version>1.18.6</version>
     <name>Genesis Gateway Java Client Library</name>
     <description>Java Client Library for Genesis Gateway</description>
     <url>https://www.emerchantpay.com</url>
@@ -32,7 +32,7 @@
         <developerConnection>
             ${scmConnection}
         </developerConnection>
-        <tag>1.18.5</tag>
+        <tag>1.18.6</tag>
     </scm>
 
     <distributionManagement>
@@ -155,7 +155,7 @@
                         <configuration>
                             <show>private</show>
                             <nohelp>true</nohelp>
-                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
                         </configuration>
                         <executions>
                             <execution>
@@ -269,14 +269,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.5.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>

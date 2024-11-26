@@ -1,5 +1,10 @@
 package com.emerchantpay.gateway.api.constants;
 
+import lombok.Getter;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -23,31 +28,32 @@ package com.emerchantpay.gateway.api.constants;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import lombok.Getter;
-import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.*;
-
 @Getter
-public class Environments implements Serializable {
+public enum EndpointApiTypes {
+    WPF("wpf"),
+    GATE("gate"),
+    API("api");
 
-	private final String environmentName;
+    private final String urlPart;
 
-	// Production Environment (empty subdomain or "prod" when necessary)
-	public static final Environments PRODUCTION = new Environments("prod");
+    private static final Map<String, EndpointApiTypes> lookup = new HashMap<>();
 
-	// Staging Environment
-	public static final Environments STAGING = new Environments("staging");
+    static {
+        for (EndpointApiTypes service : EndpointApiTypes.values()) {
+            lookup.put(service.urlPart, service);
+        }
+    }
 
-	// Define services that require "prod" subdomain in production
-	public static final Set<EndpointApiTypes> SERVICES_WITH_PROD_SUBDOMAIN = EnumSet.of(EndpointApiTypes.API);
+    EndpointApiTypes(String urlPart) {
+        this.urlPart = urlPart;
+    }
 
-	public Environments(String environmentName) {
-		this.environmentName = environmentName;
-	}
+    public static EndpointApiTypes fromUrlPart(String urlPart) {
+        return lookup.get(urlPart);
+    }
 
-	public String toString() {
-		return getEnvironmentName();
-	}
+    @Override
+    public String toString() {
+        return urlPart;
+    }
 }

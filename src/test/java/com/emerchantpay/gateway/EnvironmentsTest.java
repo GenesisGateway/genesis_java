@@ -9,11 +9,11 @@ public class EnvironmentsTest {
 
 	@Test
 	public void testStagingEnvironment() {
-		assertEquals(Environments.STAGING.getEnvironmentName(), new Environments("staging.gate").getEnvironmentName());
+		assertEquals(Environments.STAGING.getEnvironmentName(), new Environments("staging").getEnvironmentName());
 	}
 
 	@Test
 	public void testProductionEnvironment() {
-		assertEquals(Environments.PRODUCTION.getEnvironmentName(), new Environments("gate").getEnvironmentName());
+		assertEquals(Environments.PRODUCTION.getEnvironmentName(), new Environments("prod").getEnvironmentName());
 	}
 }

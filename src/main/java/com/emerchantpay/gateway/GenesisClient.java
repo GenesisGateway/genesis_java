@@ -3,6 +3,7 @@ package com.emerchantpay.gateway;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.constants.DeprecatedTransactionTypes;
 import com.emerchantpay.gateway.api.constants.EndpointActions;
+import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.LimitsException;
 import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.util.Configuration;
@@ -181,6 +182,14 @@ public class GenesisClient extends Request {
 
     private void execute(Request request, Configuration configuration) {
 
+        // TODO: Consider refactoring the architecture to be like in the rest of the SDKs:
+        //  Use an ApiConfig (contains pre-request configuration: URL, etc.) separate from Configuration (username, password, etc.)
+        //  Allow each request to modify its ApiConfig
+        //  This Request -> Api Config provides required “things” for the Network/Request execution.
+        //  GenesisClient should connect SDK components and load the Network with the Request object
+        //  Remove the switch construction from GenesisClient->execute; avoid repetitive switch cases
+        //  Goal: Enable each request to define its endpoint without GenesisClient needing to handle it
+
         switch ((request.getTransactionType() != null) ? request.getTransactionType() : "") {
             case "wpf_payment":
                 configuration.setWpfEnabled(true);
@@ -241,6 +250,13 @@ public class GenesisClient extends Request {
                 configuration.setWpfEnabled(false);
                 configuration.setTokenEnabled(false);
                 configuration.setAction("retrieval_requests/by_date");
+                break;
+            case TransactionTypes.CONTINUE_3D:
+                configuration.setWpfEnabled(false);
+                configuration.setTokenEnabled(false);
+                // ThreedsV2ContinueRequest disables token and sets the action in setThreedsConfiguration
+                // But it will not be called if config is not associated with the request
+                // setAction will also not be called and set... if we create bare ThreedsV2ContinueRequest object without config
                 break;
             default:
                 configuration.setWpfEnabled(false);
