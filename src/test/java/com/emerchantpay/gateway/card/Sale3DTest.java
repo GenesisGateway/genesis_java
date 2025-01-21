@@ -6,17 +6,17 @@ import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.card.Sale3DRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.isA;
@@ -33,6 +33,18 @@ public class Sale3DTest {
         Sale3DRequest sale = new Sale3DRequest();
         sale.setCurrency(Currency.USD.getCurrency());
         return sale;
+    }
+
+    private void setRequiredParams(Sale3DRequest sale) {
+        sale.setTransactionId(RandomStringUtils.randomAlphanumeric(16));
+        sale.setCustomerEmail("john.doe@gmail.com");
+        sale.setAmount(BigDecimal.valueOf(50));
+        sale.setCardNumber("4200000000000000")
+                .setCardHolder("Test Holder")
+                .setExpirationMonth("04")
+                .setExpirationYear("2026");
+        sale.setConsumerId(RandomStringUtils.randomNumeric(10));
+        sale.setSchemeTokenized(Boolean.TRUE);
     }
 
     @Before
@@ -60,7 +72,7 @@ public class Sale3DTest {
     }
 
     @Test
-    public void testSale3D() throws MalformedURLException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public void testSale3D() throws MalformedURLException {
 
         // Sale3D
         when(sale3d.setTransactionId(isA(String.class))).thenReturn(sale3d);
@@ -89,6 +101,7 @@ public class Sale3DTest {
         when(sale3d.setFXRateId(isA(String.class))).thenReturn(sale3d);
         when(sale3d.setCrypto(isA(Boolean.class))).thenReturn(sale3d);
         when(sale3d.setRecurringType(isA(String.class))).thenReturn(sale3d);
+        when(sale3d.setSchemeTokenized(isA(Boolean.class))).thenReturn(sale3d);
 
         assertEquals(sale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 sale3d);
@@ -110,6 +123,7 @@ public class Sale3DTest {
         assertEquals(sale3d.setFXRateId("123"), sale3d);
         assertEquals(sale3d.setCrypto(true), sale3d);
         assertEquals(sale3d.setRecurringType("initial"), sale3d);
+        assertEquals(sale3d.setSchemeTokenized(true), sale3d);
 
         verify(sale3d).setTransactionId(uniqueId);
         verify(sale3d).setRemoteIp("192.168.0.1");
@@ -137,6 +151,8 @@ public class Sale3DTest {
         verify(sale3d).setFXRateId("123");
         verify(sale3d).setCrypto(true);
         verify(sale3d).setRecurringType("initial");
+        verify(sale3d).setSchemeTokenized(true);
+
         verifyNoMoreInteractions(sale3d);
 
         verifyExecute();
@@ -187,6 +203,22 @@ public class Sale3DTest {
         Sale3DRequest sale3D = new Sale3DRequest();
         sale3D.setRecurringType("subsequent");
         sale3D.buildRecurringAttrParams();
+    }
+
+    @Test
+    public void testMissingSchemeTokenizedParam(){
+        Sale3DRequest sale3D = prepareObject();
+        setRequiredParams(sale3D);
+        sale3D.setSchemeTokenized(null);
+        assertThrows("scheme_tokenized Required param(s) are missing", RequiredParamsException.class, sale3D::toXML);
+    }
+
+    @Test
+    public void testValidRequiredParam() {
+        Sale3DRequest sale3D = prepareObject();
+        setRequiredParams(sale3D);
+        String xml = sale3D.toXML();
+        assertTrue(xml.contains("<scheme_tokenized>true</scheme_tokenized>"));
     }
 
 }

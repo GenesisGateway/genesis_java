@@ -52,6 +52,7 @@ public class SaleRequest extends FinancialRequest implements CreditCardAttribute
     private String transactionType = TransactionTypes.SALE;
     private Boolean moto;
     private Boolean gaming;
+    private Boolean schemeTokenized;
 
     @Getter
     private String referenceId;
@@ -78,6 +79,11 @@ public class SaleRequest extends FinancialRequest implements CreditCardAttribute
 
     public SaleRequest setGaming(Boolean gaming) {
         this.gaming = gaming;
+        return this;
+    }
+
+    public SaleRequest setSchemeTokenized(Boolean schemeTokenized) {
+        this.schemeTokenized = schemeTokenized;
         return this;
     }
 
@@ -137,6 +143,7 @@ public class SaleRequest extends FinancialRequest implements CreditCardAttribute
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("sca_params", buildScaParams().toXML())
+                .addElement("scheme_tokenized", schemeTokenized)
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())

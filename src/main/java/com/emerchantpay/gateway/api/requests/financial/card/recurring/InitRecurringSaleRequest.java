@@ -50,6 +50,7 @@ public class InitRecurringSaleRequest extends FinancialRequest implements Credit
 
     private String transactionType = TransactionTypes.INIT_RECURRING_SALE;
     private Boolean moto;
+    private Boolean schemeTokenized;
 
     // Required params
     private HashMap<String, String> requiredParams = new HashMap<String, String>();
@@ -68,6 +69,11 @@ public class InitRecurringSaleRequest extends FinancialRequest implements Credit
 
     public InitRecurringSaleRequest setMoto(Boolean moto) {
         this.moto = moto;
+        return this;
+    }
+
+    public InitRecurringSaleRequest setSchemeTokenized(Boolean schemeTokenized) {
+        this.schemeTokenized = schemeTokenized;
         return this;
     }
 
@@ -111,6 +117,7 @@ public class InitRecurringSaleRequest extends FinancialRequest implements Credit
                 .addElement(buildShippingAddress(false).toXML())
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
+                .addElement("scheme_tokenized", schemeTokenized)
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())

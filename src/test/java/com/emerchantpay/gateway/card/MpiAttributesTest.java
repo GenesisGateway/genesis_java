@@ -75,17 +75,11 @@ public class MpiAttributesTest {
         when(mpiAttributes.setMpiEci(isA(String.class))).thenReturn(mpiAttributes);
         when(mpiAttributes.setMpiProtocolVersion(randomProtocolVersion)).thenReturn(mpiAttributes);
         when(mpiAttributes.is3DSv2()).thenReturn(true);
-        when(mpiAttributes.getMpiConditionalRequiredFields()).thenReturn(new HashMap<String, String>() {
-            {
-                put(RequiredParameters.mpiDirectoryServerId, null);
-            }
-        });
 
         assertEquals(mpiAttributes.setMpiCavv("AAACA1BHADYJkIASQkcAAAAAAAA="), mpiAttributes);
         assertEquals(mpiAttributes.setMpiEci("05"), mpiAttributes);
         assertEquals(mpiAttributes.setMpiProtocolVersion(randomProtocolVersion), mpiAttributes);
         assertTrue(mpiAttributes.is3DSv2());
-        assertTrue(!mpiAttributes.getMpiConditionalRequiredFields().isEmpty());
 
         verify(mpiAttributes).setMpiCavv("AAACA1BHADYJkIASQkcAAAAAAAA=");
         verify(mpiAttributes).setMpiEci("05");

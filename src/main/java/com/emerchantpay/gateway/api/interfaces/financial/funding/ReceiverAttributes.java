@@ -62,6 +62,24 @@ public interface ReceiverAttributes {
         return this;
     }
 
+    default ReceiverAttributes setReceiverAddress(String address) {
+        getReceiverAttrParamsMap().put("address", address);
+        getReceiverAttrRequestBuilder().addElement("address", address);
+        return this;
+    }
+
+    default ReceiverAttributes setReceiverState(String state) {
+        getReceiverAttrParamsMap().put("state", state);
+        getReceiverAttrRequestBuilder().addElement("state", state);
+        return this;
+    }
+
+    default ReceiverAttributes setReceiverCity(String city) {
+        getReceiverAttrParamsMap().put("city", city);
+        getReceiverAttrRequestBuilder().addElement("city", city);
+        return this;
+    }
+
     default String getReceiverFirstname() {
         return getReceiverAttrParamsMap().get("first_name");
     }
@@ -81,6 +99,20 @@ public interface ReceiverAttributes {
     default String getReceiverAccountNumberType() {
         return getReceiverAttrParamsMap().get("account_number_type");
     }
+
+    default String getReceiverAddress() {
+        return getReceiverAttrParamsMap().get("address");
+    }
+
+    default String getReceiverState() {
+        return getReceiverAttrParamsMap().get("state");
+    }
+
+    default String getReceiverCity() {
+        return getReceiverAttrParamsMap().get("city");
+    }
+
+
 
     default RequestBuilder buildReceiverParams() {
         if (getReceiverCountry() != null && getReceiverCountry().length() > 3) {

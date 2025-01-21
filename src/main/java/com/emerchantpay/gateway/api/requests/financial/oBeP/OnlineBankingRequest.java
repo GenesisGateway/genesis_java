@@ -43,7 +43,9 @@ public class OnlineBankingRequest extends FinancialRequest implements CustomerIn
             "quick_payment",
             "qr_payment",
             "netbanking",
-            "alipay_qr"
+            "alipay_qr",
+            "bancomer",
+            "scotiabank"
     ));
 
     private static final ArrayList<String> allowedBankCodesCNY = new ArrayList<>(Arrays.asList(
@@ -235,6 +237,63 @@ public class OnlineBankingRequest extends FinancialRequest implements CustomerIn
             "VTCP_VIETCOMBANK",
             "VTCP_VIETINBANK"));
 
+    private static final ArrayList<String> allowedBankCodesPEN = new ArrayList<>(Arrays.asList(
+            "BC",
+            "IB",
+            "EF",
+            "BP"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesEUR = new ArrayList<>(Arrays.asList(
+            "PF",
+            "BCT",
+            "TRL"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesUSD = new ArrayList<>(Arrays.asList(
+            "SN",
+            "IT",
+            "BR",
+            "BB",
+            "WP",
+            "BN",
+            "PS",
+            "BO"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesMXN = new ArrayList<>(Arrays.asList(
+            "SE",
+            "BQ"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesBRL = new ArrayList<>(Arrays.asList(
+            "CA"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesCHF = new ArrayList<>(Arrays.asList(
+            "PF"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesCAD = new ArrayList<>(Arrays.asList(
+            "CPI"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesPLN = new ArrayList<>(Arrays.asList(
+            "BLK"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesAUD = new ArrayList<>(Arrays.asList(
+            "PID"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesGBP = new ArrayList<>(Arrays.asList(
+            "TRL"
+    ));
+
+    private static final ArrayList<String> allowedBankCodesNZD = new ArrayList<>(Arrays.asList(
+            "POLI"
+    ));
+
     private static final HashMap<String, ArrayList<String>> currenciesBankCodesMap = new HashMap<String, ArrayList<String>>();
 
     {
@@ -249,6 +308,17 @@ public class OnlineBankingRequest extends FinancialRequest implements CustomerIn
         currenciesBankCodesMap.put(Currency.THB.getCurrency(), allowedBankCodesTHB);
         currenciesBankCodesMap.put(Currency.UYU.getCurrency(), allowedBankCodesUYU);
         currenciesBankCodesMap.put(Currency.VND.getCurrency(), allowedBankCodesVND);
+        currenciesBankCodesMap.put(Currency.PEN.getCurrency(), allowedBankCodesPEN);
+        currenciesBankCodesMap.put(Currency.EUR.getCurrency(), allowedBankCodesEUR);
+        currenciesBankCodesMap.put(Currency.USD.getCurrency(), allowedBankCodesUSD);
+        currenciesBankCodesMap.put(Currency.MXN.getCurrency(), allowedBankCodesMXN);
+        currenciesBankCodesMap.put(Currency.BRL.getCurrency(), allowedBankCodesBRL);
+        currenciesBankCodesMap.put(Currency.CHF.getCurrency(), allowedBankCodesCHF);
+        currenciesBankCodesMap.put(Currency.CAD.getCurrency(), allowedBankCodesCAD);
+        currenciesBankCodesMap.put(Currency.PLN.getCurrency(), allowedBankCodesPLN);
+        currenciesBankCodesMap.put(Currency.AUD.getCurrency(), allowedBankCodesAUD);
+        currenciesBankCodesMap.put(Currency.GBP.getCurrency(), allowedBankCodesGBP);
+        currenciesBankCodesMap.put(Currency.NZD.getCurrency(), allowedBankCodesNZD);
     }
 
     public OnlineBankingRequest() {

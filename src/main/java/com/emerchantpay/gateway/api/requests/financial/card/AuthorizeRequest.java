@@ -55,6 +55,7 @@ public class AuthorizeRequest extends FinancialRequest implements CreditCardAttr
     private final String transactionType = TransactionTypes.AUTHORIZE;
     private Boolean moto;
     private Boolean gaming;
+    private Boolean schemeTokenized;
 
     @Getter
     private String referenceId;
@@ -76,6 +77,11 @@ public class AuthorizeRequest extends FinancialRequest implements CreditCardAttr
 
     public AuthorizeRequest setGaming(Boolean gaming) {
         this.gaming = gaming;
+        return this;
+    }
+
+    public AuthorizeRequest setSchemeTokenized(Boolean schemeTokenized) {
+        this.schemeTokenized = schemeTokenized;
         return this;
     }
 
@@ -140,6 +146,7 @@ public class AuthorizeRequest extends FinancialRequest implements CreditCardAttr
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("sca_params", buildScaParams().toXML())
+                .addElement("scheme_tokenized", schemeTokenized)
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())

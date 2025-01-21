@@ -95,6 +95,7 @@ public class AuthorizeRequestTest {
         when(authorize.setFXRateId(isA(String.class))).thenReturn(authorize);
         when(authorize.setCrypto(isA(Boolean.class))).thenReturn(authorize);
         when(authorize.setRecurringType(isA(String.class))).thenReturn(authorize);
+        when(authorize.setSchemeTokenized(isA(Boolean.class))).thenReturn(authorize);
 
         assertEquals(authorize.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize);
         assertEquals(authorize.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize);
@@ -108,6 +109,7 @@ public class AuthorizeRequestTest {
         assertEquals(authorize.setFXRateId("123"), authorize);
         assertEquals(authorize.setCrypto(true), authorize);
         assertEquals(authorize.setRecurringType("initial"), authorize);
+        assertEquals(authorize.setSchemeTokenized(Boolean.TRUE), authorize);
 
         verify(authorize).setTransactionId(uniqueId);
         verify(authorize).setRemoteIp("82.137.112.202");
@@ -131,6 +133,7 @@ public class AuthorizeRequestTest {
         verify(authorize).setFXRateId("123");
         verify(authorize).setCrypto(true);
         verify(authorize).setRecurringType("initial");
+        verify(authorize).setSchemeTokenized(Boolean.TRUE);
         verifyNoMoreInteractions(authorize);
 
         verifyExecute();

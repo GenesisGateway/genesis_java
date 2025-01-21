@@ -95,6 +95,7 @@ public class SaleRequestTest {
         when(sale.setFXRateId(isA(String.class))).thenReturn(sale);
         when(sale.setCrypto(isA(Boolean.class))).thenReturn(sale);
         when(sale.setRecurringType(isA(String.class))).thenReturn(sale);
+        when(sale.setSchemeTokenized(isA(Boolean.class))).thenReturn(sale);
 
         assertEquals(sale.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"), sale);
         assertEquals(sale.setAmount(new BigDecimal("22.00")).setCurrency(Currency.USD.getCurrency()), sale);
@@ -111,6 +112,7 @@ public class SaleRequestTest {
         assertEquals(sale.setFXRateId("123"), sale);
         assertEquals(sale.setCrypto(true), sale);
         assertEquals(sale.setRecurringType("initial"), sale);
+        assertEquals(sale.setSchemeTokenized(Boolean.TRUE), sale);
 
         verify(sale).setTransactionId(uniqueId);
         verify(sale).setRemoteIp("192.168.0.1");
@@ -135,6 +137,7 @@ public class SaleRequestTest {
         verify(sale).setFXRateId("123");
         verify(sale).setCrypto(true);
         verify(sale).setRecurringType("initial");
+        verify(sale).setSchemeTokenized(Boolean.TRUE);
         verifyNoMoreInteractions(sale);
 
         verifyExecute();

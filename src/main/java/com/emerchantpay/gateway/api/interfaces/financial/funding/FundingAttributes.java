@@ -1,6 +1,7 @@
 package com.emerchantpay.gateway.api.interfaces.financial.funding;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.constants.BusinessApplicationIdentifierTypes;
 import com.emerchantpay.gateway.api.constants.IdentifierTypes;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
@@ -30,10 +31,16 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public interface FundingAttributes extends ReceiverAttributes {
+public interface FundingAttributes extends ReceiverAttributes, SenderAttributes {
     default FundingAttributes setIdentifierType(String identifierType) {
         getFundingAttrParamsMap().put("identifier_type", IdentifierTypes.validate(identifierType));
         getFundingAttrRequestBuilder().addElement("identifier_type", IdentifierTypes.validate(identifierType));
+        return this;
+    }
+
+    default FundingAttributes setBusinessApplicationIdentifier(String businessApplicationIdentifier) {
+        getFundingAttrParamsMap().put("business_application_identifier", BusinessApplicationIdentifierTypes.validate(businessApplicationIdentifier));
+        getFundingAttrRequestBuilder().addElement("business_application_identifier", BusinessApplicationIdentifierTypes.validate(businessApplicationIdentifier));
         return this;
     }
 
@@ -41,13 +48,24 @@ public interface FundingAttributes extends ReceiverAttributes {
         return getFundingAttrParamsMap().get("identifier_type");
     }
 
+    default String getBusinessApplicationIdentifier() {
+        return getFundingAttrParamsMap().get("business_application_identifier");
+    }
+
     default RequestBuilder buildFundingParams() {
         if (!getFundingAttrParamsMap().isEmpty()){
-            getFundingAttrParamsMap().put("receiver", buildReceiverParams().toXML());
-            getFundingAttrRequestBuilder().addElement("receiver", buildReceiverParams().toXML());
+            String receiverParamsXML = buildReceiverParams().toXML();
+            String senderParamsXML = buildSenderParams().toXML();
+            getFundingAttrParamsMap().put("receiver",receiverParamsXML );
+            getFundingAttrRequestBuilder().addElement("receiver",receiverParamsXML);
+            getFundingAttrParamsMap().put("sender", senderParamsXML);
+            getFundingAttrRequestBuilder().addElement("sender", senderParamsXML);
         }
         if (!getFundingAttrParamsMap().isEmpty() && getIdentifierType() == null) {
             throw new InvalidParamException("Invalid Funding Identifier type.");
+        }
+        if (!getFundingAttrParamsMap().isEmpty() && getBusinessApplicationIdentifier() == null) {
+            throw new InvalidParamException("Invalid Business Application Identifier");
         }
 
         return getFundingAttrRequestBuilder();

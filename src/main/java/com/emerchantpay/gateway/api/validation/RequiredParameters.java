@@ -159,6 +159,7 @@ public class RequiredParameters {
 
     // Recurring
     public static String recurringType = "recurring_type";
+    public static String schemeTokenized = "scheme_tokenized";
     // Managed recurring
     public static String mode = "mode";
     public static String period = "period";

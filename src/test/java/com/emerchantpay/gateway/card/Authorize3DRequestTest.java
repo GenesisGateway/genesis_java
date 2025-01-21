@@ -6,9 +6,12 @@ import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.InvalidParamException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
 import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
+import com.emerchantpay.gateway.api.requests.financial.card.Sale3DRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +35,18 @@ public class Authorize3DRequestTest {
         Authorize3DRequest authorize3d = new Authorize3DRequest();
         authorize3d.setCurrency(Currency.USD.getCurrency());
         return authorize3d;
+    }
+
+    private void setRequiredParams(Authorize3DRequest sale) {
+        sale.setTransactionId(RandomStringUtils.randomAlphanumeric(16));
+        sale.setCustomerEmail("john.doe@gmail.com");
+        sale.setAmount(BigDecimal.valueOf(50));
+        sale.setCardNumber("4200000000000000")
+                .setCardHolder("Test Holder")
+                .setExpirationMonth("04")
+                .setExpirationYear("2026");
+        sale.setConsumerId(RandomStringUtils.randomNumeric(10));
+        sale.setSchemeTokenized(Boolean.TRUE);
     }
 
     @Before
@@ -89,6 +104,7 @@ public class Authorize3DRequestTest {
         when(authorize3d.setFXRateId(isA(String.class))).thenReturn(authorize3d);
         when(authorize3d.setCrypto(isA(Boolean.class))).thenReturn(authorize3d);
         when(authorize3d.setRecurringType(isA(String.class))).thenReturn(authorize3d);
+        when(authorize3d.setSchemeTokenized(isA(Boolean.class))).thenReturn(authorize3d);
 
         assertEquals(authorize3d.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), authorize3d);
         assertEquals(authorize3d.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("10.00")), authorize3d);
@@ -104,6 +120,7 @@ public class Authorize3DRequestTest {
         assertEquals(authorize3d.setFXRateId("123"), authorize3d);
         assertEquals(authorize3d.setCrypto(true), authorize3d);
         assertEquals(authorize3d.setRecurringType("initial"), authorize3d);
+        assertEquals(authorize3d.setSchemeTokenized(Boolean.TRUE), authorize3d);
 
         verify(authorize3d).setTransactionId(uniqueId);
         verify(authorize3d).setRemoteIp("82.137.112.202");
@@ -129,6 +146,7 @@ public class Authorize3DRequestTest {
         verify(authorize3d).setFXRateId("123");
         verify(authorize3d).setCrypto(true);
         verify(authorize3d).setRecurringType("initial");
+        verify(authorize3d).setSchemeTokenized(Boolean.TRUE);
 
         verifyNoMoreInteractions(authorize3d);
 
@@ -169,4 +187,19 @@ public class Authorize3DRequestTest {
         authorize3D.buildRecurringAttrParams();
     }
 
+    @Test
+    public void testMissingSchemeTokenizedParam(){
+        Authorize3DRequest sale3D = prepareObject();
+        setRequiredParams(sale3D);
+        sale3D.setSchemeTokenized(null);
+        assertThrows("scheme_tokenized Required param(s) are missing", RequiredParamsException.class, sale3D::toXML);
+    }
+
+    @Test
+    public void testValidRequiredParam() {
+        Authorize3DRequest sale3D = prepareObject();
+        setRequiredParams(sale3D);
+        String xml = sale3D.toXML();
+        assertTrue(xml.contains("<scheme_tokenized>true</scheme_tokenized>"));
+    }
 }

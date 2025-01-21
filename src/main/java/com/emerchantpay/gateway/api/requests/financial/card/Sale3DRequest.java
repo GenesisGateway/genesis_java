@@ -15,9 +15,7 @@ import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,6 +49,7 @@ public class Sale3DRequest extends FinancialRequest implements CreditCardAttribu
     private String transactionType = TransactionTypes.SALE_3D;
     private Boolean moto;
     private Boolean gaming;
+    private Boolean schemeTokenized;
 
     @Getter
     private String referenceId;
@@ -81,6 +80,11 @@ public class Sale3DRequest extends FinancialRequest implements CreditCardAttribu
 
     public Sale3DRequest setGaming(Boolean gaming) {
         this.gaming = gaming;
+        return this;
+    }
+
+    public Sale3DRequest setSchemeTokenized(Boolean schemeTokenized) {
+        this.schemeTokenized = schemeTokenized;
         return this;
     }
 
@@ -127,9 +131,9 @@ public class Sale3DRequest extends FinancialRequest implements CreditCardAttribu
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
         requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.cardHolder, getCardHolder());
+        requiredParams.put(RequiredParameters.schemeTokenized, Objects.toString(schemeTokenized, ""));
         requiredParams.putAll(getCreditCardConditionalRequiredParams(getToken()));
         requiredParams.putAll(getTokenizationConditionalRequiredParams(getCustomerEmail(), getCardNumber()));
-        requiredParams.putAll(getMpiConditionalRequiredFields());
 
         // Validate request
         validator.isValidRequest(requiredParams);
@@ -155,6 +159,7 @@ public class Sale3DRequest extends FinancialRequest implements CreditCardAttribu
                 .addElement("mpi_params", buildMpiParams().toXML())
                 .addElement("risk_params", buildRiskParams().toXML())
                 .addElement("sca_params", buildScaParams().toXML())
+                .addElement("scheme_tokenized", schemeTokenized)
                 .addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement(buildFXParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML())

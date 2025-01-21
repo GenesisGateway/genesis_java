@@ -92,18 +92,6 @@ public interface MpiAttributes {
         return paramsMap.get("protocol_version") == MpiProtocolVersions.PROTOCOL_VERSION_2;
     }
 
-    default HashMap<String, String> getMpiConditionalRequiredFields() {
-        if (is3DSv2()) {
-            return new HashMap<String, String>() {
-                {
-                    put(RequiredParameters.mpiDirectoryServerId, paramsMap.get("directory_server_id"));
-                }
-            };
-        } else {
-            return new HashMap<>();
-        }
-    }
-
     RequestBuilder getMpiAttrRequest3DSv1Builder();
     RequestBuilder getMpiAttrRequest3DSv2Builder();
 }

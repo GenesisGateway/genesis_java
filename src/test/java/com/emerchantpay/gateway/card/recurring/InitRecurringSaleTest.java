@@ -78,6 +78,7 @@ public class InitRecurringSaleTest {
         when(initRecurring.setCustomerPhone(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setBirthDate(isA(String.class))).thenReturn(initRecurring);
         when(initRecurring.setFXRateId(isA(String.class))).thenReturn(initRecurring);
+        when(initRecurring.setSchemeTokenized(isA(Boolean.class))).thenReturn(initRecurring);
 
         assertEquals(initRecurring.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"),
                 initRecurring);
@@ -98,6 +99,7 @@ public class InitRecurringSaleTest {
                 .setBillingZipCode("M4B1B3")
                 .setBillingState("CA"), initRecurring);
         assertEquals(initRecurring.setFXRateId("123"), initRecurring);
+        assertEquals(initRecurring.setSchemeTokenized(Boolean.TRUE), initRecurring);
 
         verify(initRecurring).setTransactionId(uniqueId);
         verify(initRecurring).setRemoteIp("82.137.112.202");
@@ -123,6 +125,7 @@ public class InitRecurringSaleTest {
         verify(initRecurring).setBillingZipCode("M4B1B3");
         verify(initRecurring).setBillingState("CA");
         verify(initRecurring).setFXRateId("123");
+        verify(initRecurring).setSchemeTokenized(Boolean.TRUE);
         verifyNoMoreInteractions(initRecurring);
 
         verifyExecute();

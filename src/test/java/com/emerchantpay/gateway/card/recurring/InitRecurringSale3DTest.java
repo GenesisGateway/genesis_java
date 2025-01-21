@@ -5,9 +5,12 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.ErrorCodes;
 import com.emerchantpay.gateway.api.exceptions.ApiException;
 import com.emerchantpay.gateway.api.exceptions.RegexException;
+import com.emerchantpay.gateway.api.exceptions.RequiredParamsException;
+import com.emerchantpay.gateway.api.requests.financial.card.Authorize3DRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.recurring.InitRecurringSale3DRequest;
 import com.emerchantpay.gateway.util.Currency;
 import com.emerchantpay.gateway.util.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,7 +81,8 @@ public class InitRecurringSale3DTest {
         when(initrecsale3d.setReturnSuccessUrl(isA(URL.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setReturnFailureUrl(isA(URL.class))).thenReturn(initrecsale3d);
         when(initrecsale3d.setNotificationUrl(isA(URL.class))).thenReturn(initrecsale3d);
-        when(initrecsale3d.setFXRateId(isA(String.class))).thenReturn(initrecsale3d);;
+        when(initrecsale3d.setFXRateId(isA(String.class))).thenReturn(initrecsale3d);
+        when(initrecsale3d.setSchemeTokenized(isA(Boolean.class))).thenReturn(initrecsale3d);
 
         assertEquals(initrecsale3d.setTransactionId(uniqueId.toString()).setRemoteIp("192.168.0.1").setUsage("TICKETS"),
                 initrecsale3d);
@@ -102,6 +106,7 @@ public class InitRecurringSale3DTest {
                 .setBillingZipCode("M4B1B3")
                 .setBillingState("CA"), initrecsale3d);
         assertEquals(initrecsale3d.setFXRateId("123"), initrecsale3d);
+        assertEquals(initrecsale3d.setSchemeTokenized(Boolean.TRUE), initrecsale3d);
 
         verify(initrecsale3d).setTransactionId(uniqueId.toString());
         verify(initrecsale3d).setRemoteIp("192.168.0.1");
@@ -129,6 +134,7 @@ public class InitRecurringSale3DTest {
         verify(initrecsale3d).setReturnSuccessUrl(new URL("http://www.example.com/success"));
         verify(initrecsale3d).setReturnFailureUrl(new URL("http://www.example.com/failure"));
         verify(initrecsale3d).setFXRateId("123");
+        verify(initrecsale3d).setSchemeTokenized(Boolean.TRUE);
         verifyNoMoreInteractions(initrecsale3d);
 
         verifyExecute();
@@ -162,4 +168,31 @@ public class InitRecurringSale3DTest {
         assertTrue(initRecurringSale3D.buildPaymentParams() instanceof RequestBuilder);
     }
 
+    @Test
+    public void testMissingSchemeTokenizedParam(){
+        InitRecurringSale3DRequest sale3D = new InitRecurringSale3DRequest();
+        setRequiredParams(sale3D);
+        sale3D.setSchemeTokenized(null);
+        assertThrows("scheme_tokenized Required param(s) are missing", RequiredParamsException.class, sale3D::toXML);
+    }
+
+    @Test
+    public void testValidRequiredParam() {
+        InitRecurringSale3DRequest sale3D = new InitRecurringSale3DRequest();
+        setRequiredParams(sale3D);
+        String xml = sale3D.toXML();
+        assertTrue(xml.contains("<scheme_tokenized>true</scheme_tokenized>"));
+    }
+
+    private void setRequiredParams(InitRecurringSale3DRequest sale) {
+        sale.setTransactionId(RandomStringUtils.randomAlphanumeric(16));
+        sale.setCustomerEmail("john.doe@gmail.com");
+        sale.setCurrency(Currency.EUR.getCurrency()).setAmount(BigDecimal.valueOf(50));
+        sale.setCardNumber("4200000000000000")
+                .setCardHolder("Test Holder")
+                .setExpirationMonth("04")
+                .setExpirationYear("2026");
+        sale.setConsumerId(RandomStringUtils.randomNumeric(10));
+        sale.setSchemeTokenized(Boolean.TRUE);
+    }
 }

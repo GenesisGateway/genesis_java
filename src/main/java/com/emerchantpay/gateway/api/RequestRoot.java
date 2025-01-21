@@ -157,6 +157,10 @@ public abstract class RequestRoot {
 
     private HashMap<String, String> receiverAttrParamsMap;
 
+    private HashMap<String, String> fundingSenderAttrParamsMap;
+
+    private RequestBuilder fundingSenderAttrRequestBuilder;
+
     public GenesisValidator getValidator() {
         if (validator == null) {
             validator = new GenesisValidator();
@@ -582,5 +586,19 @@ public abstract class RequestRoot {
             receiverAttrParamsMap = new HashMap<String, String>();
         }
         return receiverAttrParamsMap;
+    }
+
+    public RequestBuilder getSenderAttrributeRequestBuilder() {
+        if (fundingSenderAttrRequestBuilder == null) {
+            fundingSenderAttrRequestBuilder = new RequestBuilder("");
+        }
+        return fundingSenderAttrRequestBuilder;
+    }
+
+    public HashMap<String, String> getSenderAttributeParamsMap() {
+        if (fundingSenderAttrParamsMap == null) {
+            fundingSenderAttrParamsMap = new HashMap<String, String>();
+        }
+        return fundingSenderAttrParamsMap;
     }
 }
