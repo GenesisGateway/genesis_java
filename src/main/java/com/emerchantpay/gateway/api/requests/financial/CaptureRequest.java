@@ -4,25 +4,32 @@ import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.BusinessParamsAttributes;
 import com.emerchantpay.gateway.api.interfaces.financial.traveldata.TravelDataAttributes;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
 
-public class CaptureRequest extends FinancialRequest implements BusinessParamsAttributes, TravelDataAttributes {
+import java.util.HashMap;
 
-    private String transactionType = TransactionTypes.CAPTURE;
-
-    private String referenceId;
+public class CaptureRequest extends ReferenceRequest implements BusinessParamsAttributes, TravelDataAttributes {
 
     public CaptureRequest() {
         super();
     }
 
+    /**
+     * Sets the reference identifier for this request.
+     *
+     * @param referencialId the reference identifier to set
+     * @return this instance of {@link <ClassName>}
+     * @deprecated and scheduled for removal since {@code 1.18.8}, use {@link #setReferenceId(String)} instead.
+     */
+    @Deprecated
     public CaptureRequest setReferencialId(String referencialId) {
-        this.referenceId = referencialId;
+        setReferenceId(referencialId);
         return this;
     }
 
     @Override
     public String getTransactionType() {
-        return transactionType;
+        return TransactionTypes.CAPTURE;
     }
 
     @Override
@@ -35,12 +42,17 @@ public class CaptureRequest extends FinancialRequest implements BusinessParamsAt
         return buildRequest(root).toQueryString();
     }
 
-    protected RequestBuilder buildRequest(String root) {
+    @Override
+    protected HashMap<String, String> getRequiredParams(){
+        super.getRequiredParams();
+        requiredParams.put(RequiredParameters.currency, getCurrency());
+        return requiredParams;
+    }
 
-        return new RequestBuilder(root).addElement("transaction_type", transactionType)
-                .addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
-                .addElement("business_attributes", buildBusinessParams().toXML())
-                .addElement("reference_id", referenceId)
+    protected RequestBuilder buildRequest(String root) {
+        RequestBuilder builder = super.buildRequest(root);
+
+        return builder.addElement("business_attributes", buildBusinessParams().toXML())
                 .addElement("travel", buildTravelDataParams().toXML());
     }
 }

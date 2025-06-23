@@ -17,6 +17,7 @@ import com.emerchantpay.gateway.model.Transaction;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.SHA1Hasher;
 import com.emerchantpay.gateway.util.SHA512Hasher;
+import lombok.Getter;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -47,13 +48,15 @@ public class NotificationGateway implements Serializable {
 	private ReconcileRequest reconcilationRequest;
 	private WPFReconcileRequest wpfReconcileRequest;
 	private GenesisClient client;
-	private RequestBuilder response;
+	@Getter
+    private RequestBuilder response;
 
 	private String uniqueId;
 	private String signature;
 	private Map<String, String> notificationParams;
 
-	private Notification notification;
+	@Getter
+    private Notification notification;
 
 	public NotificationGateway(Configuration configuration, Map<String, String> notificationParams)
 			throws UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -71,15 +74,15 @@ public class NotificationGateway implements Serializable {
 
 		signature = notification.getSignature();
 
-		if (isApiNotification() == true) {
+		if (Boolean.TRUE.equals(isApiNotification())) {
 			uniqueId = notification.getUniqueId();
 		}
 
-		if (isWPFNotification() == true) {
+		if (Boolean.TRUE.equals(isWPFNotification())) {
 			uniqueId = notification.getWpfUniqueId();
 		}
 
-		if (isAuthentic() == false) {
+		if (Boolean.FALSE.equals(isAuthentic())) {
 			Integer errorCode = ErrorCodes.INPUT_DATA_ERROR.getCode();
 			throw new GenesisException(errorCode, "Invalid Genesis Notification!", new Throwable());
 		}
@@ -87,7 +90,7 @@ public class NotificationGateway implements Serializable {
 
 	public void initReconciliation() {
 		// Init Reconciliation request
-		if (isApiNotification() == true) {
+		if (Boolean.TRUE.equals(isApiNotification())) {
 			reconcilationRequest = new ReconcileRequest();
 			reconcilationRequest.setUniqueId(notification.getUniqueId());
 
@@ -95,7 +98,7 @@ public class NotificationGateway implements Serializable {
 			client.execute();
 		}
 
-		if (isWPFNotification() == true) {
+		if (Boolean.TRUE.equals(isWPFNotification())) {
 			wpfReconcileRequest = new WPFReconcileRequest();
 			wpfReconcileRequest.setUniqueId(notification.getWpfUniqueId());
 
@@ -144,18 +147,10 @@ public class NotificationGateway implements Serializable {
 	}
 
 	public Boolean isWPFNotification() {
-		if (notification.getWpfUniqueId() != null && !notification.getWpfUniqueId().isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+        return notification.getWpfUniqueId() != null && !notification.getWpfUniqueId().isEmpty();
 	}
 
-	public Notification getNotification() {
-		return notification;
-	}
-
-	public Transaction getReconcilation() {
+    public Transaction getReconcilation() {
 		TransactionResult<? extends Transaction> result = client.getTransaction().getRequest();
 
 		return result.getTransaction();
@@ -164,20 +159,16 @@ public class NotificationGateway implements Serializable {
 	public void generateResponse() {
 		response = new RequestBuilder("notification_echo");
 
-		if (isApiNotification() == true) {
+		if (Boolean.TRUE.equals(isApiNotification())) {
 			response.addElement("unique_id", uniqueId);
 		}
 
-		if (isWPFNotification() == true) {
+		if (Boolean.TRUE.equals(isWPFNotification())) {
 			response.addElement("wpf_unique_id", uniqueId);
 		}
 	}
 
-	public RequestBuilder getResponse() {
-		return response;
-	}
-
-	public List<Map.Entry<String,Object>> getResponseParams() {
+    public List<Map.Entry<String,Object>> getResponseParams() {
 		return response.getElements();
 	}
 

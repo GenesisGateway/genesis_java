@@ -31,12 +31,23 @@ public interface ReferenceAttributes {
 
     String referenceIdParamName = "reference_id";
 
+    /**
+     * Sets the reference identifier for this request.
+     *
+     * @param referenceId the reference identifier to set
+     * @return this instance of {@link <ClassName>}
+     */
     default ReferenceAttributes setReferenceId(String referenceId) {
         getReferenceAttrParamsMap().put(referenceIdParamName, String.valueOf(referenceId));
         getReferenceAttrRequestBuilder().addElement(referenceIdParamName, referenceId);
         return this;
     }
 
+    /**
+     * Gets the reference identifier for this request.
+     *
+     * @return the reference identifier for this request.
+     */
     default String getReferenceId() {
         return getReferenceAttrParamsMap().get(referenceIdParamName);
     }

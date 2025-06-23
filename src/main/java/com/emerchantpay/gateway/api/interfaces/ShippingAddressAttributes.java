@@ -1,7 +1,6 @@
 package com.emerchantpay.gateway.api.interfaces;
 
 import com.emerchantpay.gateway.api.RequestBuilder;
-import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.api.validation.RequiredParametersValidator;
 import com.emerchantpay.gateway.util.Country;
@@ -130,11 +129,11 @@ public interface ShippingAddressAttributes {
     }
 
     default RequestBuilder buildShippingAddress(Boolean includeEmptyTags, String parent) {
-        if (!isShippingAddressValid()) {
+        if (Boolean.FALSE.equals(isShippingAddressValid())) {
             return null;
         }
         String shippingAddressXML = getShipAddrAttrRequestBuilder().toXML();
-        if(!includeEmptyTags && shippingAddressXML.isEmpty()){
+        if(Boolean.FALSE.equals(includeEmptyTags) && shippingAddressXML.isEmpty()){
             //No empty tags included
             return new RequestBuilder("");
         } else {

@@ -3,6 +3,9 @@ package com.emerchantpay.gateway.api.requests.nonfinancial.reconcile;
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Map;
@@ -30,23 +33,20 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
+@Setter
+@Accessors(chain = true)
 public class ReconcileRequest extends Request {
 
+	@Getter(onMethod_ = @__({@Override}))
 	private String uniqueId;
+
 	private String arn;
+
+	@Getter
+	private Boolean useSmartRouting = false;
 
 	public ReconcileRequest() {
 		super();
-	}
-
-	public ReconcileRequest setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-		return this;
-	}
-
-	public ReconcileRequest setArn(String arn) {
-		this.arn = arn;
-		return this;
 	}
 
 	public ReconcileRequest setTransactionId(String transactionId) {
@@ -57,11 +57,6 @@ public class ReconcileRequest extends Request {
 	@Override
 	public String getTransactionType() {
 		return TransactionTypes.RECONCILE;
-	}
-
-	@Override
-	public String getUniqueId() {
-		return uniqueId;
 	}
 
 	@Override

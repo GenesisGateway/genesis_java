@@ -30,4 +30,5 @@ public class EndpointActions implements Serializable {
 
 	public static final String PROCESS = "process";
 	public static final String TRANSACTIONS = "transactions";
+	public static final String RECONCILE = "reconcile";
 }

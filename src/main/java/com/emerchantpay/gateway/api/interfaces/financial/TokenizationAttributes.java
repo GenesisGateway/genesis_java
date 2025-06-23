@@ -89,7 +89,7 @@ public interface TokenizationAttributes {
             requiredParams.put(RequiredParameters.customerEmail, customerEmail);
             requiredParams.put(RequiredParameters.consumerId, getConsumerId());
         }
-        if(getRememberCard()){
+        if(Boolean.TRUE.equals(getRememberCard())){
             requiredParams.put(RequiredParameters.cardNumber, cardNumber);
             requiredParams.put(RequiredParameters.customerEmail, customerEmail);
         }

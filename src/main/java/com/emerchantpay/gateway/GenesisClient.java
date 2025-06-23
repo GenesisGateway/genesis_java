@@ -6,6 +6,7 @@ import com.emerchantpay.gateway.api.constants.EndpointActions;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.LimitsException;
 import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
+import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileRequest;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
 import com.emerchantpay.gateway.util.NodeWrapper;
@@ -147,7 +148,7 @@ public class GenesisClient extends Request {
     }
 
     public Request execute() {
-        if (asyncExecute) {
+        if (Boolean.TRUE.equals(asyncExecute)) {
             executeAsync();
         } else {
             for (Request request : requestList) {
@@ -158,7 +159,7 @@ public class GenesisClient extends Request {
     }
 
     private void executeAsync() {
-        ArrayList<CompletableFuture> requestFutures = new ArrayList<>();
+        ArrayList<CompletableFuture<?>> requestFutures = new ArrayList<>();
         for (int requestIndex = 0; requestIndex < requestList.size(); requestIndex++) {
             Request request = requestList.get(requestIndex);
             //Clone configuration for each request so asynchronous execution doesn't throw errors
@@ -188,7 +189,7 @@ public class GenesisClient extends Request {
         //  This Request -> Api Config provides required “things” for the Network/Request execution.
         //  GenesisClient should connect SDK components and load the Network with the Request object
         //  Remove the switch construction from GenesisClient->execute; avoid repetitive switch cases
-        //  Goal: Enable each request to define its endpoint without GenesisClient needing to handle it
+        //  Goal: Enable each request have in-object(or in-class) definition of its endpoint without GenesisClient needing to handle it (use Strategy pattern?)
 
         switch ((request.getTransactionType() != null) ? request.getTransactionType() : "") {
             case "wpf_payment":
@@ -208,8 +209,7 @@ public class GenesisClient extends Request {
                 break;
             case "reconcile":
                 configuration.setWpfEnabled(false);
-                configuration.setTokenEnabled(true);
-                configuration.setAction("reconcile");
+                handleSmartRouting(request, configuration);
                 break;
             case "reconcile_by_date":
                 configuration.setWpfEnabled(false);
@@ -259,16 +259,9 @@ public class GenesisClient extends Request {
                 // setAction will also not be called and set... if we create bare ThreedsV2ContinueRequest object without config
                 break;
             default:
+                // i.e. for financial transaction types
                 configuration.setWpfEnabled(false);
-                FinancialRequest financialRequest = request instanceof FinancialRequest ? ((FinancialRequest) request) : null;
-                boolean useSmartRouting = configuration.getForceSmartRouting() || (financialRequest != null && financialRequest.getUseSmartRouting());
-                if (useSmartRouting) {
-                    configuration.setTokenEnabled(false);
-                    configuration.setAction(EndpointActions.TRANSACTIONS);
-                } else {
-                    configuration.setTokenEnabled(true);
-                    configuration.setAction(EndpointActions.PROCESS);
-                }
+                handleSmartRouting(request, configuration);
                 break;
         }
 
@@ -292,7 +285,7 @@ public class GenesisClient extends Request {
     }
 
     public NodeWrapper getResponse() {
-        //Return first element. Map isn't ordered but it's for compatibility when working with single request.
+        //Return the first element. Map isn't ordered, but it's for compatibility when working with single request.
         Iterator<NodeWrapper> iterator = responseMap.values().iterator();
         if (iterator.hasNext()) {
             return iterator.next();
@@ -359,7 +352,7 @@ public class GenesisClient extends Request {
         if (configuration != null) {
             return configuration;
         } else if (iterator.hasNext()) {
-            //Return first element. Map isn't ordered but it's for compatibility when working with single request.
+            //Return the first element. Map isn't ordered, but it's for compatibility when working with a single request.
             return iterator.next();
         } else {
             return null;
@@ -392,5 +385,21 @@ public class GenesisClient extends Request {
             requestIdentifier = UUID.randomUUID().toString();
         }
         return requestIdentifier;
+    }
+
+    private void handleSmartRouting(Request request, Configuration configuration) {
+        boolean useSmartRouting = false;
+        if (request instanceof FinancialRequest) {
+            FinancialRequest fr = (FinancialRequest) request;
+            useSmartRouting = configuration.getForceSmartRouting() || fr.getUseSmartRouting();
+            configuration.setAction(
+                    useSmartRouting ? EndpointActions.TRANSACTIONS : EndpointActions.PROCESS
+            );
+        } else if (request instanceof ReconcileRequest) {
+            ReconcileRequest rr = (ReconcileRequest) request;
+            useSmartRouting = configuration.getForceSmartRouting() || rr.getUseSmartRouting();
+            configuration.setAction(EndpointActions.RECONCILE);
+        }
+        configuration.setTokenEnabled(!useSmartRouting);
     }
 }

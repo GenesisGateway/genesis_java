@@ -221,7 +221,7 @@ public class Configuration implements Serializable, Cloneable {
         } else {
             if (getWpfEnabled()) {
                 return EndpointApiTypes.WPF;
-            } else if (EndpointActions.TRANSACTIONS.equals(getAction())) {
+            } else if (EndpointActions.TRANSACTIONS.equals(getAction()) || EndpointActions.RECONCILE.equals(getAction())) {
                 return EndpointApiTypes.API;
             } else {
                 // This can occur when we have ThreedsV2ContinueRequest, it is a non-token request

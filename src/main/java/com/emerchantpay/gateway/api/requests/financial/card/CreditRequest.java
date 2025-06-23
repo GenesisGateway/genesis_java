@@ -1,11 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial.card;
 
-import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
-import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
-
-import java.util.List;
-import java.util.Map;
+import com.emerchantpay.gateway.api.requests.financial.ReferenceRequest;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,45 +26,27 @@ import java.util.Map;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class CreditRequest extends FinancialRequest {
+public class CreditRequest extends ReferenceRequest {
 
-	private String transactionType = TransactionTypes.CREDIT;
-
-	private String referenceId;
-
-	public CreditRequest() {
+    public CreditRequest() {
 		super();
-	}
-
-	public CreditRequest setReferencialId(String referencialId) {
-		this.referenceId = referencialId;
-		return this;
 	}
 
 	@Override
 	public String getTransactionType() {
-		return transactionType;
+		return TransactionTypes.CREDIT;
 	}
 
-	@Override
-	public String toXML() {
-		return buildRequest("payment_transaction").toXML();
+	/**
+	 * Sets the reference identifier for this request.
+	 *
+	 * @param referencialId the reference identifier to set
+	 * @return this instance of {@link <ClassName>}
+	 * @deprecated and scheduled for removal since {@code 1.18.8}, use {@link #setReferenceId(String)} instead.
+	 */
+	@Deprecated
+	public CreditRequest setReferencialId(String referencialId) {
+		setReferenceId(referencialId);
+		return this;
 	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
-				.addElement("reference_id", referenceId);
-	}
-
-	public List<Map.Entry<String, Object>> getElements() {
-		return buildRequest("payment_transaction").getElements();
-	}
-
 }

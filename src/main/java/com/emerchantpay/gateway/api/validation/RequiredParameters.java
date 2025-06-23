@@ -9,6 +9,7 @@ public class RequiredParameters {
     public static String transactionId = "transaction_id";
     public static String amount = "amount";
     public static String currency = "currency";
+    public static String transactionType = "transaction_type";
     public static String transactionTypes = "transaction_types";
     public static String transactionTypeName = "transaction_type_name";
     public static String returnSuccessUrl = "return_success_url";

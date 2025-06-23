@@ -39,7 +39,7 @@ public class CreditTest {
         ApiException exception = new ApiException(errorCode, ErrorCodes.getErrorDescription(errorCode),
                 new Throwable());
 
-        when(credit.setReferencialId(null)).thenThrow(exception);
+        when(credit.setReferenceId(null)).thenThrow(exception);
     }
 
     public void verifyExecute() {
@@ -58,18 +58,18 @@ public class CreditTest {
         when(credit.setUsage(isA(String.class))).thenReturn(credit);
         when(credit.setCurrency(isA(String.class))).thenReturn(credit);
         when(credit.setAmount(isA(BigDecimal.class))).thenReturn(credit);
-        when(credit.setReferencialId(isA(String.class))).thenReturn(credit);
+        when(credit.setReferenceId(isA(String.class))).thenReturn(credit);
 
         assertEquals(credit.setTransactionId(uniqueId).setRemoteIp("82.137.112.202").setUsage("TICKETS"), credit);
         assertEquals(credit.setCurrency(Currency.USD.getCurrency()).setAmount(new BigDecimal("2.00")), credit);
-        assertEquals(credit.setReferencialId("57b3a7b166ffe873d0a11863560b410c"), credit);
+        assertEquals(credit.setReferenceId("57b3a7b166ffe873d0a11863560b410c"), credit);
 
         verify(credit).setTransactionId(uniqueId);
         verify(credit).setRemoteIp("82.137.112.202");
         verify(credit).setUsage("TICKETS");
         verify(credit).setCurrency(Currency.USD.getCurrency());
         verify(credit).setAmount(new BigDecimal("2.00"));
-        verify(credit).setReferencialId("57b3a7b166ffe873d0a11863560b410c");
+        verify(credit).setReferenceId("57b3a7b166ffe873d0a11863560b410c");
         verifyNoMoreInteractions(credit);
 
         verifyExecute();
@@ -79,8 +79,8 @@ public class CreditTest {
     public void testCreditWithMissingParams() {
         clearRequiredParams();
 
-        assertNull(credit.setReferencialId(null));
-        verify(credit).setReferencialId(null);
+        assertNull(credit.setReferenceId(null));
+        verify(credit).setReferenceId(null);
         verifyNoMoreInteractions(credit);
 
         verifyExecute();

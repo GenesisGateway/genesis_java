@@ -12,6 +12,9 @@ import com.emerchantpay.gateway.api.requests.financial.apm.KlarnaItemsRequest;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
 import com.emerchantpay.gateway.api.validation.RequiredParameters;
 import com.emerchantpay.gateway.model.klarna.KlarnaItem;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -24,36 +27,50 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         DescriptorAttributes, NotificationAttributes, AsyncAttributes, RiskParamsAttributes, PendingPaymentAttributes,
         ThreedsV2CommonAttributes, TokenizationAttributes, RecurringCategoryAttributes, FundingAttributes {
 
-    //Request Builder
-    private RequestBuilder requestBuilder;
-
+    @Setter
+    @Accessors(chain = true)
     private String description;
     private URL cancelUrl;
     private BigDecimal amount;
     private String currency;
+    @Setter
+    @Accessors(chain = true)
     private Integer lifetime;
+    @Setter
+    @Accessors(chain = true)
     private String customerGender;
     private BigDecimal orderTaxAmount;
+    @Getter
+    @Setter
+    @Accessors(chain = true)
     private Boolean payLater = false;
+    @Getter
+    @Setter
+    @Accessors(chain = true)
     private Boolean scaPreference;
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    private String webPaymentFormId;
 
-    private TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
+    private final TransactionTypesRequest transactionTypes = new TransactionTypesRequest(this);
 
     //3DSv2 Attributes
     private HashMap<String, RequestBuilder> threedsV2RequestBuildersMap;
     private HashMap<String, HashMap<String, String>> threedsV2AttrParamsMap;
 
     // Reminders
-    private RemindersRequest reminders = new RemindersRequest(this);
+    @Getter
+    private final RemindersRequest reminders = new RemindersRequest(this);
 
     // Klarna items
     private KlarnaItemsRequest klarnaItemsRequest;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    private final HashMap<String, String> requiredParams = new HashMap<String, String>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     public WPFCreateRequest() {
         super();
@@ -97,11 +114,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         return threedsV2AttrParamsMap;
     }
 
-    public WPFCreateRequest setDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
     public WPFCreateRequest setReturnCancelUrl(URL cancelUrl) {
         if (validator.isValidUrl("return_cancel_url", String.valueOf(cancelUrl))) {
             this.cancelUrl = cancelUrl;
@@ -113,39 +125,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
     public WPFCreateRequest setReturnPendingUrl(URL pendingUrl) {
         //Keep method for compatibility but redirect to PendingPaymentAttributes interface method
         setReturnPendingUrl(String.valueOf(pendingUrl));
-        return this;
-    }
-
-    public WPFCreateRequest setLifetime(Integer lifetime) {
-        this.lifetime = lifetime;
-        return this;
-    }
-
-    public WPFCreateRequest setCustomerGender(String customerGender) {
-        this.customerGender = customerGender;
-        return this;
-    }
-
-    public WPFCreateRequest setOrderTaxAmount(BigDecimal orderTaxAmount) {
-        this.orderTaxAmount = orderTaxAmount;
-        return this;
-    }
-
-    public WPFCreateRequest setPayLater(Boolean payLater) {
-        this.payLater = payLater;
-        return this;
-    }
-
-    public Boolean getPayLater() {
-        return payLater;
-    }
-
-    public Boolean getScaPreference() {
-        return scaPreference;
-    }
-
-    public WPFCreateRequest setScaPreference(Boolean scaPreference) {
-        this.scaPreference = scaPreference;
         return this;
     }
 
@@ -212,7 +191,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     protected RequestBuilder buildRequest(String root) {
 
-        requestBuilder = new RequestBuilder(root).addElement(buildBaseParams().toXML())
+        RequestBuilder requestBuilder = new RequestBuilder(root).addElement(buildBaseParams().toXML())
                 .addElement(buildPaymentParams().toXML())
                 .addElement(buildCustomerInfoParams().toXML())
                 .addElement("description", description)
@@ -229,6 +208,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
                 .addElement("dynamic_descriptor_params", buildDescriptorParams().toXML())
                 .addElement("pay_later", payLater)
                 .addElement("sca_preference", scaPreference)
+                .addElement("web_payment_form_id", webPaymentFormId)
                 .addElement("threeds_v2_params", buildThreedsV2Params().toXML())
                 .addElement(buildTokenizationParams().toXML())
                 .addElement("funding", buildFundingParams().toXML());
@@ -245,7 +225,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         }
 
         // Pay Later
-        if (payLater == true) {
+        if (Boolean.TRUE.equals(payLater)) {
             requestBuilder.addElement("reminders", reminders);
         }
 
@@ -259,7 +239,7 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
         requiredParams.put(RequiredParameters.returnFailureUrl, getReturnFailureUrl());
         requiredParams.put(RequiredParameters.returnCancelUrl, String.valueOf(cancelUrl));
         requiredParams.put(RequiredParameters.transactionTypes, transactionTypes.toXML());
-        if ((getConsumerId() != null && !getConsumerId().isEmpty()) || getRememberCard() == true) {
+        if ((getConsumerId() != null && !getConsumerId().isEmpty()) || Boolean.TRUE.equals(getRememberCard())) {
             requiredParams.put(RequiredParameters.customerEmail, getCustomerEmail());
         }
 
@@ -271,10 +251,6 @@ public class WPFCreateRequest extends Request implements PaymentAttributes, Cust
 
     public List<Map.Entry<String, Object>> getElements() {
         return buildRequest("wpf_payment").getElements();
-    }
-
-    public RemindersRequest getReminders() {
-        return reminders;
     }
 
 }

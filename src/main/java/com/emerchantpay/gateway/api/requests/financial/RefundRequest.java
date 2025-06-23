@@ -1,7 +1,9 @@
 package com.emerchantpay.gateway.api.requests.financial;
 
-import com.emerchantpay.gateway.api.RequestBuilder;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
+import com.emerchantpay.gateway.api.validation.RequiredParameters;
+
+import java.util.HashMap;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,40 +28,34 @@ import com.emerchantpay.gateway.api.constants.TransactionTypes;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class RefundRequest extends FinancialRequest {
+public class RefundRequest extends ReferenceRequest {
 
-	private String transactionType = TransactionTypes.REFUND;
-
-	private String referenceId;
-
-	public RefundRequest() {
+    public RefundRequest() {
 		super();
 	}
 
+	/**
+	 * Sets the reference identifier for this request.
+	 *
+	 * @param referencialId the reference identifier to set
+	 * @return this instance of {@link <ClassName>}
+	 * @deprecated and scheduled for removal since {@code 1.18.8}, use {@link #setReferenceId(String)} instead.
+	 */
+	@Deprecated
 	public RefundRequest setReferencialId(String referencialId) {
-		this.referenceId = referencialId;
+		setReferenceId(referencialId);
 		return this;
 	}
 
 	@Override
 	public String getTransactionType() {
-		return transactionType;
+        return TransactionTypes.REFUND;
 	}
 
 	@Override
-	public String toXML() {
-		return buildRequest("payment_transaction").toXML();
-	}
-
-	@Override
-	public String toQueryString(String root) {
-		return buildRequest(root).toQueryString();
-	}
-
-	protected RequestBuilder buildRequest(String root) {
-
-		return new RequestBuilder(root).addElement("transaction_type", transactionType)
-				.addElement(buildBaseParams().toXML()).addElement(buildPaymentParams().toXML())
-				.addElement("reference_id", referenceId);
+	protected HashMap<String, String> getRequiredParams(){
+		super.getRequiredParams();
+		requiredParams.put(RequiredParameters.currency, getCurrency());
+		return requiredParams;
 	}
 }

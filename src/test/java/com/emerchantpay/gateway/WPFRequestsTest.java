@@ -137,6 +137,7 @@ public class WPFRequestsTest {
         when(wpfCreate.setLifetime(isA(Integer.class))).thenReturn(wpfCreate);
         when(wpfCreate.setScaPreference(isA(Boolean.class))).thenCallRealMethod();
         when(wpfCreate.getScaPreference()).thenCallRealMethod();
+        when(wpfCreate.setWebPaymentFormId(isA(String.class))).thenCallRealMethod();
 
         assertEquals(wpfCreate.setTransactionId(uidWpf).setUsage("TICKETS"), wpfCreate);
         assertEquals(wpfCreate.setDescription("TEST Description"), wpfCreate);
@@ -158,6 +159,7 @@ public class WPFRequestsTest {
         assertEquals(wpfCreate.setLifetime(60), wpfCreate);
         assertEquals(wpfCreate, wpfCreate.setScaPreference(true));
         assertEquals(true, wpfCreate.getScaPreference());
+        assertEquals(wpfCreate, wpfCreate.setWebPaymentFormId("WpfId_test"));
 
         verify(wpfCreate).setTransactionId(uidWpf);
         verify(wpfCreate).setUsage("TICKETS");
@@ -182,6 +184,7 @@ public class WPFRequestsTest {
         verify(wpfCreate).setLifetime(60);
         verify(wpfCreate).setScaPreference(true);
         verify(wpfCreate).getScaPreference();
+        verify(wpfCreate).setWebPaymentFormId("WpfId_test");
         verifyNoMoreInteractions(wpfCreate);
 
         verifyWPFExecute();
@@ -238,7 +241,7 @@ public class WPFRequestsTest {
         wpfCreate.addReminder("test", 1).done();
 
         assertEquals(wpfCreate.addReminder("test", 1), wpfCreate.getReminders());
-        assertEquals(wpfCreate.getReminders().getList(), new ArrayList<Reminder>());
+        assertEquals(new ArrayList<Reminder>(), wpfCreate.getReminders().getList());
     }
 
     @Test

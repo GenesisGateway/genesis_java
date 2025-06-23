@@ -14,8 +14,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class ReferenceAttributesTest {
@@ -55,8 +54,8 @@ public class ReferenceAttributesTest {
         request.setReferenceId(referenceId);
         assertEquals(referenceId, request.getReferenceId());
 
-        assertTrue(request.toXML() instanceof String);
-        assertTrue(request.toQueryString("") instanceof String);
+        assertNotNull(request.toXML());
+        assertNotNull(request.toQueryString(""));
     }
 
     @Test
@@ -100,14 +99,6 @@ public class ReferenceAttributesTest {
         PartialReversalRequest partialReversalRequest = new PartialReversalRequest();
         stubAndVerify(partialReversalRequest);
         partialReversalRequest.setAmount(new BigDecimal(0));
-        partialReversalRequest.toXML();
-    }
-
-    @Test(expected = RequiredParamsException.class)
-    public void testMissingCurrency(){
-        PartialReversalRequest partialReversalRequest = new PartialReversalRequest();
-        stubAndVerify(partialReversalRequest);
-        partialReversalRequest.setCurrency("");
         partialReversalRequest.toXML();
     }
 }

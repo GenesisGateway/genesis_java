@@ -31,7 +31,7 @@ cd genesis_java
 <dependency>
         <groupId>com.emerchantpay.gateway</groupId>
         <artifactId>genesis-java</artifactId>
-        <version>1.18.7</version>
+        <version>1.18.8</version>
 </dependency>
 ```
 
@@ -108,6 +108,9 @@ configuration.setForceSmartRouting(true);
 // Enable smart routing per request
 AuthorizeRequest authorize = new AuthorizeRequest();
 authorize.setUseSmartRouting(true);
+
+ReconcileRequest reconcile = new ReconcileRequest();
+reconcile.setUseSmartRouting(true);
 ```
 
 Notifications

@@ -98,7 +98,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testSmartRoutingEnabledStageBaseURl(){
+    public void testAuthorizationSmartRoutingEnabledStageBaseURl(){
         configurationStaging.setAction(EndpointActions.TRANSACTIONS);
         configurationStaging.setTokenEnabled(false);
         String baseUrl = configurationStaging.getBaseUrl();
@@ -108,7 +108,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testSmartRoutingDisabledStageBaseURl(){
+    public void testAuthorizationSmartRoutingDisabledStageBaseURl(){
         configurationStaging.setAction(EndpointActions.PROCESS);
         configurationStaging.setTokenEnabled(true);
         configurationStaging.setToken("testTerminalToken");
@@ -119,7 +119,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testSmartRoutingEnabledProdBaseURl(){
+    public void testAuthorizationSmartRoutingEnabledProdBaseURl(){
         configurationProd.setAction(EndpointActions.TRANSACTIONS);
         configurationProd.setTokenEnabled(false);
         String baseUrl = configurationProd.getBaseUrl();
@@ -129,12 +129,54 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testSmartRoutingDisabledProdBaseURl(){
+    public void testAuthorizationSmartRoutingDisabledProdBaseURl(){
         configurationProd.setAction(EndpointActions.PROCESS);
         configurationProd.setTokenEnabled(true);
         configurationProd.setToken("testTerminalToken");
         String baseUrl = configurationProd.getBaseUrl();
         String expectedUrl = "https://gate.emerchantpay.net/process/testTerminalToken";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testReconcileSmartRoutingEnabledStageBaseURl(){
+        configurationStaging.setAction(EndpointActions.RECONCILE);
+        configurationStaging.setTokenEnabled(false);
+        String baseUrl = configurationStaging.getBaseUrl();
+        String expectedUrl = "https://staging.api.emerchantpay.net/reconcile";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testReconcileSmartRoutingDisabledStageBaseURl(){
+        configurationStaging.setAction(EndpointActions.RECONCILE);
+        configurationStaging.setTokenEnabled(true);
+        configurationStaging.setToken("testTerminalToken");
+        String baseUrl = configurationStaging.getBaseUrl();
+        String expectedUrl = "https://staging.gate.emerchantpay.net/reconcile/testTerminalToken";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testReconcileSmartRoutingEnabledProdBaseURl(){
+        configurationProd.setAction(EndpointActions.RECONCILE);
+        configurationProd.setTokenEnabled(false);
+        String baseUrl = configurationProd.getBaseUrl();
+        String expectedUrl = "https://prod.api.emerchantpay.net/reconcile";
+
+        assertEquals(expectedUrl, baseUrl);
+    }
+
+    @Test
+    public void testReconcileSmartRoutingDisabledProdBaseURl(){
+        configurationProd.setAction(EndpointActions.RECONCILE);
+        configurationProd.setTokenEnabled(true);
+        configurationProd.setToken("testTerminalToken");
+        String baseUrl = configurationProd.getBaseUrl();
+        String expectedUrl = "https://gate.emerchantpay.net/reconcile/testTerminalToken";
 
         assertEquals(expectedUrl, baseUrl);
     }

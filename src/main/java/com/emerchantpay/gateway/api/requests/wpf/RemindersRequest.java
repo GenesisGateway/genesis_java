@@ -26,7 +26,7 @@ public class RemindersRequest extends Request implements ReminderAttributes {
     }
 
     public RemindersRequest(Reminder reminder) {
-        if (parent.getPayLater() == true
+        if (Boolean.TRUE.equals(parent.getPayLater())
                 && validator.validateReminder(reminder.getChannel(), reminder.getAfter())
                 && validator.validateRemindersNumber(remindersList) ) {
             this.remindersList.add(reminder);
@@ -34,7 +34,7 @@ public class RemindersRequest extends Request implements ReminderAttributes {
     }
 
     public RemindersRequest addReminder(String channel, Integer after) {
-        if (parent.getPayLater() == true
+        if (Boolean.TRUE.equals(parent.getPayLater())
                 && validator.validateReminder(channel, after)
                 && validator.validateRemindersNumber(remindersList)) {
             this.remindersList.add(new Reminder(channel, after));

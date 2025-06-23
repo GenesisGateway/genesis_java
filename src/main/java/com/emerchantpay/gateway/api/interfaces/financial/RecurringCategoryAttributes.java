@@ -35,7 +35,7 @@ public interface RecurringCategoryAttributes {
     String recurringCategoryParamName = "recurring_category";
 
     default RecurringCategoryAttributes setRecurringCategory(String recurringCategory) {
-        if(isValidRecurringCategory(recurringCategory)) {
+        if(Boolean.TRUE.equals(isValidRecurringCategory(recurringCategory))) {
             getRecurringCategoryAttrParamsMap().put(recurringCategoryParamName, recurringCategory);
             getRecurringCategoryAttrRequestBuilder().addElement(recurringCategoryParamName, recurringCategory);
         }

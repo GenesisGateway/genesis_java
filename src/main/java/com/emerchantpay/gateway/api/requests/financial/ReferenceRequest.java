@@ -40,21 +40,21 @@ public abstract class ReferenceRequest extends FinancialRequest implements Refer
     private HashMap<String, String> referenceAttrParamsMap;
 
     // Required params
-    private HashMap<String, String> requiredParams = new HashMap<String, String>();
+    protected final HashMap<String, String> requiredParams = new HashMap<>();
 
     // GenesisValidator
-    private GenesisValidator validator = new GenesisValidator();
+    private final GenesisValidator validator = new GenesisValidator();
 
     public ReferenceRequest() {
         super();
     }
 
-    //Could be overridden in sub-classes with different required parameters
+    //Could be overridden in subclasses with different required parameters
     protected HashMap<String, String> getRequiredParams(){
         //Set required params
+        requiredParams.put(RequiredParameters.transactionType, getTransactionType());
         requiredParams.put(RequiredParameters.transactionId, getTransactionId());
         requiredParams.put(RequiredParameters.amount, getAmount().toString());
-        requiredParams.put(RequiredParameters.currency, getCurrency());
         requiredParams.put(RequiredParameters.referenceId, getReferenceId());
         return requiredParams;
     }
@@ -68,7 +68,7 @@ public abstract class ReferenceRequest extends FinancialRequest implements Refer
 
     public HashMap<String, String> getReferenceAttrParamsMap(){
         if(referenceAttrParamsMap == null){
-            referenceAttrParamsMap = new HashMap<String, String>();
+            referenceAttrParamsMap = new HashMap<>();
         }
         return referenceAttrParamsMap;
     }

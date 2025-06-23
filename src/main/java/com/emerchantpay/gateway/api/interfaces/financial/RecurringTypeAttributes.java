@@ -35,7 +35,7 @@ public interface RecurringTypeAttributes {
     String recurringTypeParamName = "recurring_type";
 
     default RecurringTypeAttributes setRecurringType(String recurringType) {
-        if(isValidRecurring(recurringType)) {
+        if(Boolean.TRUE.equals(isValidRecurring(recurringType))) {
             getRecurringTypeAttrParamsMap().put(recurringTypeParamName, recurringType);
             getRecurringTypeAttrRequestBuilder().addElement(recurringTypeParamName, recurringType);
         }

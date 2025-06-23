@@ -24,8 +24,21 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// Before running the test, make sure src/testIntegration/resources/test-integration.properties exists
-public class SmartRoutingIT {
+/**
+ * Integration tests for authorization transactions.<br/>
+ * The tests execute against Genesis Staging endpoint defined by
+ * {@link Environments#STAGING} and {@link Endpoints#EMERCHANTPAY}
+ *
+ * <p><strong>Prerequisites:</strong>
+ * Ensure the file {@code src/testIntegration/resources/test-integration.properties}
+ * exists and contains valid keys:
+ * <ul>
+ *   <li><code>merchant.ci.username</code></li>
+ *   <li><code>merchant.ci.password</code></li>
+ *   <li><code>terminal.ci-eur.token</code></li>
+ * </ul>
+ */
+public class SmartRoutingAuthorizeIT {
 
     private static PropertiesConfiguration props;
     private Configuration configuration;

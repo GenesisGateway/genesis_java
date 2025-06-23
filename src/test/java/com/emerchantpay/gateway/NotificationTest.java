@@ -150,7 +150,7 @@ public class NotificationTest {
         GenesisException exception = new GenesisException(errorCode, "Invalid Genesis Notification!", new Throwable());
 
         when(notificationGtw.getNotification()).thenReturn(notification);
-        when(notificationGtw.isAuthentic() == false).thenThrow(exception);
+        when(Boolean.FALSE.equals(notificationGtw.isAuthentic())).thenThrow(exception);
         when(notificationGtw.isApiNotification()).thenReturn(true);
         when(notificationGtw.isWPFNotification()).thenReturn(false);
         when(notificationGtw.getResponse()).thenReturn(expectedResponse);
