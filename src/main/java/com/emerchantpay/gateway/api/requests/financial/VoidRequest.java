@@ -1,7 +1,7 @@
 package com.emerchantpay.gateway.api.requests.financial;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.SmartRoutingRequest;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.interfaces.financial.ReferenceAttributes;
 import com.emerchantpay.gateway.api.validation.GenesisValidator;
@@ -32,7 +32,7 @@ import java.util.HashMap;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-public class VoidRequest extends Request implements ReferenceAttributes {
+public class VoidRequest extends SmartRoutingRequest implements ReferenceAttributes {
 
     private final String transactionType = TransactionTypes.VOID;
 

@@ -167,11 +167,12 @@ public class ThreedsV2ContinueRequest extends FinancialRequest {
     }
 
     @Override
-    public void setUseSmartRouting(Boolean useSmartRouting) {
+    public ThreedsV2ContinueRequest setUseSmartRouting(boolean useSmartRouting) {
         if (useSmartRouting) {
-            throw new IllegalArgumentException("Smart routing is not supported for this request");
+            throw new IllegalArgumentException("Smart routing is not supported for this request type");
         }
         super.setUseSmartRouting(false);
+        return this;
     }
 
     @Override

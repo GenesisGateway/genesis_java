@@ -2,13 +2,7 @@ package com.emerchantpay.gateway.util;
 
 import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.constants.ContentTypes;
-import com.emerchantpay.gateway.api.exceptions.AuthenticationException;
-import com.emerchantpay.gateway.api.exceptions.DownForMaintenanceException;
-import com.emerchantpay.gateway.api.exceptions.NetworkException;
-import com.emerchantpay.gateway.api.exceptions.NotFoundException;
-import com.emerchantpay.gateway.api.exceptions.ServerException;
-import com.emerchantpay.gateway.api.exceptions.UnexpectedException;
-import com.emerchantpay.gateway.api.exceptions.UpgradeRequiredException;
+import com.emerchantpay.gateway.api.exceptions.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -388,6 +382,8 @@ public class Http implements Serializable {
 
         if (isErrorCode(statusCode)) {
             switch (statusCode) {
+                case 400:
+                    throw new BadRequestException();
                 case 401:
                     throw new AuthenticationException();
                 case 404:

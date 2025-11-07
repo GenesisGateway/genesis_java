@@ -105,7 +105,7 @@ public class Configuration implements Serializable, Cloneable {
      */
     @Getter
     @Setter
-    private Boolean forceSmartRouting = false;
+    private boolean forceSmartRouting = false;
     @Getter
     @Setter
     private Boolean wpfEnabled = false;

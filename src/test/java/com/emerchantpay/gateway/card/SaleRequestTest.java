@@ -181,17 +181,17 @@ public class SaleRequestTest {
     }
 
     @Test
+    public void testRecurrency_ShouldSuccess_WhenNotProvidedReferenceId(){
+        SaleRequest sale = prepareObject();
+        sale.setRecurringType("subsequent");
+        sale.toXML();
+    }
+
+    @Test
     public void testRecurrency_ShouldSuccess_WhenMissedCardData(){
         SaleRequest sale = prepareObjectWithoutCardData();
         sale.setRecurringType("subsequent");
         sale.setReferenceId("1234");
-        sale.toXML();
-    }
-
-    @Test(expected = InvalidParamException.class)
-    public void testRecurrency_ThrowException_WhenMissedReferenceId() {
-        SaleRequest sale = prepareObject();
-        sale.setRecurringType("subsequent");
         sale.toXML();
     }
 

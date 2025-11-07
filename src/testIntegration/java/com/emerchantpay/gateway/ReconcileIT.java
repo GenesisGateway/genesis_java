@@ -1,13 +1,16 @@
 package com.emerchantpay.gateway;
 
+import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.TransactionResult;
 import com.emerchantpay.gateway.api.constants.Endpoints;
 import com.emerchantpay.gateway.api.constants.Environments;
 import com.emerchantpay.gateway.api.constants.TransactionStates;
 import com.emerchantpay.gateway.api.exceptions.NotFoundException;
 import com.emerchantpay.gateway.api.exceptions.ResponseException;
+import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileRequest;
 import com.emerchantpay.gateway.model.Transaction;
+import com.emerchantpay.gateway.util.AuthorizeRequestFactory;
 import com.emerchantpay.gateway.util.Configuration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
@@ -25,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p><strong>Prerequisites:</strong>
  * <ol>
- *   <li>Run authorization test (e.g., in {@code SmartRoutingAuthorizeIT}) to obtain a valid
- *       RECONCILE_TRANSACTION_ID from authorization response</li>
  *   <li>Ensure the file
  *       {@code src/testIntegration/resources/test-integration.properties}
  *       exists and contains valid keys:
@@ -38,12 +39,10 @@ import static org.junit.jupiter.api.Assertions.*;
  *   </li>
  * </ol>
  */
-public class SmartRoutingReconcileIT {
+public class ReconcileIT {
 
     private static PropertiesConfiguration props;
     private Configuration configuration;
-
-    private final String RECONCILE_TRANSACTION_ID = "f78ab55b07ce4922ab79f49ebaa4d1";
 
     @BeforeAll
     public static void loadProperties() {
@@ -65,9 +64,10 @@ public class SmartRoutingReconcileIT {
     @Test
     public void testReconcileNoSmartRouting() {
         configuration.setToken(props.getString("terminal.ci-eur.token"));
+        String authTransactionId = issueAuthRequest(false);
 
         ReconcileRequest reconcile = new ReconcileRequest();
-        reconcile.setTransactionId(RECONCILE_TRANSACTION_ID);
+        reconcile.setTransactionId(authTransactionId);
 
         TransactionResult<Transaction> result = executeRequest(reconcile);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
@@ -76,9 +76,10 @@ public class SmartRoutingReconcileIT {
     @Test
     public void testReconcileGlobalSmartRouting() {
         configuration.setForceSmartRouting(true);
+        String authTransactionId = issueAuthRequest(false);
 
         ReconcileRequest reconcile = new ReconcileRequest();
-        reconcile.setTransactionId(RECONCILE_TRANSACTION_ID);
+        reconcile.setTransactionId(authTransactionId);
 
         TransactionResult<Transaction> result = executeRequest(reconcile);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
@@ -86,8 +87,10 @@ public class SmartRoutingReconcileIT {
 
     @Test
     public void testReconcilePerRequestSmartRouting() {
+        String authTransactionId = issueAuthRequest(true);
+
         ReconcileRequest reconcile = new ReconcileRequest();
-        reconcile.setTransactionId(RECONCILE_TRANSACTION_ID);
+        reconcile.setTransactionId(authTransactionId);
         reconcile.setUseSmartRouting(true);
 
         TransactionResult<Transaction> result = executeRequest(reconcile);
@@ -108,16 +111,24 @@ public class SmartRoutingReconcileIT {
     @Test
     public void testReconcileErrorNoSmartRoutingNoToken() {
         ReconcileRequest reconcile = new ReconcileRequest();
-        reconcile.setTransactionId(RECONCILE_TRANSACTION_ID);
+        reconcile.setTransactionId("dummy-id");
 
         ResponseException exception = assertThrows(ResponseException.class, () -> {
             executeRequest(reconcile);
         });
-        String msg = exception.getMessage();
         assertTrue(exception.getMessage().startsWith("Code: 220"));
     }
 
-    private TransactionResult<Transaction> executeRequest(ReconcileRequest request) {
+    /** Issue Auth request and get its uniqueId from response*/
+    private String issueAuthRequest(boolean useSmartRouting) {
+        AuthorizeRequest authorize = AuthorizeRequestFactory.create();
+        authorize.setUseSmartRouting(useSmartRouting);
+        TransactionResult<Transaction> authResult = executeRequest(authorize);
+        assertEquals(TransactionStates.APPROVED, authResult.getTransaction().getStatus());
+        return authResult.getTransaction().getTransactionId();
+    }
+
+    private TransactionResult<Transaction> executeRequest(Request request) {
         GenesisClient client = new GenesisClient(configuration, request);
         client.debugMode(true);
         client.execute();

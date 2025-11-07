@@ -8,19 +8,14 @@ import com.emerchantpay.gateway.api.exceptions.ResponseException;
 import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
 import com.emerchantpay.gateway.api.requests.financial.card.AuthorizeRequest;
 import com.emerchantpay.gateway.model.Transaction;
+import com.emerchantpay.gateway.util.AuthorizeRequestFactory;
 import com.emerchantpay.gateway.util.Configuration;
-import com.emerchantpay.gateway.util.Country;
-import com.emerchantpay.gateway.util.Currency;
-import com.emerchantpay.gateway.util.StringUtils;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.apache.commons.configuration2.ex.ConfigurationException;
-
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li><code>terminal.ci-eur.token</code></li>
  * </ul>
  */
-public class SmartRoutingAuthorizeIT {
+public class AuthorizeIT {
 
     private static PropertiesConfiguration props;
     private Configuration configuration;
@@ -52,6 +47,7 @@ public class SmartRoutingAuthorizeIT {
             throw new RuntimeException("Failed to load integration test configuration", e);
         }
         assertNotNull(props.getString("merchant.ci.username"), "Username property is missing");
+        assertNotNull(props.getString("terminal.ci-eur.token"), "Terminal token is missing");
     }
 
     @BeforeEach
@@ -62,32 +58,32 @@ public class SmartRoutingAuthorizeIT {
     }
 
     @Test
-    public void testAuthorizeTransactionNoSmartRouting() {
+    public void testAuthorizeNoSmartRouting() {
         configuration.setToken(props.getString("terminal.ci-eur.token"));
-        AuthorizeRequest authorize = createAuthorizeRequest();
+        AuthorizeRequest authorize = AuthorizeRequestFactory.create();
         TransactionResult<Transaction> result = executeRequest(authorize);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
     }
 
     @Test
-    public void testAuthorizeTransactionGlobalSmartRouting() {
+    public void testAuthorizeGlobalSmartRouting() {
         configuration.setForceSmartRouting(true);
-        AuthorizeRequest authorize = createAuthorizeRequest();
+        AuthorizeRequest authorize = AuthorizeRequestFactory.create();
         TransactionResult<Transaction> result = executeRequest(authorize);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
     }
 
     @Test
-    public void testAuthorizeTransactionPerRequestSmartRouting() {
-        AuthorizeRequest authorize = createAuthorizeRequest();
+    public void testAuthorizePerRequestSmartRouting() {
+        AuthorizeRequest authorize = AuthorizeRequestFactory.create();
         authorize.setUseSmartRouting(true);
         TransactionResult<Transaction> result = executeRequest(authorize);
         assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
     }
 
     @Test
-    public void testAuthorizeTransactionErrorNoSmartRoutingNoToken() {
-        AuthorizeRequest authorize = createAuthorizeRequest();
+    public void testAuthorizeErrorNoSmartRoutingNoToken() {
+        AuthorizeRequest authorize = AuthorizeRequestFactory.create();
 
         ResponseException exception = assertThrows(ResponseException.class, () -> {
             executeRequest(authorize);
@@ -96,35 +92,12 @@ public class SmartRoutingAuthorizeIT {
                 "Expected error code 220 in the exception message.");
     }
 
-    private AuthorizeRequest createAuthorizeRequest() {
-        // Set up Authorize request
-        String uniqueId = new StringUtils().generateUID();
-
-        AuthorizeRequest authorize = new AuthorizeRequest();
-
-        authorize.setTransactionId(uniqueId)
-                .setUsage("40208 concert tickets")
-                .setRemoteIp("245.253.2.12");
-        authorize.setGaming(true);
-
-        authorize.setCurrency(Currency.EUR.getCurrency()).setAmount(new BigDecimal("50.00"));
-
-        authorize.setCardHolder("Emil Example")
-                .setCardNumber("4200000000000000")
-                .setExpirationMonth("01")
-                .setExpirationYear("2029")
-                .setCvv("123");
-
-        authorize.setCustomerEmail("emil.example@abc.com");
-
-        authorize.setBillingFirstname("Travis")
-                .setBillingLastname("Pastrana")
-                .setBillingPrimaryAddress("Muster Str. 12")
-                .setBillingZipCode("10178")
-                .setBillingCity("Los Angeles")
-                .setBillingState("CA").setBillingCountry(Country.UnitedStates.getCode());
-
-        return authorize;
+    @Test
+    public void testAuthorizeDynamicDescriptorProps() {
+        configuration.setToken(props.getString("terminal.ci-eur.token"));
+        AuthorizeRequest authorize = AuthorizeRequestFactory.createWithDynamicDescriptorProps();
+        TransactionResult<Transaction> result = executeRequest(authorize);
+        assertEquals(TransactionStates.APPROVED, result.getTransaction().getStatus());
     }
 
     private TransactionResult<Transaction> executeRequest(FinancialRequest request) {

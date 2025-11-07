@@ -123,7 +123,6 @@ public class SaleRequest extends FinancialRequest implements CreditCardAttribute
 
         // Validate request
         validator.isValidRequest(requiredParams);
-        validateReferenceId(getRecurringType());
         validateManagedRecurring(getRecurringType());
 
         return new RequestBuilder(root).addElement("transaction_type", transactionType)
@@ -161,11 +160,5 @@ public class SaleRequest extends FinancialRequest implements CreditCardAttribute
         return Arrays.asList("initial", "managed", "subsequent");
     }
 
-    private void validateReferenceId(String recurringType) {
-        String refId = getReferenceId();
-        if("subsequent".equalsIgnoreCase(recurringType) && (refId==null || refId.isEmpty())) {
-            throw new InvalidParamException("Invalid reference_id [" + (refId!=null ? refId : "null")
-                    + "] when recurring_type is 'subsequent'.");
-        }
-    }
+
 }

@@ -1,7 +1,7 @@
 package com.emerchantpay.gateway.api.requests.nonfinancial.reconcile;
 
-import com.emerchantpay.gateway.api.Request;
 import com.emerchantpay.gateway.api.RequestBuilder;
+import com.emerchantpay.gateway.api.SmartRoutingRequest;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,15 +35,12 @@ import java.util.Map;
 
 @Setter
 @Accessors(chain = true)
-public class ReconcileRequest extends Request {
+public class ReconcileRequest extends SmartRoutingRequest {
 
 	@Getter(onMethod_ = @__({@Override}))
 	private String uniqueId;
 
 	private String arn;
-
-	@Getter
-	private Boolean useSmartRouting = false;
 
 	public ReconcileRequest() {
 		super();

@@ -1,11 +1,13 @@
 package com.emerchantpay.gateway;
 
 import com.emerchantpay.gateway.api.Request;
+import com.emerchantpay.gateway.api.SmartRoutingRequest;
 import com.emerchantpay.gateway.api.constants.DeprecatedTransactionTypes;
 import com.emerchantpay.gateway.api.constants.EndpointActions;
 import com.emerchantpay.gateway.api.constants.TransactionTypes;
 import com.emerchantpay.gateway.api.exceptions.LimitsException;
 import com.emerchantpay.gateway.api.requests.financial.FinancialRequest;
+import com.emerchantpay.gateway.api.requests.financial.VoidRequest;
 import com.emerchantpay.gateway.api.requests.nonfinancial.reconcile.ReconcileRequest;
 import com.emerchantpay.gateway.util.Configuration;
 import com.emerchantpay.gateway.util.Http;
@@ -389,15 +391,13 @@ public class GenesisClient extends Request {
 
     private void handleSmartRouting(Request request, Configuration configuration) {
         boolean useSmartRouting = false;
-        if (request instanceof FinancialRequest) {
-            FinancialRequest fr = (FinancialRequest) request;
-            useSmartRouting = configuration.getForceSmartRouting() || fr.getUseSmartRouting();
-            configuration.setAction(
-                    useSmartRouting ? EndpointActions.TRANSACTIONS : EndpointActions.PROCESS
-            );
+        if (request instanceof SmartRoutingRequest) {
+            SmartRoutingRequest srr = (SmartRoutingRequest) request;
+            useSmartRouting = configuration.isForceSmartRouting() || srr.isUseSmartRouting();
+        }
+        if (request instanceof FinancialRequest || request instanceof VoidRequest) {
+            configuration.setAction(useSmartRouting ? EndpointActions.TRANSACTIONS : EndpointActions.PROCESS);
         } else if (request instanceof ReconcileRequest) {
-            ReconcileRequest rr = (ReconcileRequest) request;
-            useSmartRouting = configuration.getForceSmartRouting() || rr.getUseSmartRouting();
             configuration.setAction(EndpointActions.RECONCILE);
         }
         configuration.setTokenEnabled(!useSmartRouting);

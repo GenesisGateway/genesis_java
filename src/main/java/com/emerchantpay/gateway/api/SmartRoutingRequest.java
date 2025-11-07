@@ -1,4 +1,4 @@
-package com.emerchantpay.gateway.api.requests.financial;
+package com.emerchantpay.gateway.api;
 
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,34 +23,13 @@ package com.emerchantpay.gateway.api.requests.financial;
  * @license http://opensource.org/licenses/MIT The MIT License
  */
 
-import com.emerchantpay.gateway.api.SmartRoutingRequest;
-import com.emerchantpay.gateway.api.interfaces.financial.PaymentAttributes;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
-
-public abstract class FinancialRequest extends SmartRoutingRequest implements PaymentAttributes {
-    private BigDecimal amount;
-    private String currency;
-
-    @Override
-    public PaymentAttributes setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    @Override
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    @Override
-    public PaymentAttributes setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    @Override
-    public String getCurrency() {
-        return currency;
-    }
+@Getter
+@Setter
+@Accessors(chain = true)
+public abstract class SmartRoutingRequest extends Request {
+    private boolean useSmartRouting = false;
 }
